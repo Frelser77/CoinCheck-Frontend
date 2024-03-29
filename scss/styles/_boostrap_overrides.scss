@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+:root {
+	--color-bg: #fff; // Colore di sfondo per la modalità light
+	--color-text: #000; // Colore del testo per la modalità light
+}
+
+// Variabili per la modalità dark
+[data-theme="dark"] {
+	--color-bg: #333; // Colore di sfondo per la modalità dark
+	--color-text: #fff; // Colore del testo per la modalità dark
+}
+
+$font-family-sans-serif: "Open Sans", sans-serif;
+$font-family-base: $font-family-sans-serif;
+
+$headings-font-family: "Roboto Condensed", sans-serif;
+
+$primary: rgb(75, 86, 199);
+$success: rgb(31, 149, 102);
+$info: rgb(15, 101, 145);
+$warning: rgb(227, 154, 8);
+$danger: rgb(194, 32, 20);
+$light: rgb(236, 237, 237);
+$dark: rgb(34, 35, 36);
+
+$theme-colors: (
+	"primary": $primary,
+	"success": $success,
+	"info": $info,
+	"warning": $warning,
+	"danger": $danger,
+	"light": $light,
+	"dark": $dark,
+);
+
+// $grid-breakpoints: (
+// 	xs: 0,
+// 	sm: 576px,
+// 	md: 768px,
+// 	lg: 992px,
+// 	xl: 1280px,
+// 	xxl: 1600px,
+// );
+
+// $container-max-widths: (
+// 	sm: 540px,
+// 	md: 720px,
+// 	lg: 960px,
+// 	xl: 1220px,
+// 	xxl: 1520px,
+// );
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+// 8. Add additional custom code here
+
+.card-base {
+	// Aggiungiamo un bordo leggero e arrotondato
+	border: 1px solid $light;
+	border-radius: 0.25rem;
+	// Aggiungiamo un'ombra leggera per dare profondità
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	// Aggiungiamo un padding interno per mantenere il contenuto distanziato dal bordo
+	padding: 1rem;
+	// Impostiamo un colore di sfondo predefinito, che poi potrà essere sovrascritto
+	background-color: $light;
+	// Assicurati che il testo all'interno sia leggibile e ben contrastato
+	color: $dark;
+
+	// Puoi aggiungere qui altre proprietà CSS che ritieni possano essere utili per la base di una card
+}
+
+// Se desideri modificare il colore di sfondo utilizzando le classi di utility di Bootstrap, puoi aggiungere qualcosa come:
+.card-base-primary {
+	@extend .card-base;
+	background-color: $primary;
+	border-color: darken($primary, 15%);
+}
+.card-base-success {
+	@extend .card-base;
+	background-color: $success;
+	border-color: darken($success, 15%);
+}

@@ -1,0 +1,29 @@
+.skeletonTitle,
+.skeletonPrice,
+.skeletonBase,
+.skeletonBtn,
+.skeletonFav {
+	background-color: #e0e0e0;
+	border-radius: 4px;
+}
+
+.skeletonTitle {
+	height: 20px;
+	width: 60%;
+}
+
+.skeletonPrice {
+	height: 15px;
+	width: 40%;
+}
+
+.skeletonBase {
+	height: 15px;
+	width: 100%;
+}
+
+.skeletonBtn,
+.skeletonFav {
+	height: 25px;
+	width: 25px;
+}

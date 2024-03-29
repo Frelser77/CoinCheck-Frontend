@@ -1,0 +1,29 @@
+@import "./styles/boostrap_overrides";
+// body {
+// 	background-color: var(--color-bg);
+// 	color: var(--color-text);
+// }
+
+.truncate-multiline {
+	display: -webkit-box;
+	-webkit-line-clamp: 3; /* Numero di righe a cui vuoi limitare il testo */
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.img-circle {
+	border-radius: 50%;
+	width: 200px;
+	height: 200px;
+	margin-inline: auto;
+	display: block;
+}
+
+.point {
+	cursor: pointer;
+}
+
+.btn-starred svg {
+	fill: rgb(70, 147, 248);
+}
