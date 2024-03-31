@@ -1,20 +1,24 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUtenti, deleteUser, restoreUser } from "../../redux/reducer/utentiApi";
+import { fetchUtenti, deleteUser, restoreUser } from "../../redux/reducer/Utenti/utentiApi";
 import { Each } from "../Tips/Each";
-import { Button, Card, CardBody, Col, Row } from "react-bootstrap";
+import { Button, ButtonGroup, Card, CardBody, CardGroup, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Url } from "../../Config/config";
 import useUserRole from "../../hooks/useUserRole";
+import { setSelectedUserId } from "../../redux/reducer/Utenti/selectedUserIdSlice";
+import Loader from "../Layout/Loader";
 
 const UtentiList = () => {
 	const dispatch = useDispatch();
-	const { role, isLoading } = useUserRole(); // Destruttura qui sia role che isLoading
+	const { role, isLoading } = useUserRole();
 	console.log(role, isLoading);
-	const { users, status, error } = useSelector((state) => state.utenti);
-	const navigate = useNavigate();
+	const users = useSelector((state) => state.utenti.users);
+	const status = useSelector((state) => state.utenti.status);
+	const error = useSelector((state) => state.utenti.error);
+	// const navigate = useNavigate();
 
-	console.log(users);
+	// console.log(users);
 
 	useEffect(() => {
 		dispatch(fetchUtenti());
@@ -32,46 +36,69 @@ const UtentiList = () => {
 
 	return (
 		<>
-			{status === "loading" && <div>Loading...</div>}
+			<Loader isLoading={isLoading && status} />
 			{error && <div>Ops, Try again!</div>}
-			<Row>
+			<Row className="zone-4 p-1 mt-3">
+				<h2 className="text-center">Utenti</h2>
 				<Each
 					of={users || []}
 					render={(user) => (
 						<Col xs={12} md={6} lg={4} className="g-4">
-							<Card key={user.userId} className="shadow-sm border-0 rounded">
-								{user.imageUrl && (
-									// <div className="d-flex align-items-center justify-content-center">
-									<img
-										className="img-circle"
-										src={user.imageUrl ? `${Url}${user.imageUrl.replace(/\\/g, "/")}` : "/placeholder.png"}
-									/>
-									// </div>
-								)}
-								<CardBody>
-									<Card.Title>{user.username}</Card.Title>
-									<Card.Text>Email: {user.email}</Card.Text>
-									<Card.Text>Stato: {user.isActive ? "Attivo" : "Non attivo"}</Card.Text>
-									<Card.Text>
+							<Card key={user.userId} className="shadow-sm border-0 rounded h-100">
+								<OverlayTrigger key="top" placement="top" overlay={<Tooltip id={`tooltip-top`}>Modifica</Tooltip>}>
+									{user.imageUrl && (
+										<div className="d-flex align-items-center justify-content-center my-3">
+											<img
+												onClick={() => dispatch(setSelectedUserId(user.userId))}
+												className="img-circle point img-md"
+												src={user.imageUrl ? `${Url}${user.imageUrl.replace(/\\/g, "/")}` : "/placeholder.png"}
+											/>
+										</div>
+									)}
+								</OverlayTrigger>
+								<CardBody className="d-flex flex-column justify-content-center align-items-start">
+									<Card.Text className="large-text fw-semibold">{user.username}</Card.Text>
+									<Card.Text className="small-text">Email: {user.email}</Card.Text>
+									<Card.Text className="small-text">Stato: {user.isActive ? "Attivo" : "Non attivo"}</Card.Text>
+									<Card.Text className="small-text">
 										Preferenze: {user.preferenzeUtentes?.length > 0 ? user.preferenzeUtentes.length : "n/n"}
 									</Card.Text>
-									<Card.Text>Post: {user.posts?.length > 0 ? user.posts.length : "n/n"}</Card.Text>
-									<Card.Text>
+									<Card.Text className="small-text">
+										Post: {user.posts?.length > 0 ? user.posts.length : "n/n"}
+									</Card.Text>
+									<Card.Text className="small-text">
 										Ultimo Accesso: {user.logAttivita && user.logAttivita[user.logAttivita.length - 1]}
 									</Card.Text>
-									{(role === "Admin" || role === "Moderatore") && (
-										<>
-											<Button variant="danger" onClick={() => handleDelete(user.userId)}>
-												Soft Delete
-											</Button>
-											<Button variant="primary" onClick={() => handleRestore(user.userId)}>
-												Restore
-											</Button>
-										</>
-									)}
-									<Button variant="outline-primary" onClick={() => navigate(`/utenti/${user.userId}/edit`)}>
-										Modifica
-									</Button>
+									<div className="d-flex align-items-center justify-content-between gap-1">
+										{(role === "Admin" || role === "Moderatore") && (
+											<>
+												<Button
+													size="sm"
+													variant="outline-danger"
+													className="p-1"
+													onClick={() => handleDelete(user.userId)}
+												>
+													Inactive
+												</Button>
+												<Button
+													size="sm"
+													variant="outline-success"
+													className="p-1"
+													onClick={() => handleRestore(user.userId)}
+												>
+													Restore
+												</Button>
+											</>
+										)}
+										{/* <Button
+											size="sm"
+											variant="outline-primary"
+											onClick={() => dispatch(setSelectedUserId(user.userId))}
+											className="p-1"
+										>
+											Modifica
+										</Button> */}
+									</div>
 								</CardBody>
 							</Card>
 						</Col>

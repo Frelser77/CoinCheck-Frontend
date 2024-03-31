@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../redux/reducer/loginUser";
+import Loader from "../Layout/Loader";
 // import Notifications from "./Notifica";
 
 export default function Register() {
@@ -11,12 +12,11 @@ export default function Register() {
 		email: "",
 	});
 	const [errorMessage, setErrorMessage] = useState("");
-	const {
-		isLoading,
-		isError,
-		errorMessage: reduxErrorMessage,
-		registrationSuccess,
-	} = useSelector((state) => state.login);
+	const isLoading = useSelector((state) => state.login.isLoading);
+	const isError = useSelector((state) => state.login.isError);
+	const reduxErrorMessage = useSelector((state) => state.login.errorMessage);
+	const registrationSuccess = useSelector((state) => state.login.registrationSuccess);
+
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
@@ -47,6 +47,7 @@ export default function Register() {
 
 	return (
 		<>
+			<Loader isLoading={isLoading} />
 			{/* <Notifications /> */}
 			<div className="container mt-5">
 				<h2>Register</h2>

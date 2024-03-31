@@ -5,6 +5,7 @@ import Card from "../Layout/MyCard";
 import SkeletonCard from "../Skeletorn/SkeletonCard";
 // import fetchNews, { fetchCryptoNews } from "../../redux/reducer/CryptocCompareApi/fetchNews";
 import useSaveToDatabase from "../../hooks/saveToDatabase";
+import Loader from "../Layout/Loader";
 
 const mainCoinIds = [
 	"BTC-USD",
@@ -20,7 +21,7 @@ const CryptoList = () => {
 	const coins = useSelector((state) => state.coinbase.coins);
 	const tickers = useSelector((state) => state.coinbase.tickers);
 	const coinStats = useSelector((state) => state.coinbase.coinStats);
-	const loading = useSelector((state) => state.coinbase.loading);
+	const isLoading = useSelector((state) => state.coinbase.loading);
 	const handleSaveToDb = useSaveToDatabase();
 
 	const [loadedAll, setLoadedAll] = useState(false);
@@ -41,6 +42,7 @@ const CryptoList = () => {
 
 	useEffect(() => {
 		const loadInitialCoins = async () => {
+			setLoadingCoins(mainCoinIds); // Imposta tutte le monete principali come in caricamento
 			const fetchPromises = mainCoinIds.map((coinId) => {
 				dispatch(fetchCoinTicker({ coinId }));
 				return dispatch(fetchCoinStats(coinId));
@@ -53,15 +55,16 @@ const CryptoList = () => {
 				.map((id) => coins.find((coin) => coin.id === id && coin.status === "online"))
 				.filter(Boolean);
 			setVisibleCoins(initialCoins);
+			setLoadingCoins([]); // Pulisce lo stato di caricamento dopo il fetch
 		};
 
 		if (coins.length > 0) {
 			loadInitialCoins();
 		}
-	}, [dispatch]); // Dipendenze: aggiunta 'coins' per ricaricare ogni volta che cambia
+	}, [coins, dispatch]);
 
 	const loadMoreCoins = useCallback(async () => {
-		if (!loading && !fetching && visibleCoins.length < onlineCoins.length) {
+		if (!isLoading && !fetching && visibleCoins.length < onlineCoins.length) {
 			setFetching(true);
 			const nextCoins = onlineCoins.slice(visibleCoins.length, visibleCoins.length + 3);
 			setLoadingCoins(nextCoins.map((coin) => coin.id));
@@ -76,32 +79,36 @@ const CryptoList = () => {
 			setFetching(false);
 			setLoadingCoins([]);
 		}
-	}, [loading, fetching, visibleCoins, onlineCoins, dispatch]);
+	}, [isLoading, fetching, visibleCoins, onlineCoins, dispatch]);
 
 	useEffect(() => {
 		setLoadedAll(visibleCoins.length >= onlineCoins.length);
 	}, [visibleCoins, onlineCoins]);
 
 	return (
-		<div className="mt-4">
-			{visibleCoins.map((coin) => (
-				<Card
-					coin={{ ...coin, ...tickers[coin.id] }}
-					currency="EUR"
-					stats={coinStats[coin.id]}
-					key={coin.id}
-					onSave={handleSaveToDb}
-				/>
-			))}
-			{loadingCoins.map((id) => (
-				<SkeletonCard key={id} />
-			))}
-			{!loadedAll && (
-				<div className="btn btn-primary" onClick={loadMoreCoins} disabled={loading || fetching}>
-					Mostra altro
-				</div>
-			)}
-		</div>
+		<>
+			<Loader isLoading={isLoading} />
+
+			<div className="mt-4 zone-1">
+				{visibleCoins.map((coin) => (
+					<Card
+						coin={{ ...coin, ...tickers[coin.id] }}
+						currency="EUR"
+						stats={coinStats[coin.id]}
+						key={coin.id}
+						onSave={handleSaveToDb}
+					/>
+				))}
+				{loadingCoins.map((id) => (
+					<SkeletonCard key={id} />
+				))}
+				{!loadedAll && (
+					<div className="btn btn-primary" onClick={loadMoreCoins} disabled={isLoading || fetching}>
+						Mostra altro
+					</div>
+				)}
+			</div>
+		</>
 	);
 };
 

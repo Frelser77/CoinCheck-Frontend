@@ -3,6 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useSelector } from "react-redux";
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
+import Loader from "../Layout/Loader";
 
 const localhost = Url;
 
@@ -13,6 +14,7 @@ const stripePromise = loadStripe(
 const CheckoutForm = () => {
 	const cart = useSelector((state) => state.cart.cart);
 	console.log(cart);
+	const userId = useSelector((state) => state.login.user.userId);
 	const [isLoading, setIsLoading] = useState(true);
 	const [sessionId, setSessionId] = useState("");
 
@@ -23,58 +25,71 @@ const CheckoutForm = () => {
 		});
 		if (error) {
 			console.error(error);
-			toast.error("Errore nel processo di checkout: " + error.message); // Mostra un messaggio di errore con il toast
+			toast.error("Errore nel processo di checkout: " + error.message);
 		} else {
-			// Potresti non arrivare mai qui perché redirectToCheckout redirige la pagina
-			toast.success("Redirect al pagamento riuscito!"); // Mostra un messaggio di successo con il toast
+			toast.success("Redirect al pagamento riuscito!");
 		}
 	};
 
 	useEffect(() => {
-		fetch(localhost + "checkout/create-session", {
+		setIsLoading(true);
+		const IdProdotto = cart.length > 0 ? cart[0].idprodotto : null; // Presumiamo che il carrello non sia vuoto
+
+		fetch(`${localhost}checkout/create-session`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				Items: cart,
+				UserId: userId.toString(), // Assicurati che questo valore sia corretto
+				IdProdotto: IdProdotto.toString(), // Assicurati che questo valore sia corretto
+				Items: cart.map((item) => ({
+					idprodotto: item.idprodotto,
+					prezzo: item.prezzo,
+					quantita: item.quantita,
+					descrizione: item.descrizione,
+					tipoAbbonamento: item.tipoAbbonamento,
+				})),
 			}),
 		})
-			.then((res) => {
-				if (res.ok) {
-					return res.json();
-				} else {
-					toast.error("Errore nella creazione della sessione di pagamento: " + error.message);
-				}
-			})
+			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
 				setSessionId(data.sessionId);
 				toast.info("Sessione di pagamento creata. Premi il pulsante per procedere al pagamento.");
+			})
+			.catch((error) => {
+				toast.error("Errore nella creazione della sessione di pagamento.");
+				console.error("Errore durante il fetch: ", error);
+			})
+			.finally(() => {
+				setIsLoading(false);
 			});
-	}, []);
+	}, [cart, userId]);
 
-	if (!sessionId) {
-		return <div>Loading...</div>;
-	}
+	// if (isLoading) {
+	// 	return <div>Loading...</div>;
+	// }
 
 	return (
-		<div id="checkout">
-			<div>
-				<h2>Shopping Cart</h2>
-				<ul>
-					{cart.map((item, index) => (
-						<li key={index}>
-							{item.tipoAbbonamento} - € {item.prezzo} - {item.quantita}
-						</li>
-					))}
-				</ul>
-			</div>
+		<>
+			<Loader isLoading={isLoading} />
+			<div id="checkout">
+				<div>
+					<h2>Shopping Cart</h2>
+					<ul>
+						{cart.map((item, index) => (
+							<li key={index}>
+								{item.tipoAbbonamento} - € {item.prezzo} - {item.quantita}
+							</li>
+						))}
+					</ul>
+				</div>
 
-			<button className="btn btn-primary" onClick={() => handleCheckout(sessionId)}>
-				Checkout
-			</button>
-		</div>
+				<button className="btn btn-primary" onClick={() => handleCheckout(sessionId)}>
+					Checkout
+				</button>
+			</div>
+		</>
 	);
 };
 

@@ -16,8 +16,10 @@ const SkeletonCard = () => {
 					<Col md={2} className="d-none d-md-block">
 						<div className={`${styles.skeletonBase}`}></div>
 					</Col>
-					<Col xs={3} md={4} className="d-flex justify-content-end align-items-center gap-2">
+					<Col xs={3} md={4} className="d-flex justify-content-end align-items-center gap-3">
 						<div className={`${styles.skeletonBtn} btn-transparent`}></div>
+						<div className={`${styles.skeletonFav}`}></div>
+						{/* <div className={`${styles.skeletonBtn} btn-transparent`}></div> */}
 						<div className={`${styles.skeletonFav}`}></div>
 					</Col>
 				</Row>

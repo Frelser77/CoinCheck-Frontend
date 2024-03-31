@@ -5,7 +5,7 @@ import UtentiList from "./components/Admin/UtentiList";
 import Home from "./components/Layout/Home";
 import Navbar from "./components/Layout/MyNavBar";
 import DettaglioUtente from "./components/Utenti/DettaglioUtente";
-import ModificaUtente from "./components/Utenti/ModificaUtente";
+import ModificaUtente from "./components/Admin/ModificaUtente";
 import { Col, Container, Row } from "react-bootstrap";
 import RedirectToLoginIfLoggedOut from "./components/Tips/LoginIfLogOut";
 import ShoppingCart from "./components/Paymant/Shopping";
@@ -33,7 +33,7 @@ function App() {
 	// console.log(role);
 
 	if (isLoading) {
-		return <div>Checking admin status...</div>;
+		return <div>Checking role status...</div>;
 	}
 
 	return (
@@ -41,19 +41,21 @@ function App() {
 			<ToasterComponent />
 			<Navbar />
 			<RedirectToLoginIfLoggedOut />
-			<Container fluid className="min-vh-100 mt-2">
+			<Container fluid className="mt-2">
+				{/* min-vh-100 */}
 				<Row className="d-flex flex-grow-1">
-					<Col xs={2}>{role && <SideBarLeft />}</Col>
+					{role && <SideBarLeft />}
+
 					{/* <div className="flex-grow-1 d-flex flex-column"> */}
 					{/* <div className="flex-grow-1"> */}
-					<Col xs={7}>
+					<Col xs={12} md={7}>
 						<Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/login" element={<Login />} />
 							<Route path="/register" element={<Register />} />
 
 							{/* Le seguenti sono rotte protette che richiedono autenticazione admin */}
-							{(role === "Admin" || role === "Moderatore") && <Route path="/utenti" element={<UtentiList />} />}
+							{(role === "Admin" || role === "Moderatore") && <Route path="/utentiList" element={<UtentiList />} />}
 							{(role === "Admin" || role === "Moderatore" || role === "Utente") && (
 								<Route path="/utenti/:id/edit" element={<ModificaUtente />} />
 							)}
@@ -70,7 +72,7 @@ function App() {
 					</Col>
 					{/* </div> */}
 					{/* </div> */}
-					<Col className="d-flex align-items-start justify-content-center">{role && <CoinsLink />}</Col>
+					{role && <CoinsLink />}
 				</Row>
 			</Container>
 			<Footer />

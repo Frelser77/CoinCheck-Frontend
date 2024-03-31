@@ -1,15 +1,18 @@
 import saveToDatabase from "../Coins/saveTodb";
-
+import { toast } from "react-toastify";
 const SaveCoinButton = ({ coin, coinStats }) => {
 	// Funzione per calcolare la variazione percentuale
 	const calculateVariazione24h = (open, last) => {
 		return open && last ? ((last - open) / open) * 100 : null;
 	};
-
 	const handleSave = () => {
-		const stats = coinStats[coin.id] || {};
-		// const ticker = tickers[coin.id] || {};
+		const stats = coinStats[coin.id] ? coinStats[coin.id] : {};
 
+		// console.log("coin", coin);
+		// console.log("coinStats", coinStats);
+		// console.log("coin.id", coin.id);
+		// console.log("coinStats keys", Object.keys(coinStats));
+		// console.log("Specific coin stats", stats);
 		const criptovalutaDto = {
 			Nome: coin.id,
 			Simbolo: coin.base_currency,
@@ -20,6 +23,8 @@ const SaveCoinButton = ({ coin, coinStats }) => {
 
 		saveToDatabase(criptovalutaDto)
 			.then((response) => {
+				console.log("criptovalutaDto", criptovalutaDto);
+
 				if (response.ok) {
 					toast.success("Salvataggio effettuato con successo!");
 				} else {
@@ -32,7 +37,11 @@ const SaveCoinButton = ({ coin, coinStats }) => {
 			});
 	};
 
-	return <button onClick={handleSave}>Salva nel DB</button>;
+	return (
+		<div className="btn btn-success" onClick={handleSave}>
+			Salva nel DB
+		</div>
+	);
 };
 
 export default SaveCoinButton;

@@ -1,20 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
-
-:root {
-	--color-bg: #fff; // Colore di sfondo per la modalità light
-	--color-text: #000; // Colore del testo per la modalità light
-}
-
-// Variabili per la modalità dark
-[data-theme="dark"] {
-	--color-bg: #333; // Colore di sfondo per la modalità dark
-	--color-text: #fff; // Colore del testo per la modalità dark
-}
-
 $font-family-sans-serif: "Open Sans", sans-serif;
 $font-family-base: $font-family-sans-serif;
-
 $headings-font-family: "Roboto Condensed", sans-serif;
 
 $primary: rgb(75, 86, 199);
@@ -22,8 +9,16 @@ $success: rgb(31, 149, 102);
 $info: rgb(15, 101, 145);
 $warning: rgb(227, 154, 8);
 $danger: rgb(194, 32, 20);
-$light: rgb(236, 237, 237);
+$light: rgb(190, 190, 190);
 $dark: rgb(34, 35, 36);
+$white: #fff;
+$black: #000;
+$gray: #bcbcbc;
+$blue: #007bff;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #e83e8c;
+$list: rgb(34, 34, 36);
 
 $theme-colors: (
 	"primary": $primary,
@@ -33,7 +28,214 @@ $theme-colors: (
 	"danger": $danger,
 	"light": $light,
 	"dark": $dark,
+	"white": $white,
+	"black": $black,
+	"gray": $gray,
+	"blue": $blue,
+	"indigo": $indigo,
+	"purple": $purple,
+	"pink": $pink,
+	"list": $list,
 );
+
+// Definisci i tuoi valori di spaziatura
+$spacer: 1rem;
+$spacers: (
+	0: 0,
+	1: (
+		$spacer * 0.25,
+	),
+	// Aggiusta questi valori come desideri
+	2:
+		(
+			$spacer * 0.5,
+		),
+	3: $spacer,
+	4: (
+		$spacer * 1.5,
+	),
+	5: (
+		$spacer * 3,
+	),
+);
+
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+// 3. Importa Bootstrap per avere accesso alle strutture e ai mixins
+@import "~bootstrap/scss/bootstrap";
+
+:root {
+	@each $name, $color in $theme-colors {
+		--#{$name}: #{$color};
+	}
+}
+
+[data-theme="dark"] {
+	@each $name, $color in $theme-colors {
+		--#{$name}: #{darken($color, 20%)};
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		@each $name, $color in $theme-colors {
+			--#{$name}: #{darken($color, 20%)};
+		}
+	}
+}
+
+// mixin per la generazione di scale di trasformazione esempio di classe scale-1, scale-2, scale-3, ecc.
+@mixin generate-scales($max: 10) {
+	@for $i from 1 through $max {
+		$scale-value: 1 + ($i * 0.01); // Inizia da 1.01 per scale-1
+		.scale-#{$i} {
+			transform: scale($scale-value);
+		}
+	}
+}
+
+@include generate-scales;
+
+// mixin per la dimensione del font responsive esempio di classe responsive-font-size-16
+@mixin responsive-font-size($size) {
+	font-size: $size;
+	@media (max-width: 600px) {
+		font-size: $size * 0.9;
+	}
+	@media (max-width: 400px) {
+		font-size: $size * 0.8;
+	}
+}
+
+.large-text {
+	@include responsive-font-size(24px);
+}
+
+.small-text {
+	@include responsive-font-size(14px);
+}
+
+// Mixin per generare varianti di hover per colore di sfondo, testo e bordo esempio di classe bg-primary-hover, text-primary-hover, border-primary-hover
+@mixin generate-hover-variants {
+	@each $name, $color in $theme-colors {
+		// Sfondo al hover
+		.bg-#{$name}-hover:hover {
+			background-color: lighten($color, 10%);
+		}
+
+		// Testo al hover
+		.text-#{$name}-hover:hover {
+			color: lighten($color, 10%);
+		}
+
+		// Bordo al hover
+		.border-#{$name}-hover:hover {
+			border-color: lighten($color, 10%);
+		}
+	}
+}
+
+// Includi il mixin per applicare gli stili
+@include generate-hover-variants;
+
+@mixin card-variant($bg-color) {
+	background-color: $bg-color !important;
+	color: if(lightness($bg-color) > 50, $dark, $white) !important; // Scelta iniziale del colore del testo
+	border-color: darken($bg-color, 5%) !important;
+	transition: all 0.3s ease-in-out;
+
+	&:hover {
+		background-color: lighten($bg-color, 10%) !important; // Chiarisce il colore di sfondo
+
+		// Mantieni il colore del testo invariato per garantire il contrasto
+		color: if(lightness($bg-color) > 50, $dark, $white) !important;
+		transform: scale(1.01);
+		z-index: 3;
+	}
+}
+
+@each $color-name, $color-value in $theme-colors {
+	.my-card.card-#{$color-name} {
+		@include card-variant($color-value);
+	}
+}
+
+body {
+	@include responsive-font-size(16px);
+}
+
+// Creazione dinamica delle varianti di colore
+@each $name, $color in $theme-colors {
+	@for $i from 1 through 5 {
+		.#{$name}-light-#{5 * $i} {
+			background-color: lighten($color, 5% * $i);
+		}
+		.#{$name}-dark-#{5 * $i} {
+			background-color: darken($color, 5% * $i);
+		}
+	}
+}
+
+@each $name, $color in $theme-colors {
+	@for $i from 1 through 5 {
+		.text-#{$name}-light-#{5 * $i} {
+			color: lighten($color, 5% * $i);
+		}
+		.text-#{$name}-dark-#{5 * $i} {
+			color: darken($color, 5% * $i);
+		}
+	}
+}
+
+@each $name, $color in $theme-colors {
+	@for $i from 1 through 5 {
+		.border-#{$name}-light-#{5 * $i} {
+			border-color: lighten($color, 5% * $i);
+		}
+		.border-#{$name}-dark-#{5 * $i} {
+			border-color: darken($color, 5% * $i);
+		}
+	}
+}
+
+@each $name, $color in $theme-colors {
+	@for $i from 1 through 5 {
+		.bg-#{$name}-light-#{5 * $i} {
+			background-color: lighten($color, 5% * $i);
+		}
+		.bg-#{$name}-dark-#{5 * $i} {
+			background-color: darken($color, 5% * $i);
+		}
+	}
+}
+
+@for $i from 1 through 10 {
+	.zone-#{$i} {
+		min-height: 150px + (100px * ($i - 1));
+		max-height: 300px + (100px * ($i - 1));
+		overflow-y: scroll;
+	}
+}
+
+@for $i from 1 through 5 {
+	@each $dir in (top, bottom, start, end) {
+		.m#{str-slice($dir, 1, 1)}--#{$i} {
+			margin-#{$dir}: -0.25rem * $i;
+		}
+	}
+
+	.mx--#{$i} {
+		margin-right: -0.25rem * $i;
+		margin-left: -0.25rem * $i;
+	}
+
+	.my--#{$i} {
+		margin-top: -0.25rem * $i;
+		margin-bottom: -0.25rem * $i;
+	}
+}
 
 // $grid-breakpoints: (
 // 	xs: 0,
@@ -56,6 +258,27 @@ $theme-colors: (
 
 // 8. Add additional custom code here
 
+// body {
+// background-color: $dark;
+// overflow-y: hidden;
+// }
+
+.truncate-multiline {
+	display: -webkit-box;
+	-webkit-line-clamp: 3; /* Numero di righe a cui vuoi limitare il testo */
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.point {
+	cursor: pointer;
+}
+
+.btn-starred svg {
+	fill: rgb(70, 147, 248);
+}
+
 .card-base {
 	// Aggiungiamo un bordo leggero e arrotondato
 	border: 1px solid $light;
@@ -72,6 +295,10 @@ $theme-colors: (
 	// Puoi aggiungere qui altre proprietà CSS che ritieni possano essere utili per la base di una card
 }
 
+.card {
+	border: 0;
+	// backdrop-filter: blur(10px);
+}
 // Se desideri modificare il colore di sfondo utilizzando le classi di utility di Bootstrap, puoi aggiungere qualcosa come:
 .card-base-primary {
 	@extend .card-base;
@@ -82,4 +309,99 @@ $theme-colors: (
 	@extend .card-base;
 	background-color: $success;
 	border-color: darken($success, 15%);
+}
+
+.img-circle {
+	border-radius: 50%;
+	// margin-inline: auto;
+	display: block;
+	transition: transform 0.3s ease-in-out;
+	-webkit-transition: all 0.3s ease-in-out;
+	&:hover {
+		transform: scale(1.02);
+		box-shadow: 0px 10px 10px 0 rgba(0, 0, 0, 0.6);
+	}
+}
+
+/* Dimensioni specifiche */
+.img-sm {
+	width: 100px;
+	height: 100px;
+}
+
+.img-md {
+	width: 150px;
+	height: 150px;
+}
+
+.img-lg {
+	width: 200px;
+	height: 200px;
+}
+.img-xl {
+	width: 300px;
+	height: 300px;
+}
+
+.img-xxl {
+	width: 400px;
+	height: 400px;
+}
+
+.img-xxxl {
+	width: 500px;
+	height: 500px;
+}
+
+.tooltip {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-bottom: 10px;
+	padding: 8px;
+	color: white;
+	background-color: black;
+	border-radius: 4px;
+	text-align: center;
+	z-index: 1; /* Assicurati che il tooltip sia sopra agli altri elementi */
+}
+
+// .zone {
+// 	min-height: 150px;
+// 	max-height: 300px;
+// 	overflow-y: scroll;
+// }
+
+/* Stili per modificare la scrollbar della pagina */
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background-color: $light;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: $gray;
+	border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: darken($gray, 10%);
+}
+
+// dropdown
+.dropdown-menu[data-bs-popper] {
+	top: 130%;
+	left: -69px;
+}
+
+.abbonamento {
+	transition: all 0.3s ease-in-out;
+}
+
+.abbonamento:hover {
+	transform: scale(1.02);
+	box-shadow: 0px 10px 10px 0 rgba(0, 0, 0, 0.6);
 }

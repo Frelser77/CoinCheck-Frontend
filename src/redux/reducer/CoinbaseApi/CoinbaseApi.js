@@ -145,7 +145,9 @@ const initialState = {
 const coinbaseSlice = createSlice({
 	name: "coinbase",
 	initialState,
-	reducers: {},
+	reducers: {
+		resetCoinbaseState: () => initialState,
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchAllCoins.pending, (state) => {
@@ -255,4 +257,5 @@ const coinbaseSlice = createSlice({
 	},
 });
 
+export const { resetCoinbaseState } = coinbaseSlice.actions;
 export default coinbaseSlice.reducer;

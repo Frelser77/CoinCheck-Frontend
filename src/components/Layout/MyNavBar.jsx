@@ -32,7 +32,7 @@ const MyNavbar = () => {
 										Profilo
 									</NavDropdown.Item>
 									{(role === "Admin" || role === "Moderatore") && (
-										<NavDropdown.Item as={NavLink} to="/utenti/">
+										<NavDropdown.Item as={NavLink} to="/utentiList/">
 											Utenti
 										</NavDropdown.Item>
 									)}

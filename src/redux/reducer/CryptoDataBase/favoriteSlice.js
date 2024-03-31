@@ -101,7 +101,6 @@ export const favoritesSlice = createSlice({
 					state.userPreferences.splice(index, 1);
 				} else {
 					// Aggiunge la preferenza
-					// Assicurati che l'oggetto che aggiungi abbia la struttura corretta
 					state.userPreferences.push({ UserId, CriptoId, CriptoNome: coinDetails.name });
 				}
 			})

@@ -6,9 +6,12 @@ import { Link } from "react-router-dom";
 // import styles from "./homeCarousel.module.css";
 import styles from "./homeCarousel.module.css";
 import { Card } from "react-bootstrap";
+import Loader from "./Loader";
 
 const HomeCarousel = () => {
 	const news = useSelector((state) => state.news.news);
+	const isLoading = useSelector((state) => state.news.loading);
+	const errorr = useSelector((state) => state.news.error);
 	// console.log("in carousel ", news);
 	// Opzioni per la configurazione di react-slick
 	const settings = {
@@ -66,23 +69,26 @@ const HomeCarousel = () => {
 		],
 	};
 	return (
-		<div className="d-flex align-items-center justify-content-center">
-			<div className={`${styles.carouselWrapper}`}>
-				<Slider {...settings}>
-					{news.slice(0, 5).map((article, index) => (
-						<Card key={index} className={`${styles.carouselContent} border-0 h-100`}>
-							<div className={styles.cardBackground} style={{ backgroundImage: `url(${article.imageurl})` }}>
-								<div className={styles.cardDetails}>
-									<h3>{article.title}</h3>
-									<p className="truncate-multiline">{article.body}</p>
-									<Link to={`/news/${article.id}`}>Leggi di più</Link>
+		<>
+			<Loader isLoading={isLoading} />
+			<div className="d-flex align-items-center justify-content-center">
+				<div className={`${styles.carouselWrapper}`}>
+					<Slider {...settings}>
+						{news.slice(0, 5).map((article, index) => (
+							<Card key={index} className={`${styles.carouselContent} border-0 h-100`}>
+								<div className={styles.cardBackground} style={{ backgroundImage: `url(${article.imageurl})` }}>
+									<div className={styles.cardDetails}>
+										<h3>{article.title}</h3>
+										<p className="truncate-multiline">{article.body}</p>
+										<Link to={`/news/${article.id}`}>Leggi di più</Link>
+									</div>
 								</div>
-							</div>
-						</Card>
-					))}
-				</Slider>
+							</Card>
+						))}
+					</Slider>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

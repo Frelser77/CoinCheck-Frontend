@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import fetchWithAuth from "./back/interceptor";
-import { Url } from "../../Config/config";
+import fetchWithAuth from "../back/interceptor";
+import { Url } from "../../../Config/config";
 
 const performFetch = async (url, method, body, token) => {
 	const headers = new Headers({
@@ -161,7 +161,6 @@ const utentiSlice = createSlice({
 			state.error = null;
 			state.successMessage = "";
 		},
-		// Aggiungi altri reducer per azioni sincrone se necessario
 	},
 	extraReducers: (builder) => {
 		builder
@@ -171,7 +170,7 @@ const utentiSlice = createSlice({
 			.addCase(fetchUtenti.fulfilled, (state, action) => {
 				state.status = "succeeded";
 				state.users = action.payload;
-				state.successMessage = "Utenti fetched successfully"; // Aggiungi un messaggio di successo
+				state.successMessage = "Utenti fetched successfully";
 			})
 			.addCase(fetchUtenti.rejected, (state, action) => {
 				state.status = "failed";
@@ -181,7 +180,6 @@ const utentiSlice = createSlice({
 				state.status = "loading";
 			})
 			.addCase(fetchUtente.fulfilled, (state, action) => {
-				// Se desideri memorizzare i dettagli dell'utente nel tuo stato, puoi farlo qui.
 				state.status = "succeeded";
 				state.userDetails = action.payload;
 				state.successMessage = "Dettagli utente recuperati con successo";

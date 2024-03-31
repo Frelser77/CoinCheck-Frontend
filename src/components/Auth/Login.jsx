@@ -3,10 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/reducer/loginUser";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Card, CardBody, CardTitle, Col, Row } from "react-bootstrap";
+import { BeatLoader } from "react-spinners";
+import Loader from "../Layout/Loader";
+import { useToken } from "../Coins/useToken";
 
 function Login() {
 	const [credentials, setCredentials] = useState({ username: "", password: "" });
-	const { isLoading, isError, errorMessage, loginSuccess, token } = useSelector((state) => state.login);
+	const isLoading = useSelector((state) => state.login.isLoading);
+	const isError = useSelector((state) => state.login.isError);
+	const errorMessage = useSelector((state) => state.login.errorMessage);
+	const loginSuccess = useSelector((state) => state.login.loginSuccess);
+	const token = useToken();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
@@ -60,52 +68,51 @@ function Login() {
 		}
 	}, [token, navigate]);
 
-	{
-		isLoading && <div className="loader">Loading...</div>;
-	}
 	return (
 		<>
-			{/* {isError && (
-				<div className="alert alert-danger" role="alert">
-					Error: {errorMessage}
-				</div>
-			)}
-			{loginSuccess && (
-				<div className="alert alert-success" role="alert">
-					Logged in successfully! Redirecting...
-				</div>
-			)}  */}
-			<form onSubmit={handleSubmit} className="container mt-5">
-				<div className="mb-3">
-					<label htmlFor="usernameInput" className="form-label">
-						Username:
-					</label>
-					<input
-						type="text"
-						className="form-control"
-						id="usernameInput"
-						autoComplete="username"
-						value={credentials.username}
-						onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-					/>
-				</div>
-				<div className="mb-3">
-					<label htmlFor="passwordInput" className="form-label">
-						Password:
-					</label>
-					<input
-						type="password"
-						className="form-control"
-						id="passwordInput"
-						value={credentials.password}
-						autoComplete="current-password"
-						onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-					/>
-				</div>
-				<button type="submit" className="btn btn-primary">
-					Login
-				</button>
-			</form>
+			<Loader isLoading={isLoading} />
+			<Row>
+				<Col xs={5} className="min-vh-100 offset-8 my-5">
+					<Card className="border border-2 shadow-sm p-3">
+						<CardBody>
+							<CardTitle className="text-center fs-2">Login</CardTitle>
+							<form onSubmit={handleSubmit} className="mt-5">
+								<div className="mb-3">
+									<label htmlFor="usernameInput" className="form-label">
+										Username:
+									</label>
+									<input
+										type="text"
+										className="form-control"
+										id="usernameInput"
+										autoComplete="username"
+										value={credentials.username}
+										onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+										placeholder="Username"
+									/>
+								</div>
+								<div className="mb-3">
+									<label htmlFor="passwordInput" className="form-label">
+										Password:
+									</label>
+									<input
+										type="password"
+										className="form-control"
+										id="passwordInput"
+										value={credentials.password}
+										autoComplete="current-password"
+										onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+										placeholder="Password"
+									/>
+								</div>
+								<button type="submit" className="btn btn-primary">
+									Login
+								</button>
+							</form>
+						</CardBody>
+					</Card>
+				</Col>
+			</Row>
 		</>
 	);
 }

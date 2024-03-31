@@ -29,7 +29,9 @@ const initialState = {
 const cryptoNewsSlice = createSlice({
 	name: "cryptoNews",
 	initialState,
-	reducers: {},
+	reducers: {
+		resetCryptoNewsState: () => initialState,
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchCryptoNews.pending, (state) => {
@@ -46,5 +48,7 @@ const cryptoNewsSlice = createSlice({
 			});
 	},
 });
+
+export const { resetCryptoNewsState } = cryptoNewsSlice.actions;
 
 export default cryptoNewsSlice.reducer;

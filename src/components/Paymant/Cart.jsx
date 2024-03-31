@@ -10,7 +10,6 @@ import { removeFromCart } from "../../redux/reducer/cartReducer";
 function Cart() {
 	const cartItems = useSelector((state) => state.cart.cart);
 	console.log(cartItems);
-	const [showAlert, setShowAlert] = useState(false);
 	const dispatch = useDispatch();
 
 	return (

@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useToken } from "../../hooks/useToken";
 
 function RedirectToLoginIfLoggedOut() {
-	const token = useSelector((state) => state.login.token);
+	const token = useToken();
 	const navigate = useNavigate();
 	const location = useLocation();
 
