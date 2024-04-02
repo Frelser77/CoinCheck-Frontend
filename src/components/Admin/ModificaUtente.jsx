@@ -7,9 +7,10 @@ import { Card, Row, Col, Form, Button, OverlayTrigger, Tooltip } from "react-boo
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
 import useUserRole from "../../hooks/useUserRole";
-import { useToken } from "../Coins/useToken";
+import { useToken } from "../../hooks/useToken";
+import SkeletornRight from "../Skeletorn/SkeletornRight";
 
-const ModificaUtente = ({ userId }) => {
+const ModificaUtente = ({ userId, isSelected }) => {
 	const { id: routeParamId } = useParams();
 	const effectiveUserId = userId || routeParamId;
 	const navigate = useNavigate();
@@ -44,6 +45,10 @@ const ModificaUtente = ({ userId }) => {
 			fetchDetails();
 		}
 	}, [dispatch, effectiveUserId]);
+
+	if (!isSelected) {
+		return <SkeletornRight />;
+	}
 
 	// Adesso, passa `dispatch`, `id` e una funzione per aggiornare lo stato (qui usiamo direttamente `fetchDetails` per ricaricare l'utente)
 	const handleImageUpload = (event) => handleFileUpload(event, dispatch, effectiveUserId, fetchDetails);
@@ -102,7 +107,7 @@ const ModificaUtente = ({ userId }) => {
 
 	return (
 		<Col>
-			<h1 className="text-start">Modifica Utente: {utente.username}</h1>
+			<h1 className="text-start text">Modifica Utente: {utente.username}</h1>
 			<div className=" mt-4">
 				<Card className="position-relative">
 					<Row>

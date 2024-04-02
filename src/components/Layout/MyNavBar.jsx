@@ -2,16 +2,22 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Navbar, Nav, Container, NavDropdown, DropdownItem } from "react-bootstrap";
 import LogoutButton from "../Auth/Logout";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import useUserRole from "../../hooks/useUserRole";
 
 const MyNavbar = () => {
+	const location = useLocation();
 	const user = useSelector((state) => state.login.user);
 	const userId = user?.userId;
 	const { role, isLoading } = useUserRole();
 
+	const isUserListPath = location.pathname === "/utentiList/";
+
+	// Se il percorso non è /utentiList, non renderizzare nulla
+	if (!isUserListPath) return null;
+
 	return (
-		<Navbar bg="light" expand="lg" className="sticky-top">
+		<Navbar expand="lg" className="sticky-top my-nav">
 			<Container>
 				<Navbar.Brand>
 					<NavLink to="/" className="nav-link">

@@ -26,8 +26,8 @@ const FavoriteButton = ({ coinDetails, userId, onSave }) => {
 			dispatch(toggleUserPreference({ userId, criptoName: coinDetails.id }))
 				.unwrap()
 				.then((updatedPreferences) => {
-					onSave(updatedPreferences); // onSave può essere usato per eseguire ulteriori azioni dopo il salvataggio
-					setIsFavorited(checkIsFavorited()); // Aggiorna lo stato di isFavorited dopo il cambio di preferenza
+					onSave(updatedPreferences);
+					setIsFavorited(checkIsFavorited());
 				})
 				.catch((error) => {
 					console.error("Errore:", error);

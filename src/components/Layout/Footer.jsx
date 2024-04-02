@@ -13,7 +13,7 @@ const Footer = () => {
 	const formattedDate = timestamp ? format(parseISO(timestamp), "HH:mm:ss - dd/MM/yyyy") : null;
 
 	return (
-		<footer className="py-3 bg-dark text-light mt-4">
+		<footer className="py-4 m-0 text-light position-absolute end-0 start-0">
 			<Container>
 				<Row className="">
 					<Col

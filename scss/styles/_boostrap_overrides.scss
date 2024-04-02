@@ -19,6 +19,8 @@ $indigo: #6610f2;
 $purple: #6f42c1;
 $pink: #e83e8c;
 $list: rgb(34, 34, 36);
+$body: #353353;
+$all: #0c0a2b;
 
 $theme-colors: (
 	"primary": $primary,
@@ -36,6 +38,8 @@ $theme-colors: (
 	"purple": $purple,
 	"pink": $pink,
 	"list": $list,
+	"body": $body,
+	"all": $all,
 );
 
 // Definisci i tuoi valori di spaziatura
@@ -214,7 +218,7 @@ body {
 @for $i from 1 through 10 {
 	.zone-#{$i} {
 		min-height: 150px + (100px * ($i - 1));
-		max-height: 300px + (100px * ($i - 1));
+		max-height: 255px + (100px * ($i - 1));
 		overflow-y: scroll;
 	}
 }
@@ -258,10 +262,13 @@ body {
 
 // 8. Add additional custom code here
 
-// body {
-// background-color: $dark;
-// overflow-y: hidden;
-// }
+body {
+	background-color: $body;
+}
+
+footer {
+	background-color: $all;
+}
 
 .truncate-multiline {
 	display: -webkit-box;
@@ -279,37 +286,38 @@ body {
 	fill: rgb(70, 147, 248);
 }
 
-.card-base {
-	// Aggiungiamo un bordo leggero e arrotondato
-	border: 1px solid $light;
-	border-radius: 0.25rem;
-	// Aggiungiamo un'ombra leggera per dare profondità
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	// Aggiungiamo un padding interno per mantenere il contenuto distanziato dal bordo
-	padding: 1rem;
-	// Impostiamo un colore di sfondo predefinito, che poi potrà essere sovrascritto
-	background-color: $light;
-	// Assicurati che il testo all'interno sia leggibile e ben contrastato
-	color: $dark;
+// .card-base {
+// 	// Aggiungiamo un bordo leggero e arrotondato
+// 	border: 1px solid $light;
+// 	border-radius: 0.25rem;
+// 	// Aggiungiamo un'ombra leggera per dare profondità
+// 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+// 	// Aggiungiamo un padding interno per mantenere il contenuto distanziato dal bordo
+// 	padding: 1rem;
+// 	// Impostiamo un colore di sfondo predefinito, che poi potrà essere sovrascritto
+// 	background-color: $light;
+// 	// Assicurati che il testo all'interno sia leggibile e ben contrastato
+// 	color: $dark;
 
-	// Puoi aggiungere qui altre proprietà CSS che ritieni possano essere utili per la base di una card
-}
-
+// 	// Puoi aggiungere qui altre proprietà CSS che ritieni possano essere utili per la base di una card
+// }
 .card {
 	border: 0;
+	background-color: $all;
+	color: white;
 	// backdrop-filter: blur(10px);
 }
 // Se desideri modificare il colore di sfondo utilizzando le classi di utility di Bootstrap, puoi aggiungere qualcosa come:
-.card-base-primary {
-	@extend .card-base;
-	background-color: $primary;
-	border-color: darken($primary, 15%);
-}
-.card-base-success {
-	@extend .card-base;
-	background-color: $success;
-	border-color: darken($success, 15%);
-}
+// .card-base-primary {
+// 	@extend .card-base;
+// 	background-color: $primary;
+// 	border-color: darken($primary, 15%);
+// }
+// .card-base-success {
+// 	@extend .card-base;
+// 	background-color: $success;
+// 	border-color: darken($success, 15%);
+// }
 
 .img-circle {
 	border-radius: 50%;
@@ -319,8 +327,12 @@ body {
 	-webkit-transition: all 0.3s ease-in-out;
 	&:hover {
 		transform: scale(1.02);
-		box-shadow: 0px 10px 10px 0 rgba(0, 0, 0, 0.6);
+		// box-shadow: 0px 10px 10px 0 rgba(0, 0, 0, 0.6);
 	}
+}
+
+.inverted-image {
+	filter: invert(100%);
 }
 
 /* Dimensioni specifiche */
@@ -376,22 +388,30 @@ body {
 /* Stili per modificare la scrollbar della pagina */
 ::-webkit-scrollbar {
 	width: 10px;
+	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-track {
 	background-color: $light;
+	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: $gray;
+	background-color: $all;
 	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background-color: darken($gray, 10%);
+	background-color: darken($all, 10%);
 }
 
 // dropdown
+.flex-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .dropdown-menu[data-bs-popper] {
 	top: 130%;
 	left: -69px;
@@ -404,4 +424,97 @@ body {
 .abbonamento:hover {
 	transform: scale(1.02);
 	box-shadow: 0px 10px 10px 0 rgba(0, 0, 0, 0.6);
+}
+
+#app-nav {
+	// flex: 1;
+	border-right: solid 1px #80808021;
+	overflow: overlay;
+}
+
+.side-bar-left .nav-item {
+	margin: 20px;
+	padding: 15px 5px;
+	color: #adadad;
+	cursor: pointer;
+	border-radius: 5px;
+}
+.side-bar-left .nav-item:hover,
+.side-bar-left .nav-item.active {
+	background: #ffffff1f;
+	transition: 0.5s;
+	color: white;
+}
+
+.side-bar-left #logo {
+	width: 50%;
+	height: auto;
+	margin: 25px 0 22px 0;
+}
+
+// .side-bar-left {
+// }
+
+.side-bar-left.mobile {
+	position: fixed;
+	width: 0;
+	transition: width 0.5s;
+}
+
+.side-bar-left.open {
+	width: 250px; /* O la larghezza che preferisci */
+}
+
+.side-bar-left:not(.col-2) .nav-text {
+	display: none;
+}
+
+/* Assicurati che la sidebar occupi l'altezza totale e gestisci lo sfondo */
+.side-bar-left {
+	// min-height: 100vh;
+	background-color: $all;
+	color: white;
+}
+
+.my-nav {
+	background-color: $all;
+	color: white;
+}
+
+.my-nav .nav-link {
+	color: white;
+}
+.my-nav .nav-link h5 {
+	color: white;
+}
+
+.text {
+	color: white;
+}
+
+/* skeleton card right */
+.skeletorn-riht {
+	height: 250px;
+}
+
+.skeleton-img,
+.skeleton-input {
+	background-color: #ccc;
+	border-radius: 4px;
+}
+
+.skeleton-img {
+	border-radius: 50%;
+	width: 140px;
+	height: 140px;
+}
+
+.skeleton-input {
+	width: 100%;
+	height: 40px;
+	margin-top: 25px;
+}
+
+.skeleton-input:last-child {
+	background-color: $primary;
 }

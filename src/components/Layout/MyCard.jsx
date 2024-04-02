@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine, faUpload } from "@fortawesome/free-solid-svg-icons";
 import useUserRole from "../../hooks/useUserRole";
 import { useSelector } from "react-redux";
-import SaveCoinButton from "./SaveCoinButton";
 
 const MyCard = ({ coin, currency, stats, onSave }) => {
 	const { role, isLoading } = useUserRole();

@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { Card, CardBody, CardTitle, Col, Row } from "react-bootstrap";
 import { BeatLoader } from "react-spinners";
 import Loader from "../Layout/Loader";
-import { useToken } from "../Coins/useToken";
+import { useToken } from "../../hooks/useToken";
 
 function Login() {
 	const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -71,8 +71,8 @@ function Login() {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<Row>
-				<Col xs={5} className="min-vh-100 offset-8 my-5">
+			<Row className="d-flex aling-items-center justify-content-center">
+				<Col xs={12} md={5} className="min-vh-100 my-5">
 					<Card className="border border-2 shadow-sm p-3">
 						<CardBody>
 							<CardTitle className="text-center fs-2">Login</CardTitle>

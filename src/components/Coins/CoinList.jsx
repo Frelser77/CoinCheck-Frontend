@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCoins, fetchCoinStats, fetchCoinTicker } from "../../redux/reducer/CoinbaseApi/CoinbaseApi";
 import Card from "../Layout/MyCard";
@@ -23,6 +23,7 @@ const CryptoList = () => {
 	const coinStats = useSelector((state) => state.coinbase.coinStats);
 	const isLoading = useSelector((state) => state.coinbase.loading);
 	const handleSaveToDb = useSaveToDatabase();
+	const loadMoreRef = useRef(null);
 
 	const [loadedAll, setLoadedAll] = useState(false);
 	const [visibleCoins, setVisibleCoins] = useState([]);
@@ -85,11 +86,31 @@ const CryptoList = () => {
 		setLoadedAll(visibleCoins.length >= onlineCoins.length);
 	}, [visibleCoins, onlineCoins]);
 
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && !isLoading && !fetching && !loadedAll) {
+					loadMoreCoins();
+				}
+			},
+			{ threshold: 0.1 } // Configura la soglia di intersezione qui se necessario
+		);
+
+		if (loadMoreRef.current) {
+			observer.observe(loadMoreRef.current);
+		}
+		return () => {
+			if (loadMoreRef.current) {
+				observer.unobserve(loadMoreRef.current);
+			}
+		};
+	}, [loadMoreCoins, isLoading, fetching, loadedAll]);
+
 	return (
 		<>
 			<Loader isLoading={isLoading} />
 
-			<div className="mt-4 zone-1">
+			<div className="my-2 zone-2">
 				{visibleCoins.map((coin) => (
 					<Card
 						coin={{ ...coin, ...tickers[coin.id] }}
@@ -103,9 +124,10 @@ const CryptoList = () => {
 					<SkeletonCard key={id} />
 				))}
 				{!loadedAll && (
-					<div className="btn btn-primary" onClick={loadMoreCoins} disabled={isLoading || fetching}>
-						Mostra altro
-					</div>
+					// <div className="btn btn-primary" onClick={loadMoreCoins} disabled={isLoading || fetching}>
+					// 	Mostra altro
+					// </div>
+					<div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>
 				)}
 			</div>
 		</>

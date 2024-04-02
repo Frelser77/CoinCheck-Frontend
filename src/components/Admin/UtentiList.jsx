@@ -39,7 +39,7 @@ const UtentiList = () => {
 			<Loader isLoading={isLoading && status} />
 			{error && <div>Ops, Try again!</div>}
 			<Row className="zone-4 p-1 mt-3">
-				<h2 className="text-center">Utenti</h2>
+				<h2 className="text-center text">Lista Utenti</h2>
 				<Each
 					of={users || []}
 					render={(user) => (
@@ -50,7 +50,7 @@ const UtentiList = () => {
 										<div className="d-flex align-items-center justify-content-center my-3">
 											<img
 												onClick={() => dispatch(setSelectedUserId(user.userId))}
-												className="img-circle point img-md"
+												className={`img-circle point img-md ${!user.imageUrl ? "inverted-image" : ""}`}
 												src={user.imageUrl ? `${Url}${user.imageUrl.replace(/\\/g, "/")}` : "/placeholder.png"}
 											/>
 										</div>

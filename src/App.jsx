@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import UtentiList from "./components/Admin/UtentiList";
 import Home from "./components/Layout/Home";
-import Navbar from "./components/Layout/MyNavBar";
+// import Navbar from "./components/Layout/MyNavBar";
 import DettaglioUtente from "./components/Utenti/DettaglioUtente";
 import ModificaUtente from "./components/Admin/ModificaUtente";
 import { Col, Container, Row } from "react-bootstrap";
@@ -23,6 +23,8 @@ import SideBarLeft from "./components/Layout/SideBarLeft";
 import useUserRole from "./hooks/useUserRole";
 // import "../src/App.scss";
 import "../assets/dist/css/App.min.css";
+import MyNavbar from "./components/Layout/MyNavBar";
+import { useState } from "react";
 
 // import "../assets/css/App.css";
 // import CryptoDashboard from "./components/Coins/CryptoDashboard";
@@ -31,6 +33,8 @@ import "../assets/dist/css/App.min.css";
 function App() {
 	const { role, isLoading } = useUserRole();
 	// console.log(role);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
 	if (isLoading) {
 		return <div>Checking role status...</div>;
@@ -39,16 +43,15 @@ function App() {
 	return (
 		<BrowserRouter>
 			<ToasterComponent />
-			<Navbar />
+			<MyNavbar />
 			<RedirectToLoginIfLoggedOut />
-			<Container fluid className="mt-2">
+			<Container fluid className="">
 				{/* min-vh-100 */}
-				<Row className="d-flex flex-grow-1">
-					{role && <SideBarLeft />}
-
+				<Row className="d-flex align-itmes-center justify-content-center">
+					{role && <SideBarLeft toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />}
 					{/* <div className="flex-grow-1 d-flex flex-column"> */}
 					{/* <div className="flex-grow-1"> */}
-					<Col xs={12} md={7}>
+					<Col xs={12} md={isSidebarOpen ? 7 : 8}>
 						<Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/login" element={<Login />} />
