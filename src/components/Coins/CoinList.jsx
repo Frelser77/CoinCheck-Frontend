@@ -27,6 +27,7 @@ const CryptoList = () => {
 
 	const [loadedAll, setLoadedAll] = useState(false);
 	const [visibleCoins, setVisibleCoins] = useState([]);
+	const [visibleCoinIds, setVisibleCoinIds] = useState([]);
 	const [fetching, setFetching] = useState(false);
 	const [loadingCoins, setLoadingCoins] = useState([]); // Traccia le monete attualmente in caricamento
 	const allCoins = useSelector((state) => state.coinbase.coins);
@@ -56,7 +57,8 @@ const CryptoList = () => {
 				.map((id) => coins.find((coin) => coin.id === id && coin.status === "online"))
 				.filter(Boolean);
 			setVisibleCoins(initialCoins);
-			setLoadingCoins([]); // Pulisce lo stato di caricamento dopo il fetch
+			setLoadingCoins([]);
+			setVisibleCoinIds(mainCoinIds);
 		};
 
 		if (coins.length > 0) {
@@ -67,7 +69,8 @@ const CryptoList = () => {
 	const loadMoreCoins = useCallback(async () => {
 		if (!isLoading && !fetching && visibleCoins.length < onlineCoins.length) {
 			setFetching(true);
-			const nextCoins = onlineCoins.slice(visibleCoins.length, visibleCoins.length + 3);
+			const newOnlineCoins = onlineCoins.filter((coin) => !visibleCoinIds.includes(coin.id));
+			const nextCoins = newOnlineCoins.slice(0, 3);
 			setLoadingCoins(nextCoins.map((coin) => coin.id));
 
 			const fetchPromises = nextCoins.map((coin) => {
@@ -79,6 +82,7 @@ const CryptoList = () => {
 			setVisibleCoins((prevCoins) => [...prevCoins, ...nextCoins]);
 			setFetching(false);
 			setLoadingCoins([]);
+			setVisibleCoinIds((prevIds) => [...prevIds, ...nextCoins.map((coin) => coin.id)]);
 		}
 	}, [isLoading, fetching, visibleCoins, onlineCoins, dispatch]);
 
@@ -116,12 +120,12 @@ const CryptoList = () => {
 						coin={{ ...coin, ...tickers[coin.id] }}
 						currency="EUR"
 						stats={coinStats[coin.id]}
-						key={coin.id}
+						key={`loaded-${coin.id}`}
 						onSave={handleSaveToDb}
 					/>
 				))}
 				{loadingCoins.map((id) => (
-					<SkeletonCard key={id} />
+					<SkeletonCard key={`loading-${id}`} />
 				))}
 				{!loadedAll && (
 					// <div className="btn btn-primary" onClick={loadMoreCoins} disabled={isLoading || fetching}>

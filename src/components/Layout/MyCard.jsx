@@ -40,15 +40,17 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 		<Card className="rounded-0">
 			<Card.Body>
 				<Row className="">
-					<Col xs={9} md={8} className="d-flex align-items-center justify-content-between gap-3">
+					<Col xs={5} className="d-flex align-items-center justify-content-between gap-3">
 						<Card.Title className="mb-2">{coin.display_name}</Card.Title>
 						<Card.Text className={`fs-6 mx-2 ${priceChangeColor}`}>{priceChangePercentage}%</Card.Text>
-						<span className="mx-2">{formatNumber(coin.price, 2, 2)} </span> {/*{currency}*/}{" "}
 					</Col>
 					{/* <Col md={2} className="d-xs-none d-md-block"> */}
 					{/* <Card.Text className="mb-0">{coin.base_currency}</Card.Text> */}
 					{/* </Col> */}
-					<Col xs={3} md={4} className="d-flex justify-content-end align-items-baseline gap-2">
+					<Col xs={2} className="text-center">
+						<span className="mx-2">{formatNumber(coin.price, 2, 2)} </span> {/*{currency}*/}{" "}
+					</Col>
+					<Col xs={5} className="d-flex justify-content-around align-items-center gap-2">
 						{(role === "Admin" || role === "Moderatore") && (
 							<OverlayTrigger
 								key={`top + ${coin.id}`}

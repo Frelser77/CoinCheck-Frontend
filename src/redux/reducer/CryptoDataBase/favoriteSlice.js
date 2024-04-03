@@ -37,6 +37,7 @@ export const toggleUserPreference = createAsyncThunk(
 				return thunkAPI.rejectWithValue(errorData.message);
 			}
 			const criptoId = await responseId.json();
+			// console.log("criptoId", criptoId);
 
 			// Ora che hai l'ID, puoi costruire il payload per la preferenza
 			const payload = {
@@ -44,6 +45,7 @@ export const toggleUserPreference = createAsyncThunk(
 				CriptoId: criptoId,
 			};
 
+			// console.log("payload", payload);
 			// E ora invii la tua richiesta POST a togglePreferenza
 			const response = await fetchWithAuth(`${Url}Criptovalute/togglePreferenza`, {
 				method: "POST",

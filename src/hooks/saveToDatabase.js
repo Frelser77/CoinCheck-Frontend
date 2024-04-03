@@ -16,7 +16,7 @@ const useSaveToDatabase = () => {
 			Volume24h: coinDetails.volume ? parseFloat(coinDetails.volume) : null,
 		};
 
-		console.log("dto", criptovalutaDto);
+		// console.log("dto", criptovalutaDto);
 
 		saveToDatabase(criptovalutaDto)
 			.then(() => {
