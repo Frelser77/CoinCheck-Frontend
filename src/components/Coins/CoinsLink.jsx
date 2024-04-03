@@ -8,18 +8,13 @@ import { useToken } from "../../hooks/useToken";
 const CoinsLink = () => {
 	const selectedUserId = useSelector((state) => state.selectedUserId?.id);
 	const token = useToken();
-	const shouldHide = useHide(["/utentiList"]);
-	// Rimuovere isSelected perché non influenzerà la logica di visualizzazione iniziale
-	// const isSelected = !!selectedUserId;
+	const shouldHide = useHide(["/utentiList/"]);
 
 	if (!token) {
-		// Se non c'è un token, non mostrare nulla.
 		return null;
 	} else if (shouldHide) {
-		// Mostra ModificaUtente con o senza userID. ModificaUtente gestirà lo scheletro
-		return <ModificaUtente userId={selectedUserId} isSelected={!!selectedUserId} />;
+		return <ModificaUtente userId={selectedUserId} />;
 	} else {
-		// Altrimenti, mostra il contenuto principale di CoinLink.
 		return <CoinLinkContent />;
 	}
 };

@@ -52,10 +52,10 @@ const DettaglioUtente = () => {
 	const userPreferences = useSelector((state) => state.favorites.userPreferences);
 	const isLoading = useSelector((state) => state.favorites.loading);
 	const error = useSelector((state) => state.favorites.error);
+	const [isLoadingDetails, setIsLoadingDetails] = useState(true);
 	const navigate = useNavigate();
 	const fileInputRef = useRef(null);
 	const location = useLocation();
-	console.log(utente);
 
 	const handleDelete = async (userId) => {
 		await dispatch(deleteUser(userId));
@@ -78,9 +78,11 @@ const DettaglioUtente = () => {
 		try {
 			const utenteDetails = await dispatch(fetchUtente(id, token)).unwrap();
 			setUtente(utenteDetails);
+			setIsLoadingDetails(false);
 		} catch (error) {
 			console.error("Failed to fetch the user details", error);
 			dispatch(showAlert({ message: error.message, type: "error" }));
+			setIsLoadingDetails(false);
 		}
 	};
 
@@ -123,14 +125,14 @@ const DettaglioUtente = () => {
 		}
 	};
 
-	// E nel tuo JSX, passi la funzione al componente del bottone (o direttamente come evento onClick)
+	if (isLoadingDetails) {
+		return <Loader isLoading={true} />; // Mostra solo il loader se i dettagli dell'utente sono in fase di caricamento
+	}
 
 	return (
 		<div className="mt-4">
 			<Row>
 				<Col xs={12}>
-					<Loader isLoading={isLoading} />
-
 					<Card>
 						<Row>
 							<Col>
@@ -177,7 +179,7 @@ const DettaglioUtente = () => {
 									</div>
 								</CardBody>
 							</Col>
-							<Col>
+							<Col className="zone-5">
 								<Form onSubmit={(event) => handleFileUpload(event, dispatch, id, setUtente)}>
 									<FormGroup>
 										{/* <FormLabel>Carica Immagine</FormLabel> */}
@@ -192,11 +194,12 @@ const DettaglioUtente = () => {
 									</FormGroup>
 									{/* <Button type="submit"></Button> */}
 								</Form>
+								<h4 className="m-1">Preferiti</h4>
 								{userPreferences.map((preferenza, index) => (
-									<Card className="mt-4" key={index}>
+									<Card className="mt-4 other-card" key={index}>
 										<Card.Body>
-											<h3>{preferenza.nomeCoin}</h3>
 											<Row>
+												<h3>{preferenza.nomeCoin}</h3>
 												<Col xs={9} md={8} className="d-flex align-items-center justify-content-between gap-3">
 													<Card.Text>Prezzo: {preferenza.PrezzoUsd} USD</Card.Text>
 													<Card.Text>Variazione 24h: {preferenza.variazione24h}%</Card.Text>
@@ -227,7 +230,6 @@ const DettaglioUtente = () => {
 															{isFavorited ? <BsStarFill /> : <BsStar />}
 														</div>
 													</OverlayTrigger>
-													{/* onClick={handleDetailsClick} */}
 												</Col>
 											</Row>
 										</Card.Body>

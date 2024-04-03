@@ -175,7 +175,7 @@ const CoinDetail = () => {
 	const saveDetails = () => handleSaveToDb(combinedCoinDetails);
 
 	return (
-		<>
+		<div className="container zone-5">
 			<Loader isLoading={isLoading || loading} />
 			{combinedCoinDetails && (
 				<Card className="border-0">
@@ -208,57 +208,61 @@ const CoinDetail = () => {
 							</div>
 						</Card.Title>
 
-						{/* Altre informazioni essenziali se necessario */}
+						{/* TradingViewChart */}
 						<TradingViewChart
 							data={formattedData}
 							onTimeRangeChange={setSelectedTimeRange}
 							selectedTimeRange={selectedTimeRange}
-							width={650}
+							width={790}
 							height={300}
 						/>
+						<h3 className="my-2">Dettagli aggiuntivi</h3>
+						<div className="d-flex align-items-center justify-content-between mb-2">
+							<Card.Text className="m-1 fw-semibold small-text">
+								Max 24h: {formatNumber(combinedCoinDetails.high)} {coinDetails.quote_currency}
+							</Card.Text>
+							<Card.Text className="m-1 fw-semibold small-text">
+								Min 24h: {formatNumber(combinedCoinDetails.low)} {coinDetails.quote_currency}
+							</Card.Text>
+							<Card.Text className="m-1 fw-semibold small-text">
+								V 24h: {formatVolume(combinedCoinDetails.volume)} {coinDetails.quote_currency}
+							</Card.Text>
+							<Card.Text className="m-1 fw-semibold small-text">
+								V 30g: {formatVolume(combinedCoinDetails.volume_30day)} {coinDetails.quote_currency}
+							</Card.Text>
+						</div>
 					</CardBody>
 				</Card>
 			)}
-			<Card className="border-0">
-				<h3>Dettagli aggiuntivi</h3>
-				<CardBody className="d-flex align-items-center justify-content-between">
-					<CardText className="m-1 fw-semibold small-text">
-						Max 24h: {formatNumber(combinedCoinDetails.high)}
-						{coinDetails.quote_currency}
-					</CardText>
-					<CardText className="m-1 fw-semibold small-text">
-						Min 24h: {formatNumber(combinedCoinDetails.low)}
-						{coinDetails.quote_currency}
-					</CardText>
-					<CardText className="m-1 fw-semibold small-text">
-						V 24h: {formatVolume(combinedCoinDetails.volume)} {coinDetails.quote_currency}
-					</CardText>
-					<CardText className="m-1 fw-semibold small-text">
-						V 30g: {formatVolume(combinedCoinDetails.volume_30day)} {coinDetails.quote_currency}
-					</CardText>
-				</CardBody>
-			</Card>
-			<Row>
-				<h2 className="text-center my-5">Notizie su {coinId}</h2>
-				{filteredNews.map((article, index) => (
-					<Col xs={12} md={6} lg={4} key={index} className="gap-2">
+			<h2 className="text-center my-5 text-white">
+				{filteredNews.length === 0 ? "Non ci sono notizie inerenti alla coin" : `Notizie su ${coinId}`}
+			</h2>
+			<Row className="mb-2">
+				{[...filteredNews].reverse().map((article, index) => (
+					<Col xs={12} md={6} lg={4} key={index} className="g-2">
 						<Card className="mb-3 border-0 h-100">
-							<div className="d-flex align-items-start justify-content-start gap-2">
-								<img
-									src={article.source_info.img}
-									alt={article.source_info.name}
-									style={{ width: "25px", height: "25px" }}
-								/>
-								<h6>{article.source_info.name}</h6>
-							</div>
 							<Card.Body className="d-flex flex-column align-items-start justify-content-between">
+								<div className="d-flex align-items-center justify-content-start gap-2">
+									<img
+										src={article.source_info.img}
+										alt={article.source_info.name}
+										style={{ width: "45px", height: "45px" }}
+									/>
+									<h6>{article.source_info.name}</h6>
+								</div>
 								<Card.Img variant="top" src={article.imageurl} alt={article.title} />
 								<Card.Title>{article.title}</Card.Title>
 								<Card.Text className="truncate-multiline">{article.body}</Card.Text>
-								<a href={article.guid} target="_blank" rel="noopener noreferrer">
-									{article.source}
-								</a>
-								<div className="text-muted">
+								<OverlayTrigger
+									key="right"
+									placement="right"
+									overlay={<Tooltip id={`tooltip-bottom`}>Visualizza articolo</Tooltip>}
+								>
+									<a href={article.guid} target="_blank" rel="noopener noreferrer" className="a-news">
+										{article.source}
+									</a>
+								</OverlayTrigger>
+								<div className="text-light small-text">
 									{article.tags.split("|").map((tag, tagIndex) => (
 										<span key={tagIndex}>#{tag.trim()} </span>
 									))}
@@ -268,7 +272,7 @@ const CoinDetail = () => {
 					</Col>
 				))}
 			</Row>
-		</>
+		</div>
 	);
 };
 

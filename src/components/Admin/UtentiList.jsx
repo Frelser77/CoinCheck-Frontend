@@ -37,7 +37,7 @@ const UtentiList = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading && status} />
-			{error && <div>Ops, Try again!</div>}
+			{/* {error && <div>Ops, Try again!</div>} */}
 			<Row className="zone-4 p-1 mt-3">
 				<h2 className="text-center text">Lista Utenti</h2>
 				<Each

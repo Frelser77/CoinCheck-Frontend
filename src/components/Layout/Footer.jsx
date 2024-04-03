@@ -13,7 +13,7 @@ const Footer = () => {
 	const formattedDate = timestamp ? format(parseISO(timestamp), "HH:mm:ss - dd/MM/yyyy") : null;
 
 	return (
-		<footer className="py-4 m-0 text-light position-absolute end-0 start-0">
+		<footer className="py-5 m-0 text-light">
 			<Container>
 				<Row className="">
 					<Col
@@ -43,33 +43,11 @@ const Footer = () => {
 							</li>
 						</ul>
 					</Col>
-					<Col xs={12} md={4} className="d-flex justify-content-center justify-content-md-end align-items-center">
-						<a href="https://www.facebook.com/" className="text-light me-2" target="_blanck">
-							<FontAwesomeIcon icon={faFacebookF} />
-						</a>
-						<a href="https://www.twitter.com/" className="text-light me-2" target="_blanck">
-							<FontAwesomeIcon icon={faTwitter} />
-						</a>
-						<a href="https://www.instagram.com/" className="text-light" target="_blanck">
-							<FontAwesomeIcon icon={faInstagram} />
-						</a>
-					</Col>
-				</Row>
-
-				<Row>
-					<Col xs={12} md={10} className="d-flex justify-content-center justify-content-md-start">
-						<p>
-							<a
-								href="https://github.com/yourusername/yourrepository"
-								target="_blank"
-								rel="noopener noreferrer"
-								className="text-light"
-							>
-								GitHub
-							</a>
-						</p>
-					</Col>
-					<Col xs={12} md={2} className="d-flex flex-column justify-content-center justify-content-md-end">
+					<Col
+						xs={12}
+						md={4}
+						className="d-flex flex-column justify-content-center justify-content-md-end align-items-center"
+					>
 						<h6>
 							Ringraziamenti speciali a:
 							<a
@@ -94,12 +72,36 @@ const Footer = () => {
 					</Col>
 				</Row>
 
-				<Row className="">
-					<Col xs={12} className="d-flex justify-content-center align-items-center">
-						<h6>© {year} CoinCheck. Tutti i diritti riservati</h6>
+				<Row>
+					<Col xs={12} md={10} className="d-flex justify-content-center justify-content-md-start">
+						<p>
+							<a
+								href="https://github.com/yourusername/yourrepository"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-light"
+							>
+								GitHub
+							</a>
+						</p>
 					</Col>
-					<Col xs={12}>
-						<p className="small-text text-light">{formattedDate}</p>
+					<Col xs={12} md={2} className="d-flex justify-content-center justify-content-md-end">
+						<a href="https://www.facebook.com/" className="text-light me-2" target="_blanck">
+							<FontAwesomeIcon icon={faFacebookF} />
+						</a>
+						<a href="https://www.twitter.com/" className="text-light me-2" target="_blanck">
+							<FontAwesomeIcon icon={faTwitter} />
+						</a>
+						<a href="https://www.instagram.com/" className="text-light" target="_blanck">
+							<FontAwesomeIcon icon={faInstagram} />
+						</a>
+					</Col>
+				</Row>
+
+				<Row className="">
+					<Col xs={12} className="d-flex justify-content-between align-items-center">
+						<h6>© {year} CoinCheck. Tutti i diritti riservati</h6>
+						<p className="small-text text-light">Ultimo login: {formattedDate}</p>
 					</Col>
 				</Row>
 			</Container>

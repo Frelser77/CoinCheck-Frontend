@@ -6,11 +6,10 @@ import { handleFileUpload } from "../Utenti/DettaglioUtente";
 import { Card, Row, Col, Form, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
-import useUserRole from "../../hooks/useUserRole";
 import { useToken } from "../../hooks/useToken";
 import SkeletornRight from "../Skeletorn/SkeletornRight";
 
-const ModificaUtente = ({ userId, isSelected }) => {
+const ModificaUtente = ({ userId }) => {
 	const { id: routeParamId } = useParams();
 	const effectiveUserId = userId || routeParamId;
 	const navigate = useNavigate();
@@ -20,37 +19,37 @@ const ModificaUtente = ({ userId, isSelected }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [image, setImage] = useState("");
-	const [utente, setUtente] = useState("");
+	const [utente, setUtente] = useState(null);
+	const userLoggedId = useSelector((state) => state.login.user.userId);
 	const imageInputRef = useRef(null);
-	console.log(utente);
+	const isCurrentUser = effectiveUserId === userLoggedId;
 
 	useEffect(() => {
 		const fetchDetails = async () => {
-			try {
-				const utenteDetails = await dispatch(fetchUtente(effectiveUserId, token)).unwrap();
-				setUtente(utenteDetails); // Imposta lo stato utente con i dettagli recuperati
-				setUsername(utenteDetails.username);
-				setEmail(utenteDetails.email);
-				// Assicurati di avere l'URL completo se imageUrl è relativo
-				const imageUrl = utenteDetails.imageUrl.startsWith("http")
-					? utenteDetails.imageUrl
-					: `${Url}${utenteDetails.imageUrl.replace(/\\/g, "/")}`;
-				setImage(imageUrl);
-			} catch (error) {
-				console.error("Failed to fetch the user details", error);
-				toast.error("Errore nel recupero dei dettagli dell'utente");
+			if (token && effectiveUserId) {
+				try {
+					const utenteDetails = await dispatch(fetchUtente(effectiveUserId, token)).unwrap();
+					setUtente(utenteDetails);
+					setUsername(utenteDetails.username);
+					setEmail(utenteDetails.email);
+					const imageUrl = utenteDetails.imageUrl.startsWith("http")
+						? utenteDetails.imageUrl
+						: `${Url}${utenteDetails.imageUrl.replace(/\\/g, "/")}`;
+					setImage(imageUrl);
+				} catch (error) {
+					console.error("Failed to fetch the user details", error);
+					toast.error("Errore nel recupero dei dettagli dell'utente");
+				}
 			}
 		};
-		if (token && effectiveUserId) {
-			fetchDetails();
-		}
-	}, [dispatch, effectiveUserId]);
 
-	if (!isSelected) {
+		fetchDetails();
+	}, [dispatch, effectiveUserId, token]);
+
+	if (!utente) {
 		return <SkeletornRight />;
 	}
 
-	// Adesso, passa `dispatch`, `id` e una funzione per aggiornare lo stato (qui usiamo direttamente `fetchDetails` per ricaricare l'utente)
 	const handleImageUpload = (event) => handleFileUpload(event, dispatch, effectiveUserId, fetchDetails);
 
 	const handleUsernameChange = (e) => {
@@ -63,7 +62,6 @@ const ModificaUtente = ({ userId, isSelected }) => {
 		setPassword(e.target.value);
 	};
 
-	// Chiamato quando l'utente seleziona un file
 	const handleImageChange = (event) => {
 		const file = event.target.files[0];
 		if (file) {
@@ -81,10 +79,7 @@ const ModificaUtente = ({ userId, isSelected }) => {
 
 		if (username) userData.username = username;
 		if (email) userData.email = email;
-
-		if (password) {
-			userData.password = password;
-		}
+		if (password) userData.password = password;
 
 		if (Object.keys(userData).length === 0) {
 			toast.warning("Nessuna modifica effettuata");
@@ -92,13 +87,9 @@ const ModificaUtente = ({ userId, isSelected }) => {
 		}
 
 		try {
-			const response = await dispatch(updateUser({ id: effectiveUserId, userData, token })).unwrap();
+			await dispatch(updateUser({ id: effectiveUserId, userData, token })).unwrap();
 			toast.success("Modifiche effettuata con successo!");
-			// if (role === "Admin" || role === "Moderatore") {
-			// 	navigate("/utentiList");
-			// } else {
 			navigate(`/utenti/${effectiveUserId}`);
-			// }
 		} catch (error) {
 			console.error("Failed to update the user", error);
 			toast.error("Errore nell'aggiornamento dell'utente");
@@ -119,7 +110,7 @@ const ModificaUtente = ({ userId, isSelected }) => {
 										{image && (
 											<Card.Img
 												variant="top"
-												className="img-circle point img-lg p-2"
+												className="img-circle point img-md p-2"
 												src={image}
 												alt={username}
 												onClick={triggerFileInput}
@@ -127,7 +118,6 @@ const ModificaUtente = ({ userId, isSelected }) => {
 										)}
 									</div>
 									<Form.Group>
-										{/* <Form.Label>Carica Nuova Immagine</Form.Label> */}
 										<Form.Control
 											type="file"
 											name="file"
@@ -137,9 +127,7 @@ const ModificaUtente = ({ userId, isSelected }) => {
 											className="d-none"
 										/>
 									</Form.Group>
-									<Button variant="success" type="submit" className="d-none">
-										{/* Carica */}
-									</Button>
+									<Button variant="success" type="submit" className="d-none"></Button>
 								</Form>
 							</OverlayTrigger>
 						</Col>
@@ -149,7 +137,7 @@ const ModificaUtente = ({ userId, isSelected }) => {
 							<Card.Body>
 								<Form onSubmit={handleSubmit} className="d-flex flex-column gap-2">
 									<Form.Group>
-										<Form.Label className="label text-muted">Username</Form.Label>
+										<Form.Label className="label">Username</Form.Label>
 										<Form.Control
 											type="text"
 											name="username"
@@ -159,7 +147,7 @@ const ModificaUtente = ({ userId, isSelected }) => {
 										/>
 									</Form.Group>
 									<Form.Group>
-										<Form.Label className="label text-muted">Email</Form.Label>
+										<Form.Label className="label">Email</Form.Label>
 										<Form.Control
 											type="email"
 											name="email"
@@ -168,17 +156,20 @@ const ModificaUtente = ({ userId, isSelected }) => {
 											placeholder="email"
 										/>
 									</Form.Group>
-									<Form.Group>
-										<Form.Label className="label text-muted">Nuova Password</Form.Label>
-										<Form.Control
-											type="password"
-											name="password"
-											autoComplete="new-password"
-											value={password}
-											onChange={handlePasswordChange}
-											placeholder="password"
-										/>
-									</Form.Group>
+
+									{isCurrentUser && (
+										<Form.Group>
+											<Form.Label className="label">Nuova Password</Form.Label>
+											<Form.Control
+												type="password"
+												name="password"
+												autoComplete="new-password"
+												value={password}
+												onChange={handlePasswordChange}
+												placeholder="password"
+											/>
+										</Form.Group>
+									)}
 									<Button variant="primary" type="submit">
 										Aggiorna Utente
 									</Button>
@@ -192,7 +183,6 @@ const ModificaUtente = ({ userId, isSelected }) => {
 	);
 };
 export default ModificaUtente;
-
 {
 	/* <div className="">
 										<Button variant="outline-primary" className={`${styles.pst} + " " + position-absolute m-2`}>

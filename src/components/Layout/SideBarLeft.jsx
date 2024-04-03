@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ListGroup, Button, Col } from "react-bootstrap";
+import { ListGroup, Button, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
 import useHide from "../Tips/useHide";
 import { useSelector } from "react-redux";
@@ -15,6 +15,8 @@ import {
 	faCog,
 	faUserAlt,
 	faUsers,
+	faSubscript,
+	faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
 import { faForumbee } from "@fortawesome/free-brands-svg-icons";
 import { motion } from "framer-motion";
@@ -57,64 +59,104 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 	return (
 		<motion.div
 			id="app-nav"
-			className={`${sidebarClass} position-relative `}
+			className={`${sidebarClass}`}
 			initial={false}
-			animate={{ width: isSidebarOpen ? "200px" : "100px" }} // Aggiusta le dimensioni in base al tuo layout
+			animate={{ width: isSidebarOpen ? "200px" : "100px" }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
 		>
 			{/* <div id="app-nav" className={`${sidebarClass} position-relative`}> */}
-			<div onClick={toggleSidebar} className="toggle-sidebar-icon">
+			<div onClick={toggleSidebar} className="toggle-sidebar-icon position-relative">
 				<FontAwesomeIcon
 					icon={isSidebarOpen ? faArrowLeft : faArrowRight}
-					className="position-absolute top-0 end-0 m-3 point"
+					className="position-absolute top-0 end-0 mt-2 point"
 				/>
 			</div>
 			<div className="flex-center logo-section">
 				<img id="logo" src="" alt="Logo" />
 			</div>
-			<Link to="/" className="nav-item flex-center nav-link">
-				<FontAwesomeIcon icon={faHome} className="nav-icon me-2" />
-				<span className="nav-text">Home</span>
-			</Link>
-			<Link to="/trade" className="nav-item flex-center nav-link">
-				<FontAwesomeIcon icon={faForumbee} className="nav-icon me-2" />
-				<span className="nav-text">Forum</span>
-			</Link>
-			<Link to="/wallet" className="nav-item flex-center nav-link">
-				<FontAwesomeIcon icon={faWallet} className="nav-icon me-2" />
-				<span className="nav-text">Wallet</span>
-			</Link>
+			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Home</Tooltip>}>
+				<Link to="/" className="nav-item flex-center nav-link">
+					<FontAwesomeIcon icon={faHome} className="nav-icon" />
+					<span className="nav-text ms-2">Home</span>
+				</Link>
+			</OverlayTrigger>
+			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Forum</Tooltip>}>
+				<Link to="/trade" className="nav-item flex-center nav-link">
+					<FontAwesomeIcon icon={faForumbee} className="nav-icon" />
+					<span className="nav-text ms-2">Forum</span>
+				</Link>
+			</OverlayTrigger>
+			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Trade</Tooltip>}>
+				<Link to="/wallet" className="nav-item flex-center nav-link">
+					<FontAwesomeIcon icon={faWallet} className="nav-icon" />
+					<span className="nav-text ms-2">Wallet</span>
+				</Link>
+			</OverlayTrigger>
+			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Abbonamenti</Tooltip>}>
+				<NavLink to="/abbonamenti" className="nav-item flex-center nav-link">
+					<FontAwesomeIcon icon={faCreditCard} className="nav-icon" />
+					<span className="nav-text ms-2">Abbonati</span>
+				</NavLink>
+			</OverlayTrigger>
 			{userId ? (
 				<>
-					<NavLink className="nav-item flex-center nav-link" to={`/utenti/${userId}`}>
-						<FontAwesomeIcon icon={faUserAlt} className="nav-icon me-2" />
-						<span className="nav-text">{user.username}</span>
-						{/* <span className="nav-text">Profilo</span> */}
-					</NavLink>
 					{(role === "Admin" || role === "Moderatore") && (
-						<NavLink className="nav-item flex-center nav-link" to="/utentiList/">
-							<FontAwesomeIcon icon={faUsers} className="nav-icon me-2" />
-							<span className="nav-text">Utenti</span>
-						</NavLink>
+						<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Utenti</Tooltip>}>
+							<NavLink className="nav-item flex-center nav-link" to="/utentiList/">
+								<FontAwesomeIcon icon={faUsers} className="nav-icon" />
+								<span className="nav-text ms-2">Utenti</span>
+							</NavLink>
+						</OverlayTrigger>
 					)}
 					{/* <LogoutButton /> */}
 				</>
 			) : (
 				<>
-					<NavLink className="nav-link" to="/login">
-						<span className="nav-text">Login</span>
-					</NavLink>
-					<NavLink className="nav-link" to="/register">
-						<span className="nav-text">Register</span>
-					</NavLink>
+					<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Accedi</Tooltip>}>
+						<NavLink className="nav-link" to="/login">
+							<span className="nav-text ms-2">Login</span>
+						</NavLink>
+					</OverlayTrigger>
+					<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Registrati</Tooltip>}>
+						<NavLink className="nav-link" to="/register">
+							<span className="nav-text ms-2">Register</span>
+						</NavLink>
+					</OverlayTrigger>
 				</>
 			)}
 			<div className="d-flex align-items-center justify-content-center gap-1 flex-column">
 				<LogoutButton />
-				<Link to="/settings" className="nav-item flex-center nav-link">
-					<FontAwesomeIcon icon={faCog} className="nav-icon me-2" />
-					<span className="nav-text">Settings</span>
-				</Link>
+				<OverlayTrigger
+					trigger="click" // Puoi cambiare a "hover" se vuoi che si attivi con l'hover
+					placement="right"
+					overlay={
+						<Tooltip id="settings-tooltip">
+							<ListGroup>
+								<ListGroup.Item
+									as={Link}
+									to={`/utenti/${userId}`}
+									className="nav-item flex-center align-items-start gap-2 my-item"
+								>
+									<FontAwesomeIcon icon={faUserAlt} className="nav-icon" />
+									<span> Profilo {user.username}</span>
+								</ListGroup.Item>
+								<ListGroup.Item
+									as={Link}
+									to={`/utenti/${userId}/edit`}
+									className="nav-item flex-center align-items-start gap-2 my-item"
+								>
+									<FontAwesomeIcon icon={faUserAlt} className="nav-icon" />
+									<span> Edit {user.username} </span>
+								</ListGroup.Item>
+							</ListGroup>{" "}
+						</Tooltip>
+					}
+				>
+					<Button className="nav-item flex-center nav-link">
+						<FontAwesomeIcon icon={faCog} className="nav-icon" />
+						<span className="nav-text ms-2">Impostazioni</span>
+					</Button>
+				</OverlayTrigger>
 			</div>
 			{/* </div> */}
 		</motion.div>

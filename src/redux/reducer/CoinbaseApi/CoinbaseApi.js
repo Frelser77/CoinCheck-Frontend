@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Definisci l'endpoint base per le tue chiamate API
 const BASE_URL = "https://api.exchange.coinbase.com/";
 // AsyncThunk per ottenere tutte le criptovalute
 export const fetchAllCoins = createAsyncThunk("coinbase/fetchAllCoins", async (_, { rejectWithValue }) => {
@@ -16,23 +15,6 @@ export const fetchAllCoins = createAsyncThunk("coinbase/fetchAllCoins", async (_
 	}
 });
 
-// AsyncThunk per ottenere informazioni su un singolo prodotto
-// export const fetchSingleProductInfo = createAsyncThunk(
-// 	"coinbase/fetchSingleProductInfo",
-// 	async ({ product_id }, { rejectWithValue }) => {
-// 		try {
-// 			const response = await fetch(`${BASE_URL}products/${product_id}`);
-// 			if (!response.ok) {
-// 				throw new Error("Non è stato possibile ottenere le informazioni del prodotto");
-// 			}
-// 			const data = await response.json();
-// 			return data;
-// 		} catch (error) {
-// 			return rejectWithValue(error.message);
-// 		}
-// 	}
-// );
-
 // AsyncThunk per ottenere le statistiche per un singolo prodotto
 export const fetchCoinStats = createAsyncThunk("coinbase/fetchCoinStats", async (product_id, { rejectWithValue }) => {
 	try {
@@ -46,20 +28,6 @@ export const fetchCoinStats = createAsyncThunk("coinbase/fetchCoinStats", async 
 		return rejectWithValue(error.message);
 	}
 });
-
-// AsyncThunk per ottenere il sommario dei volumi
-// export const fetchVolumeSummary = createAsyncThunk("coinbase/fetchVolumeSummary", async (_, { rejectWithValue }) => {
-// 	try {
-// 		const response = await fetch(`${BASE_URL}products/volume-summary`);
-// 		if (!response.ok) {
-// 			throw new Error("Non è stato possibile ottenere il sommario dei volumi");
-// 		}
-// 		const volumeSummary = await response.json();
-// 		return volumeSummary;
-// 	} catch (error) {
-// 		return rejectWithValue(error.message);
-// 	}
-// });
 
 // AsyncThunk per ottenere il libro ordini per una singola moneta
 export const fetchCoinOrderBook = createAsyncThunk(
@@ -162,33 +130,6 @@ const coinbaseSlice = createSlice({
 				state.loading = false;
 				state.error = action.payload;
 			})
-			// .addCase(fetchSingleProductInfo.pending, (state) => {
-			// 	state.loading = true;
-			// 	state.error = null;
-			// })
-			// .addCase(fetchSingleProductInfo.fulfilled, (state, action) => {
-			// 	state.loading = false;
-			// 	const { product_id } = action.meta.arg;
-			// 	state.productInfo[product_id] = action.payload;
-			// })
-			// .addCase(fetchSingleProductInfo.rejected, (state, action) => {
-			// 	state.loading = false;
-			// 	const { product_id } = action.meta.arg;
-			// 	state.error = action.error.message;
-			// 	state.productInfo[product_id] = { error: action.error.message };
-			// })
-			// .addCase(fetchVolumeSummary.pending, (state) => {
-			// 	state.loading = true;
-			// 	state.error = null;
-			// })
-			// .addCase(fetchVolumeSummary.fulfilled, (state, action) => {
-			// 	state.loading = false;
-			// 	state.volumeSummary = action.payload;
-			// })
-			// .addCase(fetchVolumeSummary.rejected, (state, action) => {
-			// 	state.loading = false;
-			// 	state.error = action.payload || action.error.message;
-			// })
 			.addCase(fetchCoinStats.pending, (state) => {
 				state.loading = true;
 				state.error = null;

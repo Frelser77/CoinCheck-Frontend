@@ -8,10 +8,10 @@ const useUserRole = () => {
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		let isMounted = true; // Questa variabile ti aiuterà a gestire il cleanup dell'effect
+		let isMounted = true; //  variabile  aiuterà a gestire il cleanup dell'effect
 		if (token) {
 			try {
-				const decodedToken = jwtDecode(token); // Usa il nome corretto della funzione qui
+				const decodedToken = jwtDecode(token);
 				if (isMounted) {
 					setRole(decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || "");
 				}
@@ -22,7 +22,7 @@ const useUserRole = () => {
 				}
 			} finally {
 				if (isMounted) {
-					setIsLoading(false); // Imposta il caricamento su false dopo il tentativo di decodifica
+					setIsLoading(false);
 				}
 			}
 		} else {

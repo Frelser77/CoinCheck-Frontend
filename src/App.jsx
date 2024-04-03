@@ -45,17 +45,15 @@ function App() {
 			<ToasterComponent />
 			<MyNavbar />
 			<RedirectToLoginIfLoggedOut />
-			<Container fluid className="">
-				{/* min-vh-100 */}
-				<Row className="d-flex align-itmes-center justify-content-center">
+			<Container fluid className="my-2">
+				<Row className="d-flex align-itmes-center justify-content-between">
 					{role && <SideBarLeft toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />}
-					{/* <div className="flex-grow-1 d-flex flex-column"> */}
-					{/* <div className="flex-grow-1"> */}
+
 					<Col xs={12} md={isSidebarOpen ? 7 : 8}>
 						<Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/login" element={<Login />} />
-							<Route path="/register" element={<Register />} />
+							<Route path="/Register" element={<Register />} />
 
 							{/* Le seguenti sono rotte protette che richiedono autenticazione admin */}
 							{(role === "Admin" || role === "Moderatore") && <Route path="/utentiList" element={<UtentiList />} />}

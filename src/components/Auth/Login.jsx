@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/reducer/loginUser";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Card, CardBody, CardTitle, Col, Row } from "react-bootstrap";
 import { BeatLoader } from "react-spinners";
@@ -71,8 +71,8 @@ function Login() {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<Row className="d-flex aling-items-center justify-content-center">
-				<Col xs={12} md={5} className="min-vh-100 my-5">
+			<Row className="d-flex aling-items-center justify-content-end">
+				<Col xs={12} md={5} className=" my-5">
 					<Card className="border border-2 shadow-sm p-3">
 						<CardBody>
 							<CardTitle className="text-center fs-2">Login</CardTitle>
@@ -109,6 +109,10 @@ function Login() {
 									Login
 								</button>
 							</form>
+							<p>Non sei ancora registrato?</p>
+							<NavLink to="/Register" className="btn btn-primary">
+								Registrati
+							</NavLink>
 						</CardBody>
 					</Card>
 				</Col>

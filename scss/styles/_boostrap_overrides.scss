@@ -21,6 +21,7 @@ $pink: #e83e8c;
 $list: rgb(34, 34, 36);
 $body: #353353;
 $all: #0c0a2b;
+$allight: #f3f5d4;
 
 $theme-colors: (
 	"primary": $primary,
@@ -40,6 +41,7 @@ $theme-colors: (
 	"list": $list,
 	"body": $body,
 	"all": $all,
+	"allight": $allight,
 );
 
 // Definisci i tuoi valori di spaziatura
@@ -263,7 +265,7 @@ body {
 // 8. Add additional custom code here
 
 body {
-	background-color: $body;
+	background-color: lighten($body, 20%);
 }
 
 footer {
@@ -412,9 +414,27 @@ footer {
 	justify-content: center;
 }
 
-.dropdown-menu[data-bs-popper] {
+.my-nav .dropdown-menu[data-bs-popper] {
 	top: 130%;
 	left: -69px;
+	background-color: $all;
+	color: white;
+	&:hover {
+		color: white;
+		background-color: $all;
+	}
+	&:active {
+		color: white;
+		background-color: $all;
+	}
+	&:focus {
+		color: white;
+		background-color: $all;
+	}
+	&:focus-visible {
+		color: white;
+		background-color: $all;
+	}
 }
 
 .abbonamento {
@@ -517,4 +537,38 @@ footer {
 
 .skeleton-input:last-child {
 	background-color: $primary;
+}
+
+.other-card.card {
+	background-color: lighten($body, 20%);
+	transition: all 0.3s ease-in-out;
+	&:hover {
+		background-color: lighten($body, 10%);
+	}
+}
+
+.volume-col {
+	background-color: $all;
+}
+
+.my-item {
+	background-color: $all;
+	color: $white;
+	border: 0;
+	transition: all 0.3s ease-in-out;
+	&:hover {
+		background-color: lighten($all, 20%);
+	}
+}
+
+.a-news {
+	color: lighten($body, 35%);
+}
+
+.perc-success {
+	color: lighten($success, 30%);
+}
+
+.perc-danger {
+	color: lighten($danger, 30%);
 }

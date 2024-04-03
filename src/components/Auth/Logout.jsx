@@ -5,6 +5,7 @@ import { persistor } from "../../redux/store/store"; // Assicurati che il percor
 import { useNavigate } from "react-router-dom";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 // Il tuo componente LogoutButton
 
@@ -23,11 +24,17 @@ const LogoutButton = () => {
 		navigate("/login");
 	};
 
+	const path = window.location.pathname;
+	const exatcliPath = path === "/utentiList/";
+	const placement = exatcliPath ? "bottom" : "right";
+
 	return (
-		<button onClick={handleLogout} className="nav-item flex-center nav-link">
-			<FontAwesomeIcon icon={faSignOutAlt} />
-			<span className="nav-text ms-1">Logout</span>
-		</button>
+		<OverlayTrigger trigger="hover" placement={placement} overlay={<Tooltip id="tooltip">Logout</Tooltip>}>
+			<button onClick={handleLogout} className="nav-item flex-center nav-link">
+				<FontAwesomeIcon icon={faSignOutAlt} />
+				<span className="nav-text ms-1">Logout</span>
+			</button>
+		</OverlayTrigger>
 	);
 };
 

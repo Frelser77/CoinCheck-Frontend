@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { registerUser } from "../../redux/reducer/loginUser";
 import Loader from "../Layout/Loader";
+import { Col, Row } from "react-bootstrap";
 // import Notifications from "./Notifica";
 
 export default function Register() {
@@ -16,6 +17,7 @@ export default function Register() {
 	const isError = useSelector((state) => state.login.isError);
 	const reduxErrorMessage = useSelector((state) => state.login.errorMessage);
 	const registrationSuccess = useSelector((state) => state.login.registrationSuccess);
+	const [confirmPassword, setConfirmPassword] = useState("");
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -48,15 +50,14 @@ export default function Register() {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			{/* <Notifications /> */}
-			<div className="container mt-5">
-				<h2>Register</h2>
-				{isError && (
-					<div className="alert alert-danger" role="alert">
-						{errorMessage}
-					</div>
-				)}
+			<Col xs={5} className="my-3 mx-auto">
+				<h2 className="text-start">Registrati</h2>
 				<form onSubmit={handleSubmit}>
+					{isError && (
+						<div className="alert alert-danger" role="alert">
+							{errorMessage}
+						</div>
+					)}
 					<div className="mb3">
 						<label htmlFor="emailInput" className="form-label">
 							Email:
@@ -98,11 +99,29 @@ export default function Register() {
 							required
 						/>
 					</div>
+					<div className="mb-3">
+						<label htmlFor="confirmPasswordInput" className="form-label">
+							Conferma Password:
+						</label>
+						<input
+							type="password"
+							className="form-control"
+							id="confirmPasswordInput"
+							value={confirmPassword}
+							onChange={(e) => setConfirmPassword(e.target.value)}
+							required
+						/>
+					</div>
 					<button type="submit" className="btn btn-primary" disabled={isLoading}>
 						{isLoading ? "Registering..." : "Register"}
 					</button>
 				</form>
-			</div>
+				<div className="d-flex align-items-center justify-content-end">
+					<NavLink to="/login" className="btn btn-primary mt-2">
+						Login
+					</NavLink>
+				</div>
+			</Col>
 		</>
 	);
 }

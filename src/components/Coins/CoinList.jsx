@@ -118,7 +118,7 @@ const CryptoList = () => {
 				{visibleCoins.map((coin) => (
 					<Card
 						coin={{ ...coin, ...tickers[coin.id] }}
-						currency="EUR"
+						currency="USD"
 						stats={coinStats[coin.id]}
 						key={`loaded-${coin.id}`}
 						onSave={handleSaveToDb}
