@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCryptoNews } from "../../redux/reducer/CryptocCompareApi/fetchNews";
 import HomeCarousel from "./HomeCarousel";
 import { loadUserPreferences } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
+import WalletCard from "./WalletCard";
 // import CoinLink from "../Coins/CoinsLink";
 const Home = () => {
 	const news = useSelector((state) => state.news.news);
@@ -33,7 +34,14 @@ const Home = () => {
 
 	return (
 		<>
-			<HomeCarousel />
+			<Row>
+				<Col md={7}>
+					<HomeCarousel />
+				</Col>
+				<Col md={5}>
+					<WalletCard />
+				</Col>
+			</Row>
 			<CryptoList />
 		</>
 	);

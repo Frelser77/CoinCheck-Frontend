@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
 import Loader from "../Layout/Loader";
+import fetchWithAuth from "../../redux/reducer/back/interceptor";
 
 const localhost = Url;
 
@@ -35,7 +36,7 @@ const CheckoutForm = () => {
 		setIsLoading(true);
 		const IdProdotto = cart.length > 0 ? cart[0].idprodotto : null; // Presumiamo che il carrello non sia vuoto
 
-		fetch(`${localhost}checkout/create-session`, {
+		fetchWithAuth(`${localhost}checkout/create-session`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

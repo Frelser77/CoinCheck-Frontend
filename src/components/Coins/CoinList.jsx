@@ -114,7 +114,7 @@ const CryptoList = () => {
 		<>
 			<Loader isLoading={isLoading} />
 
-			<div className="my-2 zone-2">
+			<div className="my-2 zone-5">
 				{visibleCoins.map((coin) => (
 					<Card
 						coin={{ ...coin, ...tickers[coin.id] }}

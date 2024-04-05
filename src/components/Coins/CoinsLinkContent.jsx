@@ -10,6 +10,7 @@ import { CardTitle, Col, Row } from "react-bootstrap";
 import Loader from "../Layout/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
+import UserInfoCard from "../Layout/UserInfo";
 
 const CoinLinkContent = () => {
 	const dispatch = useDispatch();
@@ -48,8 +49,9 @@ const CoinLinkContent = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
+			<Col xs={12} md={3} className="d-flex flex-column align-items-center justify-content-center volume-col gap-5">
+				<UserInfoCard />
 
-			<Col xs={12} md={3} className="d-flex flex-column align-items-center justify-content-center volume-col">
 				<Card className="px-2 pt-2 text-center">
 					<h2 className="">Monte più volatili</h2>
 					{topVolatileCoins.length > 0 ? (

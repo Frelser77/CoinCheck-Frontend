@@ -56,15 +56,17 @@ const DettaglioUtente = () => {
 	const navigate = useNavigate();
 	const fileInputRef = useRef(null);
 	const location = useLocation();
+	const user = useSelector((state) => state.login.user);
+	const isOwner = user?.userId === parseInt(id, 10);
 
 	const handleDelete = async (userId) => {
-		await dispatch(deleteUser(userId));
+		dispatch(deleteUser(userId));
 		await fetchUserDetails();
 		toast.success("Utente eliminato con successo!");
 	};
 
 	const handleRestore = async (userId) => {
-		await dispatch(restoreUser(userId));
+		dispatch(restoreUser(userId));
 		await fetchUserDetails();
 		toast.success("Utente ripristinato con successo!");
 	};
@@ -119,18 +121,18 @@ const DettaglioUtente = () => {
 			).unwrap();
 
 			toast.success(`La preferenza per ${criptoName} è stata aggiornata.`);
-			setIsFavorited(checkIsFavorited()); // Potresti voler ricalcolare lo stato di favorito qui
+			setIsFavorited(checkIsFavorited());
 		} catch (error) {
 			toast.error(`Impossibile aggiornare la preferenza per ${criptoName}: ${error.message}`);
 		}
 	};
 
 	if (isLoadingDetails) {
-		return <Loader isLoading={true} />; // Mostra solo il loader se i dettagli dell'utente sono in fase di caricamento
+		return <Loader isLoading={true} />;
 	}
 
 	return (
-		<div className="mt-4">
+		<div className="">
 			<Row>
 				<Col xs={12}>
 					<Card>
@@ -166,17 +168,24 @@ const DettaglioUtente = () => {
 									<Card.Text>
 										Ultimo Accesso: {utente && utente.logAttivita && utente.logAttivita[utente.logAttivita.length - 1]}
 									</Card.Text>
-									<div className="d-flex align-items-center justify-content-start gap-2">
-										<Button variant="outline-danger" onClick={() => handleDelete(utente.userId)}>
-											Soft Delete
-										</Button>
-										<Button variant="outline-success" onClick={() => handleRestore(utente.userId)}>
-											Restore
-										</Button>
-										<Button variant="outline-primary" onClick={() => navigate(`/utenti/${utente.userId}/edit`)}>
-											Modifica
-										</Button>
-									</div>
+									{isOwner && (
+										<>
+											<div className="d-flex align-items-center justify-content-start gap-2">
+												{utente.isActive ? (
+													<Button variant="outline-danger" onClick={() => handleDelete(utente.userId)}>
+														Soft Delete
+													</Button>
+												) : (
+													<Button variant="outline-success" onClick={() => handleRestore(utente.userId)}>
+														Restore
+													</Button>
+												)}
+												<Button variant="outline-primary" onClick={() => navigate(`/utenti/${utente.userId}/edit`)}>
+													Modifica
+												</Button>
+											</div>
+										</>
+									)}
 								</CardBody>
 							</Col>
 							<Col className="zone-5">

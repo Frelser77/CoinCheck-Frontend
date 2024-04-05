@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../../redux/reducer/loginUser";
+import { loginUser, resetAuthState } from "../../redux/reducer/loginUser";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Card, CardBody, CardTitle, Col, Row } from "react-bootstrap";
 import { BeatLoader } from "react-spinners";
 import Loader from "../Layout/Loader";
 import { useToken } from "../../hooks/useToken";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 function Login() {
 	const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -14,9 +16,14 @@ function Login() {
 	const isError = useSelector((state) => state.login.isError);
 	const errorMessage = useSelector((state) => state.login.errorMessage);
 	const loginSuccess = useSelector((state) => state.login.loginSuccess);
+	const [showPassword, setShowPassword] = useState(false);
 	const token = useToken();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+
+	const toggleShowPassword = () => {
+		setShowPassword(!showPassword);
+	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -63,15 +70,21 @@ function Login() {
 	}, [loginSuccess, isError, errorMessage, navigate]);
 
 	useEffect(() => {
+		dispatch(resetAuthState());
+
 		if (token) {
 			navigate("/"); // Reindirizza se l'utente è già loggato
 		}
-	}, [token, navigate]);
+
+		return () => {
+			dispatch(resetAuthState());
+		};
+	}, [token, navigate, dispatch]);
 
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<Row className="d-flex aling-items-center justify-content-end">
+			<Row className="d-flex aling-items-center justify-content-center">
 				<Col xs={12} md={5} className=" my-5">
 					<Card className="border border-2 shadow-sm p-3">
 						<CardBody>
@@ -91,12 +104,12 @@ function Login() {
 										placeholder="Username"
 									/>
 								</div>
-								<div className="mb-3">
+								<div className="mb-3  position-relative">
 									<label htmlFor="passwordInput" className="form-label">
 										Password:
 									</label>
 									<input
-										type="password"
+										type={showPassword ? "text" : "password"}
 										className="form-control"
 										id="passwordInput"
 										value={credentials.password}
@@ -104,6 +117,13 @@ function Login() {
 										onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
 										placeholder="Password"
 									/>
+									<button
+										className="btn btn-transparent position-absolute top-50 end-0"
+										type="button"
+										onClick={toggleShowPassword}
+									>
+										<FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+									</button>
 								</div>
 								<button type="submit" className="btn btn-primary">
 									Login

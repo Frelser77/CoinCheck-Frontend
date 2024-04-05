@@ -26,7 +26,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 	const token = useSelector((state) => state.login?.token);
 	const userId = user?.userId;
 	const { role, isLoading } = useUserRole();
-	const shouldHide = useHide(["/utentiList/"]);
+	const shouldHide = useHide(["/utentiList/", "/wallet"]);
 	// const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -81,7 +81,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 				</Link>
 			</OverlayTrigger>
 			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Forum</Tooltip>}>
-				<Link to="/trade" className="nav-item flex-center nav-link">
+				<Link to="/forum" className="nav-item flex-center nav-link">
 					<FontAwesomeIcon icon={faForumbee} className="nav-icon" />
 					<span className="nav-text ms-2">Forum</span>
 				</Link>

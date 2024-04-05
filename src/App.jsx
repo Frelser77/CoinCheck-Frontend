@@ -25,6 +25,9 @@ import useUserRole from "./hooks/useUserRole";
 import "../assets/dist/css/App.min.css";
 import MyNavbar from "./components/Layout/MyNavBar";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import ForumHome from "./components/Forum/ForumHome";
+import PageNotFound from "./components/Layout/PageNotFound";
 
 // import "../assets/css/App.css";
 // import CryptoDashboard from "./components/Coins/CryptoDashboard";
@@ -39,17 +42,23 @@ function App() {
 	if (isLoading) {
 		return <div>Checking role status...</div>;
 	}
+	const mainContentWidth = isSidebarOpen ? "calc(100% - 820px)" : "calc(100% - 720px)";
 
 	return (
 		<BrowserRouter>
 			<ToasterComponent />
 			<MyNavbar />
 			<RedirectToLoginIfLoggedOut />
-			<Container fluid className="my-2">
-				<Row className="d-flex align-itmes-center justify-content-between">
+			<Container fluid className="">
+				<Row className="d-flex align-itmes-center justify-content-between min-vh-100">
 					{role && <SideBarLeft toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />}
 
-					<Col xs={12} md={isSidebarOpen ? 7 : 8}>
+					<motion.div
+						className={`col-xs-12 col-md-${isSidebarOpen ? "7" : "8"}`}
+						style={{ flexGrow: 1 }}
+						animate={{ width: mainContentWidth }}
+						transition={{ type: "spring", stiffness: 260, damping: 20 }}
+					>
 						<Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/login" element={<Login />} />
@@ -62,15 +71,15 @@ function App() {
 							)}
 							{role === "Admin" && <Route path="/Abbonamenti/:id/edit" element={<EditProduct />} />}
 							{/* {role === "Admin" && <Route path="/cryptoBoard" element={<CryptoDashboard />} />} */}
-
+							<Route path="/forum" element={<ForumHome />} />
 							<Route path="/coin/:coinId" element={<CoinDetail />} />
 							<Route path="/utenti/:id" element={<DettaglioUtente />} />
 							<Route path="/Abbonamenti" element={<ShoppingCart />} />
 							<Route path="/Checkout" element={<CheckoutForm />} />
 							<Route path="/Carrello" element={<Cart />} />
-							<Route path="*" element={<h1>Pagina non trovata</h1>} />
+							<Route path="*" element={<PageNotFound />} />
 						</Routes>
-					</Col>
+					</motion.div>
 					{/* </div> */}
 					{/* </div> */}
 					{role && <CoinsLink />}

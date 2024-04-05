@@ -20,9 +20,24 @@ const UtentiList = () => {
 
 	// console.log(users);
 
+	// useEffect(() => {
+	// 	dispatch(fetchUtenti());
+	// }, [dispatch]);
 	useEffect(() => {
-		dispatch(fetchUtenti());
-	}, [dispatch]);
+		if (status === "idle" || status === "failed") {
+			dispatch(fetchUtenti());
+		}
+	}, [dispatch, status]);
+
+	if (status === "loading" || isLoading) {
+		return <Loader isLoading={true} />;
+	}
+
+	// Gestione dell'errore...
+	if (error) {
+		toast.error("Si è verificato un errore: " + error);
+		// Qui puoi anche restituire un componente di errore se preferisci
+	}
 
 	const handleDelete = async (id) => {
 		await dispatch(deleteUser(id));
@@ -72,22 +87,25 @@ const UtentiList = () => {
 									<div className="d-flex align-items-center justify-content-between gap-1">
 										{(role === "Admin" || role === "Moderatore") && (
 											<>
-												<Button
-													size="sm"
-													variant="outline-danger"
-													className="p-1"
-													onClick={() => handleDelete(user.userId)}
-												>
-													Inactive
-												</Button>
-												<Button
-													size="sm"
-													variant="outline-success"
-													className="p-1"
-													onClick={() => handleRestore(user.userId)}
-												>
-													Restore
-												</Button>
+												{user.isActive ? (
+													<Button
+														size="sm"
+														variant="outline-danger"
+														className="p-1"
+														onClick={() => handleDelete(user.userId)}
+													>
+														Inactive
+													</Button>
+												) : (
+													<Button
+														size="sm"
+														variant="outline-success"
+														className="p-1"
+														onClick={() => handleRestore(user.userId)}
+													>
+														Restore
+													</Button>
+												)}
 											</>
 										)}
 										{/* <Button

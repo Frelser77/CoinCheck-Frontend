@@ -22,6 +22,29 @@ $list: rgb(34, 34, 36);
 $body: #353353;
 $all: #0c0a2b;
 $allight: #f3f5d4;
+/* role color */
+$color-admin-start: #009ffd;
+$color-admin-end: #2a2a72;
+$color-moderator-start: orange;
+$color-moderator-end: red;
+$color-basic-dark: darken(#cd7f32, 15%);
+$color-basic-darker: darken(#cd7f32, 30%);
+$color-medium-dark: darken(silver, 15%);
+$color-basic: #cd7f32;
+$color-medium: silver;
+$color-pro: gold;
+$color-basic-dark: darken($color-basic, 15%);
+$color-basic-darker: darken($color-basic, 30%);
+$color-medium-dark: darken($color-medium, 15%);
+$color-medium-darker: darken($color-medium, 30%);
+$color-pro-dark: darken($color-pro, 15%);
+$color-pro-darker: darken($color-pro, 30%);
+$colors-admin: #ffdd55, #ff543e, #cd7f32, #c837ab, #3b89ec, #009ffd, #2a2a72, #c837ab, #3b89ec, #ffdd55, #ff543e,
+	#c837ab, #3b89ec;
+$colors-moderator: #ffdd55, #ff543e, #c837ab, #3b89ec, #2a2a72;
+$colors-basic: ($color-basic, $color-basic-dark, $color-basic-darker);
+$colors-medium: ($color-medium, $color-medium-dark, $color-medium-darker);
+$colors-pro: ($color-pro, $color-pro-dark, $color-pro-darker);
 
 $theme-colors: (
 	"primary": $primary,
@@ -42,6 +65,15 @@ $theme-colors: (
 	"body": $body,
 	"all": $all,
 	"allight": $allight,
+	"basic": $color-basic,
+	"basic-dark": $color-basic-dark,
+	"basic-darker": $color-basic-darker,
+	"medium": $color-medium,
+	"medium-dark": $color-medium-dark,
+	"medium-darker": $color-medium-darker,
+	"pro": $color-pro,
+	"pro-dark": $color-pro-dark,
+	"pro-darker": $color-pro-darker,
 );
 
 // Definisci i tuoi valori di spaziatura
@@ -243,6 +275,72 @@ body {
 	}
 }
 
+// Mixin per applicare gli stili di bordo e sfondo
+@mixin roleGradient($colors, $duration: 3s, $text: false) {
+	background-size: 300% 300%;
+	background-image: linear-gradient(270deg, $colors...);
+	animation: slideGradient $duration linear infinite;
+
+	@if $text {
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		display: inline-block; // Aggiunto per assicurarsi che il clip funzioni.
+	}
+}
+
+// Creazione dell'animazione del gradiente per tutti i ruoli
+@keyframes slideGradient {
+	0% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+// Applica il mixin per ciascun ruolo con i propri colori e tempi
+.user-cards-container {
+	.card-role-admin {
+		@include roleGradient($colors-admin, 10s);
+	}
+
+	.card-role-moderator {
+		@include roleGradient($colors-moderator, 7s);
+	}
+
+	.card-role-basic {
+		@include roleGradient($colors-basic, 5s);
+	}
+
+	.card-role-medium {
+		@include roleGradient($colors-medium, 4s);
+	}
+
+	.card-role-pro {
+		@include roleGradient($colors-pro, 3s);
+	}
+}
+
+.gradient-admin {
+	@include roleGradient($colors-admin, 10s, true);
+}
+
+.gradient-moderator {
+	@include roleGradient($colors-moderator, 7s, true);
+}
+
+.gradient-basic {
+	@include roleGradient($colors-basic, 5s, true);
+}
+
+.gradient-medium {
+	@include roleGradient($colors-medium, 4s, true);
+}
+
+.gradient-pro {
+	@include roleGradient($colors-pro, 3s, true);
+}
 // $grid-breakpoints: (
 // 	xs: 0,
 // 	sm: 576px,
@@ -265,7 +363,7 @@ body {
 // 8. Add additional custom code here
 
 body {
-	background-color: lighten($body, 20%);
+	background-color: $black;
 }
 
 footer {
@@ -274,7 +372,7 @@ footer {
 
 .truncate-multiline {
 	display: -webkit-box;
-	-webkit-line-clamp: 3; /* Numero di righe a cui vuoi limitare il testo */
+	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -338,6 +436,16 @@ footer {
 }
 
 /* Dimensioni specifiche */
+.img-xxs {
+	width: 30px;
+	height: 30px;
+}
+
+.img-xs {
+	width: 50px;
+	height: 50px;
+}
+
 .img-sm {
 	width: 100px;
 	height: 100px;
@@ -380,12 +488,6 @@ footer {
 	text-align: center;
 	z-index: 1; /* Assicurati che il tooltip sia sopra agli altri elementi */
 }
-
-// .zone {
-// 	min-height: 150px;
-// 	max-height: 300px;
-// 	overflow-y: scroll;
-// }
 
 /* Stili per modificare la scrollbar della pagina */
 ::-webkit-scrollbar {
@@ -571,4 +673,94 @@ footer {
 
 .perc-danger {
 	color: lighten($danger, 30%);
+}
+
+.post-img {
+	max-height: 300px;
+	max-width: 300px;
+}
+
+/* imput file image post */
+.img-preview {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.custom-file-input {
+	display: none; // Nasconde l'input del file predefinito
+}
+
+.custom-file-label {
+	display: block;
+	width: 100%;
+	padding: 0.375rem 0.75rem;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #495057;
+	background-color: #fff;
+	background-clip: padding-box;
+	border: 1px solid #ced4da;
+	border-radius: 0.25rem;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	cursor: pointer;
+}
+
+.custom-file-label::after {
+	content: "Browse";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #007bff;
+	color: #fff;
+	padding: 0.375rem 0.75rem;
+	border-top-right-radius: 0.25rem;
+	border-bottom-right-radius: 0.25rem;
+}
+
+.user-img-post {
+	max-width: 50px;
+	max-width: 50px;
+}
+
+.user-img-comment {
+	max-width: 20px;
+	max-width: 20px;
+}
+
+.post-card,
+.comment {
+	background-color: $black;
+	border: 0.5px solid lighten($all, 20%);
+}
+// .icon-post:hover {
+// 	background-color: $white;
+// }
+
+.like-profile-images {
+	display: flex;
+	position: relative;
+}
+
+.profile-image {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 2px solid $all;
+	object-fit: cover;
+	position: absolute;
+}
+
+.profile-image.overlapped {
+	left: 15px;
+}
+
+// .like-username {
+// 	margin-left: 45px;
+// }
+
+.user-img-info {
+	max-width: 100px;
+	max-height: 100px;
 }

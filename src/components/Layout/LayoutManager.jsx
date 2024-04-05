@@ -14,3 +14,5 @@ const LayoutManager = ({ children }) => {
 	// Altrimenti, mostra il layout originale
 	return <>{children}</>;
 };
+
+export default LayoutManager;

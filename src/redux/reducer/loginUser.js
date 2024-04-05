@@ -68,7 +68,11 @@ export const authSlice = createSlice({
 			Object.assign(state, initialState);
 			//altre azioni, come navigare l'utente alla pagina di autenticazione
 		},
-		// Puoi aggiungere altre azioni qui se necessario
+		resetAuthState: (state) => {
+			state.isError = false;
+			state.errorMessage = "";
+			state.registrationSuccess = false;
+		},
 	},
 	extraReducers: (builder) => {
 		builder
@@ -113,6 +117,6 @@ export const authSlice = createSlice({
 	},
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, resetAuthState } = authSlice.actions;
 export default authSlice.reducer;
 // export const selectUserRole = (state) => (state.login.user ? state.login.user.ruolo : null);

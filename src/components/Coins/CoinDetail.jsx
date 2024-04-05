@@ -234,7 +234,7 @@ const CoinDetail = () => {
 					</CardBody>
 				</Card>
 			)}
-			<h2 className="text-center my-5 text-white">
+			<h2 className="text-center mb-5 mt-1 text-white">
 				{filteredNews.length === 0 ? "Non ci sono notizie inerenti alla coin" : `Notizie su ${coinId}`}
 			</h2>
 			<Row className="mb-2">

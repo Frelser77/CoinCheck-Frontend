@@ -71,7 +71,7 @@ const HomeCarousel = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<div className="d-flex align-items-center justify-content-center">
+			<div className="d-flex align-items-center ">
 				<div className={`${styles.carouselWrapper}`}>
 					<Slider {...settings}>
 						{news.slice(0, 5).map((article, index) => (

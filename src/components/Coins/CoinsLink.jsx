@@ -8,7 +8,7 @@ import { useToken } from "../../hooks/useToken";
 const CoinsLink = () => {
 	const selectedUserId = useSelector((state) => state.selectedUserId?.id);
 	const token = useToken();
-	const shouldHide = useHide(["/utentiList/"]);
+	const shouldHide = useHide(["/utentiList/", "/wallet"]);
 
 	if (!token) {
 		return null;
