@@ -108,10 +108,104 @@ export const toggleLikeComment = createAsyncThunk(
 	}
 );
 
+export const editPost = createAsyncThunk(
+	"posts/editPost",
+	async ({ postId, formData }, { getState, rejectWithValue }) => {
+		try {
+			const token = getState().login.token;
+			const response = await fetchWithAuth(`${Url}posts/edit/post/${postId}`, {
+				method: "PUT",
+				body: formData, // Assumi che formData contenga il titolo, il contenuto e/o il file
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to edit post.");
+			}
+
+			return await response.json();
+		} catch (error) {
+			return rejectWithValue(error.message);
+		}
+	}
+);
+
+export const editComment = createAsyncThunk(
+	"posts/editComment",
+	async ({ commentId, content }, { getState, rejectWithValue }) => {
+		try {
+			const token = getState().login.token;
+			const response = await fetchWithAuth(`${Url}posts/edit/comment/${commentId}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({ content }),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to edit comment.");
+			}
+
+			return await response.json();
+		} catch (error) {
+			return rejectWithValue(error.message);
+		}
+	}
+);
+
+export const softDeletePost = createAsyncThunk(
+	"posts/softDeletePost",
+	async (postId, { getState, rejectWithValue }) => {
+		try {
+			const token = getState().login.token;
+			const response = await fetchWithAuth(`${Url}posts/delete/post/${postId}`, {
+				method: "PUT",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to delete post.");
+			}
+
+			return postId; // Ritorna l'ID del post per identificarlo nello stato
+		} catch (error) {
+			return rejectWithValue(error.message);
+		}
+	}
+);
+
+export const softDeleteComment = createAsyncThunk(
+	"posts/softDeleteComment",
+	async (commentId, { getState, rejectWithValue }) => {
+		try {
+			const token = getState().login.token;
+			const response = await fetchWithAuth(`${Url}posts/delete/comment/${commentId}`, {
+				method: "PUT",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to delete comment.");
+			}
+
+			return commentId; // Ritorna l'ID del commento per identificarlo nello stato
+		} catch (error) {
+			return rejectWithValue(error.message);
+		}
+	}
+);
+
 // Inizializza lo stato iniziale
 const initialState = {
 	posts: [],
-	comments: [],
 	isLoading: false,
 	isError: false,
 	errorMessage: "",
@@ -177,7 +271,12 @@ const postsSlice = createSlice({
 				state.isLoading = false;
 				state.isError = false;
 				state.errorMessage = "";
-				state.comments.push(action.payload);
+				// Trova il post a cui il commento appartiene
+				const postIndex = state.posts.findIndex((post) => post.postId === action.meta.arg.postId);
+				if (postIndex !== -1) {
+					// Aggiungi il commento all'array di commenti di quel post
+					state.posts[postIndex].comments.push(action.payload);
+				}
 			})
 			.addCase(commentOnPost.rejected, (state, action) => {
 				state.isLoading = false;
@@ -185,10 +284,13 @@ const postsSlice = createSlice({
 				state.errorMessage = action.payload;
 			})
 			.addCase(toggleLikePost.fulfilled, (state, action) => {
-				const index = state.posts.findIndex((post) => post.postId === action.meta.arg.postId);
-				if (index !== -1) {
-					// Aggiorna il conteggio dei mi piace e l'array dei mi piace con le nuove informazioni
-					state.posts[index].likeCount = action.payload.likeCount;
+				const postIndex = state.posts.findIndex((post) => post.postId === action.meta.arg.postId);
+				if (postIndex !== -1) {
+					const isLikeAdded = action.payload.message === "Like added";
+					state.posts[postIndex] = {
+						...state.posts[postIndex],
+						likeCount: isLikeAdded ? state.posts[postIndex].likeCount + 1 : state.posts[postIndex].likeCount - 1,
+					};
 				}
 				state.isLoading = false;
 				state.isError = false;
@@ -205,17 +307,22 @@ const postsSlice = createSlice({
 				state.errorMessage = action.payload;
 			})
 			.addCase(toggleLikeComment.fulfilled, (state, action) => {
-				const { postId, commentId, likeCount } = action.payload;
-				const postToUpdate = state.posts.find((post) => post.postId === postId);
-				if (postToUpdate) {
-					const commentToUpdate = postToUpdate.comments.find((comment) => comment.commentId === commentId);
-					if (commentToUpdate) {
-						commentToUpdate.likeCount = likeCount;
-					}
+				const { commentId, likesCount, likesDetails } = action.payload;
+				// Trova il post che contiene il commento aggiornato
+				const postIndex = state.posts.findIndex((post) =>
+					post.comments.some((comment) => comment.commentId === commentId)
+				);
+				if (postIndex !== -1) {
+					// Trova e aggiorna il commento specifico con i nuovi dati di like
+					const commentsUpdated = state.posts[postIndex].comments.map((comment) => {
+						if (comment.commentId === commentId) {
+							return { ...comment, likeCount: likesCount, likes: likesDetails };
+						}
+						return comment;
+					});
+					// Crea una nuova copia dell'array dei post con i commenti aggiornati
+					state.posts[postIndex] = { ...state.posts[postIndex], comments: commentsUpdated };
 				}
-				state.isLoading = false;
-				state.isError = false;
-				state.errorMessage = "";
 			})
 			.addCase(fetchAllPosts.fulfilled, (state, action) => {
 				// Sostituisci i post esistenti con quelli appena recuperati
@@ -232,6 +339,50 @@ const postsSlice = createSlice({
 				state.isLoading = false;
 				state.isError = true;
 				state.errorMessage = action.payload;
+			})
+			.addCase(editPost.fulfilled, (state, action) => {
+				state.isLoading = false;
+				state.isError = false;
+				const index = state.posts.findIndex((post) => post.postId === action.payload.postId);
+				if (index !== -1) {
+					state.posts[index] = action.payload;
+				}
+			})
+			.addCase(editPost.pending, (state) => {
+				state.isLoading = true;
+				state.isError = false;
+			})
+			.addCase(editPost.rejected, (state, action) => {
+				state.isLoading = false;
+				state.isError = true;
+				state.errorMessage = action.error.message;
+			})
+			.addCase(softDeletePost.pending, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(softDeletePost.fulfilled, (state, action) => {
+				state.isLoading = false;
+				state.posts = state.posts.filter((post) => post.postId !== action.payload); // action.payload qui è postId
+			})
+			.addCase(softDeletePost.rejected, (state, action) => {
+				state.isLoading = false;
+				state.isError = true;
+				state.errorMessage = action.error.message;
+			})
+			.addCase(softDeleteComment.pending, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(softDeleteComment.fulfilled, (state, action) => {
+				state.isLoading = false;
+				const commentId = action.payload; // action.payload qui è commentId
+				state.posts.forEach((post) => {
+					post.comments = post.comments.filter((comment) => comment.commentId !== commentId);
+				});
+			})
+			.addCase(softDeleteComment.rejected, (state, action) => {
+				state.isLoading = false;
+				state.isError = true;
+				state.errorMessage = action.error.message;
 			});
 	},
 });

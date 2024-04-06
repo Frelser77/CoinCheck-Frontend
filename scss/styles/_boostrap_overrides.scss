@@ -110,16 +110,16 @@ $spacers: (
 	}
 }
 
-[data-theme="dark"] {
+[data-theme="light"] {
 	@each $name, $color in $theme-colors {
-		--#{$name}: #{darken($color, 20%)};
+		--#{$name}: #{lighten($color, 20%)};
 	}
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: lighten) {
 	:root {
 		@each $name, $color in $theme-colors {
-			--#{$name}: #{darken($color, 20%)};
+			--#{$name}: #{lighten($color, 20%)};
 		}
 	}
 }
@@ -175,7 +175,6 @@ $spacers: (
 	}
 }
 
-// Includi il mixin per applicare gli stili
 @include generate-hover-variants;
 
 @mixin card-variant($bg-color) {
@@ -198,10 +197,6 @@ $spacers: (
 	.my-card.card-#{$color-name} {
 		@include card-variant($color-value);
 	}
-}
-
-body {
-	@include responsive-font-size(16px);
 }
 
 // Creazione dinamica delle varianti di colore
@@ -363,6 +358,7 @@ body {
 // 8. Add additional custom code here
 
 body {
+	@include responsive-font-size(16px);
 	background-color: $black;
 }
 
@@ -675,9 +671,11 @@ footer {
 	color: lighten($danger, 30%);
 }
 
+/* DA SPOSTARE NEL PARTIAL DEI POST*/
 .post-img {
-	max-height: 300px;
-	max-width: 300px;
+	max-height: 400px;
+	max-width: 400px;
+	margin-inline: auto;
 }
 
 /* imput file image post */
@@ -763,4 +761,45 @@ footer {
 .user-img-info {
 	max-width: 100px;
 	max-height: 100px;
+}
+
+.dropdown-toggle::after {
+	display: none;
+}
+
+.btn:hover,
+.btn:active,
+.btn:focus,
+.btn:focus-visible,
+.btn:active:focus {
+	color: var(--bs-btn-hover-color);
+	background-color: var(--bs-btn-hover-bg);
+	border-color: transparent;
+}
+
+.dropdown-menu,
+.dropdown-menu.actvie,
+.dropdown-menu:active,
+.dropdown-menu:focus,
+.dropdown-menu:focus-visible {
+	background-color: $all;
+	color: $white;
+}
+
+.dropdown-item,
+.dropdown-item:active,
+.dropdown-item:focus,
+.dropdown-item:focus-visible,
+.dropdown-item.active {
+	background-color: $all;
+	color: $white;
+}
+
+.dropdown-item:hover {
+	background-color: $allight;
+	color: $black;
+}
+
+.icon-like.liked {
+	color: rgb(171, 0, 0);
 }

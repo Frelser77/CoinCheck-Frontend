@@ -45,7 +45,7 @@ const UserInfoCard = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<div className="user-cards-container">
+			<div className="user-cards-container mt-5">
 				<Card onClick={handleCardClick} className={`${cardClass} user-card`} style={{ cursor: "pointer" }}>
 					<Row className="justify-content-center align-items-center p-2">
 						<Col xs={5}>
