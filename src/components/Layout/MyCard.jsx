@@ -53,12 +53,11 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 		open: stats.open,
 		volume: coin.volume,
 	};
-	// console.log("coindetails", coinDetails);
-	// console.log("stats", stats);
 
 	const priceChangePercentage = stats
-		? calculatePriceChangePercentage(parseFloat(stats.open), parseFloat(stats.last))
+		? calculatePriceChangePercentage(parseFloat(stats?.open), parseFloat(stats?.last))
 		: null;
+
 	const priceChangeColor = priceChangePercentage && priceChangePercentage > 0 ? "perc-success" : "perc-danger";
 
 	if (!coin || !stats || isLoading) return null;
@@ -66,7 +65,6 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 	const handleDetailsClick = () => navigate(`/coin/${coin.id}`);
 
 	const saveCoinDetails = () => onSave(coinDetails);
-	// console.log("saveCoinDetails", coinDetails);
 
 	return (
 		<div className="bg-all p-1">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUtente, updateUser, uploadProfileImage } from "../../redux/reducer/Utenti/utentiApi";
 import { handleFileUpload } from "../Utenti/DettaglioUtente";
@@ -8,6 +8,7 @@ import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
 import { useToken } from "../../hooks/useToken";
 import SkeletornRight from "../Skeletorn/SkeletornRight";
+import CustomImage from "../Utenti/CustomImage";
 
 const ModificaUtente = ({ userId }) => {
 	const { id: routeParamId } = useParams();
@@ -22,8 +23,10 @@ const ModificaUtente = ({ userId }) => {
 	const [utente, setUtente] = useState(null);
 	const userLoggedId = useSelector((state) => state.login.user.userId);
 	const imageInputRef = useRef(null);
-	const isCurrentUser = effectiveUserId === userLoggedId;
-
+	const isCurrentUser = Number(effectiveUserId) === userLoggedId;
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const location = useLocation();
+	const isEditPath = location.pathname.match(/\/utenti\/\d+\/edit/);
 	useEffect(() => {
 		const fetchDetails = async () => {
 			if (token && effectiveUserId) {
@@ -34,7 +37,7 @@ const ModificaUtente = ({ userId }) => {
 					setEmail(utenteDetails.email);
 					const imageUrl = utenteDetails.imageUrl.startsWith("http")
 						? utenteDetails.imageUrl
-						: `${Url}${utenteDetails.imageUrl.replace(/\\/g, "/")}`;
+						: `${utenteDetails.imageUrl.replace(/\\/g, "/")}`;
 					setImage(imageUrl);
 				} catch (error) {
 					console.error("Failed to fetch the user details", error);
@@ -50,7 +53,7 @@ const ModificaUtente = ({ userId }) => {
 		return <SkeletornRight />;
 	}
 
-	const handleImageUpload = (event) => handleFileUpload(event, dispatch, effectiveUserId, fetchDetails);
+	const handleImageUpload = (event) => handleFileUpload(event, dispatch, effectiveUserId, setUtente);
 
 	const handleUsernameChange = (e) => {
 		setUsername(e.target.value);
@@ -69,12 +72,21 @@ const ModificaUtente = ({ userId }) => {
 		}
 	};
 
+	const handleConfirmPasswordChange = (e) => {
+		setConfirmPassword(e.target.value);
+	};
+
 	const triggerFileInput = () => {
 		imageInputRef.current.click();
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		// Verifica che la password e la conferma corrispondano
+		if (password !== confirmPassword) {
+			toast.error("Le password non corrispondono.");
+			return;
+		}
 		let userData = {};
 
 		if (username) userData.username = username;
@@ -103,17 +115,24 @@ const ModificaUtente = ({ userId }) => {
 				<Card className="position-relative">
 					<Row>
 						{/* Colonna per l'immagine */}
-						<Col md={5} className="p-4 d-flex align-items-center justify-content-center">
+						<Col md={5} className="p-4 felx-center">
 							<OverlayTrigger key="top" placement="top" overlay={<Tooltip id={`tooltip-top`}>Carica Immagine</Tooltip>}>
 								<Form onSubmit={handleImageUpload}>
 									<div className="">
 										{image && (
-											<Card.Img
-												variant="top"
-												className="img-circle point img-md p-2"
+											// <Card.Img
+											// 	variant="top"
+											// 	className="img-circle point img-md p-2"
+											// 	src={image}
+											// 	alt={username}
+											// 	onClick={triggerFileInput}
+											// />
+											<CustomImage
 												src={image}
 												alt={username}
+												className={`img-circle point ${isEditPath ? "img-xl" : "img-xs"}`}
 												onClick={triggerFileInput}
+												// Url={Url}
 											/>
 										)}
 									</div>
@@ -166,7 +185,16 @@ const ModificaUtente = ({ userId }) => {
 												autoComplete="new-password"
 												value={password}
 												onChange={handlePasswordChange}
-												placeholder="password"
+												placeholder="Nuova password"
+											/>
+											<Form.Label className="label">Conferma Password</Form.Label>
+											<Form.Control
+												type="password"
+												name="confirmPassword"
+												autoComplete="new-password"
+												value={confirmPassword}
+												onChange={handleConfirmPasswordChange}
+												placeholder="Conferma nuova password"
 											/>
 										</Form.Group>
 									)}
@@ -183,10 +211,3 @@ const ModificaUtente = ({ userId }) => {
 	);
 };
 export default ModificaUtente;
-{
-	/* <div className="">
-										<Button variant="outline-primary" className={`${styles.pst} + " " + position-absolute m-2`}>
-											<BsPencil />
-										</Button>
-									</div> */
-}

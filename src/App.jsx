@@ -29,14 +29,12 @@ import { motion } from "framer-motion";
 import ForumHome from "./components/Forum/ForumHome";
 import PageNotFound from "./components/Layout/PageNotFound";
 
-// import "../assets/css/App.css";
-// import CryptoDashboard from "./components/Coins/CryptoDashboard";
-// import CoinLink from "./components/Layout/CoinsLink";
-
 function App() {
 	const { role, isLoading } = useUserRole();
 	// console.log(role);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [showFavorites, setShowFavorites] = useState(false);
+
 	const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
 	if (isLoading) {
@@ -51,7 +49,13 @@ function App() {
 			<RedirectToLoginIfLoggedOut />
 			<Container fluid className="">
 				<Row className="d-flex align-itmes-center justify-content-between min-vh-100">
-					{role && <SideBarLeft toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />}
+					{role && (
+						<SideBarLeft
+							toggleSidebar={toggleSidebar}
+							isSidebarOpen={isSidebarOpen}
+							setShowFavorites={setShowFavorites}
+						/>
+					)}
 
 					<motion.div
 						className={`col-xs-12 col-md-${isSidebarOpen ? "7" : "8"}`}
@@ -60,7 +64,7 @@ function App() {
 						transition={{ type: "spring", stiffness: 260, damping: 20 }}
 					>
 						<Routes>
-							<Route path="/" element={<Home />} />
+							<Route path="/" element={<Home isSidebarOpen={isSidebarOpen} showFavorites={showFavorites} />} />
 							<Route path="/login" element={<Login />} />
 							<Route path="/Register" element={<Register />} />
 

@@ -17,11 +17,14 @@ import {
 	faUsers,
 	faSubscript,
 	faCreditCard,
+	faStar as faSolidStar,
 } from "@fortawesome/free-solid-svg-icons";
+import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 import { faForumbee } from "@fortawesome/free-brands-svg-icons";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 
-const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
+const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavoritesLoaded }) => {
 	const user = useSelector((state) => state.login.user);
 	const token = useSelector((state) => state.login?.token);
 	const userId = user?.userId;
@@ -31,6 +34,8 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
 	const sidebarClass = `side-bar-left ${isMobile ? "fixed-left" : ""} ${isSidebarOpen ? "col-2" : "col-1"}`;
+
+	const favoritesIcon = showFavoritesLoaded ? faSolidStar : faRegularStar;
 
 	// Aggiorna lo stato di isMobile in base alla larghezza della finestra
 	useEffect(() => {
@@ -48,9 +53,9 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 		};
 	}, []);
 
-	// const toggleSidebar = () => {
-	// 	setIsSidebarOpen(!isSidebarOpen);
-	// };
+	const toggleFavorites = () => {
+		setShowFavorites((prev) => !prev);
+	};
 
 	if (shouldHide) {
 		return null;
@@ -74,25 +79,40 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 			<div className="flex-center logo-section">
 				<img id="logo" src="" alt="Logo" />
 			</div>
-			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Home</Tooltip>}>
+			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Home</Tooltip>}>
 				<Link to="/" className="nav-item flex-center nav-link">
 					<FontAwesomeIcon icon={faHome} className="nav-icon" />
 					<span className="nav-text ms-2">Home</span>
 				</Link>
 			</OverlayTrigger>
-			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Forum</Tooltip>}>
+			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Forum</Tooltip>}>
 				<Link to="/forum" className="nav-item flex-center nav-link">
 					<FontAwesomeIcon icon={faForumbee} className="nav-icon" />
 					<span className="nav-text ms-2">Forum</span>
 				</Link>
 			</OverlayTrigger>
-			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Trade</Tooltip>}>
+			<OverlayTrigger
+				trigger={["hover", "focus"]}
+				placement="right"
+				overlay={<Tooltip id="tooltip">Preferiti</Tooltip>}
+			>
+				<Button onClick={toggleFavorites} className="nav-item flex-center nav-link">
+					<FontAwesomeIcon icon={favoritesIcon} className="nav-icon" />
+					<span className="nav-text ms-2">{showFavoritesLoaded ? "Preferiti" : "Carica Preferiti"}</span>
+				</Button>
+			</OverlayTrigger>
+
+			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Trade</Tooltip>}>
 				<Link to="/wallet" className="nav-item flex-center nav-link">
 					<FontAwesomeIcon icon={faWallet} className="nav-icon" />
 					<span className="nav-text ms-2">Wallet</span>
 				</Link>
 			</OverlayTrigger>
-			<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Abbonamenti</Tooltip>}>
+			<OverlayTrigger
+				trigger={["hover", "focus"]}
+				placement="right"
+				overlay={<Tooltip id="tooltip">Abbonamenti</Tooltip>}
+			>
 				<NavLink to="/abbonamenti" className="nav-item flex-center nav-link">
 					<FontAwesomeIcon icon={faCreditCard} className="nav-icon" />
 					<span className="nav-text ms-2">Abbonati</span>
@@ -101,7 +121,11 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 			{userId ? (
 				<>
 					{(role === "Admin" || role === "Moderatore") && (
-						<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Utenti</Tooltip>}>
+						<OverlayTrigger
+							trigger={["hover", "focus"]}
+							placement="right"
+							overlay={<Tooltip id="tooltip">Utenti</Tooltip>}
+						>
 							<NavLink className="nav-item flex-center nav-link" to="/utentiList/">
 								<FontAwesomeIcon icon={faUsers} className="nav-icon" />
 								<span className="nav-text ms-2">Utenti</span>
@@ -112,19 +136,27 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen }) => {
 				</>
 			) : (
 				<>
-					<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Accedi</Tooltip>}>
+					<OverlayTrigger
+						trigger={["hover", "focus"]}
+						placement="right"
+						overlay={<Tooltip id="tooltip">Accedi</Tooltip>}
+					>
 						<NavLink className="nav-link" to="/login">
 							<span className="nav-text ms-2">Login</span>
 						</NavLink>
 					</OverlayTrigger>
-					<OverlayTrigger trigger="hover" placement="right" overlay={<Tooltip id="tooltip">Registrati</Tooltip>}>
+					<OverlayTrigger
+						trigger={["hover", "focus"]}
+						placement="right"
+						overlay={<Tooltip id="tooltip">Registrati</Tooltip>}
+					>
 						<NavLink className="nav-link" to="/register">
 							<span className="nav-text ms-2">Register</span>
 						</NavLink>
 					</OverlayTrigger>
 				</>
 			)}
-			<div className="d-flex align-items-center justify-content-center gap-1 flex-column">
+			<div className="flex-center gap-1 flex-column">
 				<LogoutButton />
 				<OverlayTrigger
 					trigger="click" // Puoi cambiare a "hover" se vuoi che si attivi con l'hover

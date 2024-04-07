@@ -7,18 +7,12 @@ import SkeletonCard from "../Skeletorn/SkeletonCard";
 import useSaveToDatabase from "../../hooks/saveToDatabase";
 import Loader from "../Layout/Loader";
 
-const mainCoinIds = [
-	"BTC-USD",
-	"ETH-USD",
-	"USDT-USD",
-	"SOL-USD",
-	"XRP-USD",
-	// Altre monete commentate
-];
+const mainCoinIds = ["BTC-USD", "ETH-USD", "USDT-USD", "SOL-USD", "XRP-USD"];
 
-const CryptoList = () => {
+const CryptoList = ({ showFavorites }) => {
 	const dispatch = useDispatch();
 	const coins = useSelector((state) => state.coinbase.coins);
+	const userPreferences = useSelector((state) => state.favorites?.userPreferences) || [];
 	const tickers = useSelector((state) => state.coinbase.tickers);
 	const coinStats = useSelector((state) => state.coinbase.coinStats);
 	const isLoading = useSelector((state) => state.coinbase.loading);
@@ -31,6 +25,7 @@ const CryptoList = () => {
 	const [fetching, setFetching] = useState(false);
 	const [loadingCoins, setLoadingCoins] = useState([]); // Traccia le monete attualmente in caricamento
 	const allCoins = useSelector((state) => state.coinbase.coins);
+	const [initialLoading, setInitialLoading] = useState(true);
 
 	const onlineCoins = coins.filter(
 		(coin) => coin.status === "online" && coin.id.endsWith("-USD") && !coin.id.startsWith("USD-")
@@ -59,6 +54,7 @@ const CryptoList = () => {
 			setVisibleCoins(initialCoins);
 			setLoadingCoins([]);
 			setVisibleCoinIds(mainCoinIds);
+			setInitialLoading(false);
 		};
 
 		if (coins.length > 0) {
@@ -97,7 +93,7 @@ const CryptoList = () => {
 					loadMoreCoins();
 				}
 			},
-			{ threshold: 0.1 } // Configura la soglia di intersezione qui se necessario
+			{ threshold: 0.1 } // Configurazione  soglia di intersezione qui
 		);
 
 		if (loadMoreRef.current) {
@@ -110,29 +106,56 @@ const CryptoList = () => {
 		};
 	}, [loadMoreCoins, isLoading, fetching, loadedAll]);
 
+	const filteredCoins = showFavorites
+		? coins.filter((coin) => userPreferences.some((pref) => pref.nomeCoin === coin.id))
+		: null;
+
+	useEffect(() => {
+		const coinsToShow =
+			showFavorites && userPreferences.length > 0
+				? coins.filter(
+						(coin) =>
+							userPreferences.some((pref) => pref.nomeCoin === coin.id) &&
+							coin.status === "online" &&
+							coinStats[coin.id] // Assicurati che le statistiche siano disponibili
+				  )
+				: mainCoinIds
+						.map((id) => coins.find((coin) => coin.id === id && coin.status === "online"))
+						.filter((coin) => coin && coinStats[coin.id]); // Controlla anche qui per le statistiche
+
+		setVisibleCoins(coinsToShow);
+	}, [showFavorites, userPreferences, coins, mainCoinIds, coinStats]);
+
+	const coinsToRender = showFavorites ? filteredCoins : visibleCoins;
+
 	return (
 		<>
-			<Loader isLoading={isLoading} />
+			<Loader isLoading={isLoading && initialLoading} />
 
 			<div className="my-2 zone-5">
-				{visibleCoins.map((coin) => (
-					<Card
-						coin={{ ...coin, ...tickers[coin.id] }}
-						currency="USD"
-						stats={coinStats[coin.id]}
-						key={`loaded-${coin.id}`}
-						onSave={handleSaveToDb}
-					/>
-				))}
+				{coinsToRender.map((coin) => {
+					const coinId = coin.id; // Assicurati che questo sia l'ID corretto
+					const coinDetails = coinStats[coinId];
+
+					if (!coinDetails && showFavorites) {
+						return null;
+					}
+
+					// Ora hai le statistiche, quindi puoi procedere a renderizzare il componente Card.
+					return (
+						<Card
+							coin={{ ...coin, ...tickers[coinId], ...coinDetails }}
+							currency="USD"
+							stats={coinDetails}
+							key={`loaded-${coinId}`}
+							onSave={handleSaveToDb}
+						/>
+					);
+				})}
 				{loadingCoins.map((id) => (
 					<SkeletonCard key={`loading-${id}`} />
 				))}
-				{!loadedAll && (
-					// <div className="btn btn-primary" onClick={loadMoreCoins} disabled={isLoading || fetching}>
-					// 	Mostra altro
-					// </div>
-					<div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>
-				)}
+				{!loadedAll && !showFavorites && <div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>}
 			</div>
 		</>
 	);

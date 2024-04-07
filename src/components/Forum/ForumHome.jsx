@@ -45,7 +45,7 @@ const ForumHome = () => {
 				Crea Post
 			</Button>
 			{isLoading && <Loader />}
-			<Row className="zone-5">
+			<Row className="zone-7">
 				{[...posts].reverse().map((post) => (
 					<Post key={post.postId} post={post} onEdit={() => openModal(post)} currentUserId={currentUserId} />
 				))}

@@ -7,12 +7,12 @@ import { Link } from "react-router-dom";
 import styles from "./homeCarousel.module.css";
 import { Card } from "react-bootstrap";
 import Loader from "./Loader";
+import { motion } from "framer-motion";
 
-const HomeCarousel = () => {
+const HomeCarousel = ({ isSidebarOpen }) => {
 	const news = useSelector((state) => state.news.news);
 	const isLoading = useSelector((state) => state.news.loading);
 	const errorr = useSelector((state) => state.news.error);
-	// console.log("in carousel ", news);
 	// Opzioni per la configurazione di react-slick
 	const settings = {
 		dots: false,
@@ -68,10 +68,11 @@ const HomeCarousel = () => {
 			},
 		],
 	};
+
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<div className="d-flex align-items-center ">
+			<motion.div className="d-flex align-items-center" transition={{ type: "spring", stiffness: 260, damping: 20 }}>
 				<div className={`${styles.carouselWrapper}`}>
 					<Slider {...settings}>
 						{news.slice(0, 5).map((article, index) => (
@@ -87,7 +88,7 @@ const HomeCarousel = () => {
 						))}
 					</Slider>
 				</div>
-			</div>
+			</motion.div>
 		</>
 	);
 };

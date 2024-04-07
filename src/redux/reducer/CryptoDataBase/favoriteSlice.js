@@ -11,7 +11,6 @@ export const loadUserPreferences = createAsyncThunk("favorites/loadUserPreferenc
 		});
 		if (response.ok) {
 			const userPreferences = await response.json();
-			console.log("userPreferences", userPreferences);
 			return userPreferences;
 		} else {
 			const errorData = await response.json();
@@ -37,7 +36,6 @@ export const toggleUserPreference = createAsyncThunk(
 				return thunkAPI.rejectWithValue(errorData.message);
 			}
 			const criptoId = await responseId.json();
-			// console.log("criptoId", criptoId);
 
 			// Ora che hai l'ID, puoi costruire il payload per la preferenza
 			const payload = {
@@ -45,7 +43,6 @@ export const toggleUserPreference = createAsyncThunk(
 				CriptoId: criptoId,
 			};
 
-			// console.log("payload", payload);
 			// E ora invii la tua richiesta POST a togglePreferenza
 			const response = await fetchWithAuth(`${Url}Criptovalute/togglePreferenza`, {
 				method: "POST",
@@ -85,7 +82,6 @@ export const favoritesSlice = createSlice({
 			.addCase(loadUserPreferences.fulfilled, (state, action) => {
 				state.loading = false;
 				state.userPreferences = action.payload;
-				console.log(state.userPreferences);
 			})
 			.addCase(loadUserPreferences.rejected, (state, action) => {
 				state.loading = false;

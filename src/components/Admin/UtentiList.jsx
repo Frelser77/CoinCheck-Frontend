@@ -8,6 +8,7 @@ import { Url } from "../../Config/config";
 import useUserRole from "../../hooks/useUserRole";
 import { setSelectedUserId } from "../../redux/reducer/Utenti/selectedUserIdSlice";
 import Loader from "../Layout/Loader";
+import CustomImage from "../Utenti/CustomImage";
 
 const UtentiList = () => {
 	const dispatch = useDispatch();
@@ -16,13 +17,7 @@ const UtentiList = () => {
 	const users = useSelector((state) => state.utenti.users);
 	const status = useSelector((state) => state.utenti.status);
 	const error = useSelector((state) => state.utenti.error);
-	// const navigate = useNavigate();
 
-	// console.log(users);
-
-	// useEffect(() => {
-	// 	dispatch(fetchUtenti());
-	// }, [dispatch]);
 	useEffect(() => {
 		if (status === "idle" || status === "failed") {
 			dispatch(fetchUtenti());
@@ -33,10 +28,8 @@ const UtentiList = () => {
 		return <Loader isLoading={true} />;
 	}
 
-	// Gestione dell'errore...
 	if (error) {
 		toast.error("Si è verificato un errore: " + error);
-		// Qui puoi anche restituire un componente di errore se preferisci
 	}
 
 	const handleDelete = async (id) => {
@@ -52,8 +45,7 @@ const UtentiList = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading && status} />
-			{/* {error && <div>Ops, Try again!</div>} */}
-			<Row className="zone-4 p-1 mt-3">
+			<Row className="zone-7 p-1 mt-3">
 				<h2 className="text-center text">Lista Utenti</h2>
 				<Each
 					of={users || []}
@@ -63,10 +55,12 @@ const UtentiList = () => {
 								<OverlayTrigger key="top" placement="top" overlay={<Tooltip id={`tooltip-top`}>Modifica</Tooltip>}>
 									{user.imageUrl && (
 										<div className="d-flex align-items-center justify-content-center my-3">
-											<img
+											<CustomImage
+												src={user.imageUrl}
+												alt={user.username}
+												className="my-custom-class"
 												onClick={() => dispatch(setSelectedUserId(user.userId))}
-												className={`img-circle point img-md ${!user.imageUrl ? "inverted-image" : ""}`}
-												src={user.imageUrl ? `${Url}${user.imageUrl.replace(/\\/g, "/")}` : "/placeholder.png"}
+												Url={Url}
 											/>
 										</div>
 									)}

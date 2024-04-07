@@ -27,3 +27,28 @@
 	height: 25px;
 	width: 25px;
 }
+@keyframes shimmer {
+	0% {
+		background-color: #ffffff; /* Bianco */
+	}
+	25% {
+		background-color: #d2d2d2; /* Grigio chiaro */
+	}
+	50% {
+		background-color: #cccccc; /* Bianco */
+	}
+	75% {
+		background-color: #d2d2d2; /* Grigio chiaro */
+	}
+	100% {
+		background-color: #efefef; /* Bianco */
+	}
+}
+
+.skeletonTitle,
+.skeletonPrice,
+.skeletonBase,
+.skeletonBtn,
+.skeletonFav {
+	animation: shimmer 2s infinite ease-in-out;
+}

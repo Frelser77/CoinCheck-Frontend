@@ -1,6 +1,13 @@
 import { Card, Col, Row } from "react-bootstrap";
+import useHide from "../Tips/useHide";
 
 const SkeletornRight = () => {
+	const shouldHide = useHide(["/utentiList/", "/wallet"]);
+
+	if (shouldHide) {
+		return null;
+	}
+
 	return (
 		<Col className="skeletorn-right">
 			<h1 className="text-start text">Seleziona un utente per modificare</h1>

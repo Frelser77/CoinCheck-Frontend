@@ -10,6 +10,7 @@ import CommentForm from "./CommentForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
+import CustomImage from "../Utenti/CustomImage";
 
 export const getUserNameStyle = (role) => {
 	switch (role) {
@@ -33,6 +34,7 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	const navigate = useNavigate();
 	const [showCommentForm, setShowCommentForm] = useState(false);
 	const [hasLikedPost, setHasLikedPost] = useState(post.likes.some((like) => like.userId === currentUserId));
+	const [showComments, setShowComments] = useState(false);
 
 	useEffect(() => {
 		setHasLikedPost(post.likes.some((like) => like.userId === currentUserId));
@@ -56,8 +58,18 @@ const Post = ({ post, onEdit, currentUserId }) => {
 		toast.success("Post eliminato con successo.");
 	};
 
+	const handleComments = () => {
+		setShowComments(!showComments);
+	};
+
+	const getTopComment = (comments) => {
+		return comments.slice().sort((a, b) => b.likeCount - a.likeCount)[0];
+	};
+
+	const topComment = getTopComment(post.comments);
+
 	// Sistemare il percorso dell'immagine
-	const userImagePath = post.userImage ? `${Url}${post.userImage.replace(/\\/g, "/")}` : "default-profile-path";
+	const userImagePath = post.userImage ? `${post.userImage.replace(/\\/g, "/")}` : "default-profile-path";
 
 	const postOwnerStyle = getUserNameStyle(post.userRole);
 
@@ -88,22 +100,34 @@ const Post = ({ post, onEdit, currentUserId }) => {
 		}
 	};
 
+	const getDifferentComments = (comments) => {
+		if (comments.length === 1) return "comment";
+		else return "comments";
+	};
+
 	return (
 		<Row className="justify-content-center">
 			<Col xs={12} md={6}>
 				<Card className="mb-4 post-card position-relative">
 					<Card.Header className="d-flex align-items-center justify-content-between p-2">
 						<div className="d-flex align-items-center">
-							<img
+							{/* <img
 								src={userImagePath}
 								alt={post.userName}
 								className="rounded-circle mr-2 point img-xs"
 								onClick={() => goToUserProfile(post.userId)}
 								style={{ objectFit: "cover" }}
+							/> */}
+							<CustomImage
+								src={userImagePath}
+								alt={post.userName}
+								className="mr-2 point user-img-post"
+								onClick={() => goToUserProfile(post.userId)}
+								Url={Url}
 							/>
 							<strong className={`ms-2 ${postOwnerStyle}`}>{post.userName}</strong>
 						</div>
-						<small className="ms-auto">Posted on {getTimeDifference(new Date(post.postDate))}</small>
+						<small className="ms-auto">{getTimeDifference(new Date(post.postDate))}</small>
 					</Card.Header>
 					{post.filePath && (
 						<Card.Img
@@ -125,21 +149,26 @@ const Post = ({ post, onEdit, currentUserId }) => {
 								<FaRegComment className="me-1 point icon-comment" onClick={handleToggleComments} />
 								<span>{post.likeCount} likes</span>
 							</div>
-							<div className="like-profile-images">
-								{topThreeLikes.map((like, index) => (
-									<img
-										key={like.likeId}
-										src={`${Url}${like.user.imageUrl.replace(/\\/g, "/")}`}
-										alt={`Like by ${like.user.username}`}
-										className={`profile-image point ${index > 0 ? "overlapped" : ""}`}
-										onClick={() => goToUserProfile(like.userId)}
-									/>
-								))}
-								{topThreeLikes.map((like) => (
-									<span className={`like-username me-1 ${like.style}`} onClick={() => goToUserProfile(like.userId)}>
-										{like.user.username}
-									</span>
-								))}
+							<div className="like-profile-images d-flex align-items-start justify-content-between">
+								<div className="me-4">
+									{topThreeLikes.map((like, index) => (
+										<CustomImage
+											key={like.likeId}
+											src={`${like.user.imageUrl.replace(/\\/g, "/")}`}
+											alt={`Like by ${like.user.username}`}
+											className={`profile-image  ${index > 0 ? "overlapped" : ""}`}
+											onClick={() => goToUserProfile(like.userId)}
+											Url={Url}
+										/>
+									))}
+								</div>
+								<div className="ms-3 small-text">
+									{topThreeLikes.map((like) => (
+										<span className={`like-username me-1 ${like.style}`} onClick={() => goToUserProfile(like.userId)}>
+											{like.user.username}
+										</span>
+									))}
+								</div>
 							</div>
 							<Dropdown className="edit-icon position-absolute top-0 end-0 m-2 point">
 								<Dropdown.Toggle variant="transparent" id="dropdown-basic" size="sm">
@@ -155,11 +184,18 @@ const Post = ({ post, onEdit, currentUserId }) => {
 					</Card.Body>
 					<Card.Footer className="p-2">
 						<div className="comments-section">
-							<div>{post.comments?.length > 0 ? `${post.comments.length} comments` : "No comments yet."}</div>
-							{post.comments &&
-								post.comments.map((comment) => (
-									<Comment key={comment.commentId} comment={comment} currentUserId={currentUserId} />
-								))}
+							<div className="point" onClick={handleComments}>
+								{post.comments?.length > 0
+									? `${post.comments.length} ${getDifferentComments(post.comments)}`
+									: "No comments yet."}
+							</div>
+							{showComments
+								? // Mostra tutti i commenti se showComments è true
+								  post.comments?.map((comment) => (
+										<Comment key={comment.commentId} comment={comment} currentUserId={currentUserId} />
+								  ))
+								: // Mostra solo il commento con più like
+								  topComment && <Comment comment={topComment} currentUserId={currentUserId} />}
 						</div>
 					</Card.Footer>
 				</Card>

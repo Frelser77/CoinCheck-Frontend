@@ -30,34 +30,6 @@
 	height: 250px;
 	width: 300px;
 }
-/* 
-.cardBackground {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-size: cover;
-	background-position: center;
-	transition: opacity 0.3s ease; 
-} */
-
-.cardDetails {
-	background-color: rgba(0, 0, 0, 0.5);
-	color: white;
-	padding: 25px;
-	transition: opacity 0.3s ease;
-	opacity: 0;
-	height: 250px;
-}
-
-.cardBackground {
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	object-fit: cover;
-	transition: opacity 0.3s ease; /* Opzionale: Transizione fluida per l'opacità */
-}
 
 .carouselContent:hover .cardBackground {
 	opacity: 1;

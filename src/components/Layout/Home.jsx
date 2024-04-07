@@ -9,19 +9,18 @@ import { fetchCryptoNews } from "../../redux/reducer/CryptocCompareApi/fetchNews
 import HomeCarousel from "./HomeCarousel";
 import { loadUserPreferences } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
 import WalletCard from "./WalletCard";
+import { toast } from "react-toastify";
 // import CoinLink from "../Coins/CoinsLink";
-const Home = () => {
+const Home = ({ isSidebarOpen, showFavorites }) => {
 	const news = useSelector((state) => state.news.news);
 	const userId = useSelector((state) => state.login.user?.userId);
-	// console.log(news);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		if (userId) {
 			dispatch(loadUserPreferences(userId));
 		} else {
-			// Qui potresti gestire cosa succede se userId è null
-			console.log("UserId non disponibile.");
+			toast.error("UserId non disponibile.");
 		}
 	}, [userId, dispatch]);
 
@@ -36,13 +35,13 @@ const Home = () => {
 		<>
 			<Row>
 				<Col md={7}>
-					<HomeCarousel />
+					<HomeCarousel isSidebarOpen={isSidebarOpen} />
 				</Col>
 				<Col md={5}>
 					<WalletCard />
 				</Col>
 			</Row>
-			<CryptoList />
+			<CryptoList showFavorites={showFavorites} />
 		</>
 	);
 };

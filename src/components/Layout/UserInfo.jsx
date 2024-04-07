@@ -10,7 +10,6 @@ const UserInfoCard = () => {
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.login.user);
 	const { role, isLoading } = useUserRole();
-	console.log(role);
 
 	if (!user || !user.userId) {
 		return <div>L'utente non è loggato</div>;

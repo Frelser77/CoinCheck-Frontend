@@ -26,8 +26,9 @@ a {
 	min-width: 320px;
 	top: 50%;
 	left: 50%;
-	// @include transform(translate(-50%, -50%));
-
+	transform: (translate(-50%, -50%));
+	text-align: left;
+	font-family: monospace;
 	> span {
 		display: block;
 	}
@@ -43,5 +44,30 @@ a {
 		padding: 5px;
 		padding-left: 10px;
 		line-height: 6.5vw;
+		color: #777;
+		font-style: italic;
 	}
+}
+
+.comment-404 {
+	color: #777;
+	font-style: italic;
+}
+
+.keyword {
+	color: #d65562;
+}
+
+.negation {
+	color: #4ca8ef;
+}
+
+.italic {
+	font-style: italic;
+	color: #bdbdbd;
+}
+
+.throw {
+	padding-left: 15px;
+	color: #2796ec;
 }

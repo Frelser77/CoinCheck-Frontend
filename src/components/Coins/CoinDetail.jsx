@@ -141,7 +141,6 @@ const CoinDetail = () => {
 		...orderBook,
 		...historicTrade,
 	};
-	console.log(combinedCoinDetails);
 	const handleSaveToDb = useSaveToDatabase();
 
 	const priceChangePercentage = coinStats[coinId]

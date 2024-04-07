@@ -27,16 +27,12 @@ const FavoriteButton = ({ coinDetails, userId, onSave }) => {
 
 	const handleFavoriteClick = () => {
 		if (coinDetails && coinDetails.id) {
-			console.log(`Preferito per ${coinDetails.id} prima del dispatch: `, isFavorited);
-
 			dispatch(toggleUserPreference({ userId, criptoName: coinDetails.id }))
 				.unwrap()
 				.then((updatedPreferences) => {
-					console.log(`Preferenze aggiornate dopo dispatch: `, updatedPreferences);
 					onSave(updatedPreferences);
 					setIsFavorited((prev) => {
 						const newFavoritedStatus = !prev;
-						console.log(`Stato preferito per ${coinDetails.id} è ora: `, newFavoritedStatus);
 						return newFavoritedStatus;
 					});
 				})
@@ -50,7 +46,6 @@ const FavoriteButton = ({ coinDetails, userId, onSave }) => {
 	// Aggiungi anche un log all'interno dell'effetto per tracciare i cambiamenti alle preferenze dell'utente
 	useEffect(() => {
 		const isCurrentlyFavorited = userPreferences.some((p) => p.nomeCoin === coinDetails.id);
-		console.log(`L'utente ha ${coinDetails.id} come preferito: `, isCurrentlyFavorited);
 		setIsFavorited(checkIsFavorited());
 	}, [userPreferences, coinDetails.id]);
 

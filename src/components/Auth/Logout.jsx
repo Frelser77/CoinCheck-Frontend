@@ -29,7 +29,7 @@ const LogoutButton = () => {
 	const placement = exatcliPath ? "bottom" : "right";
 
 	return (
-		<OverlayTrigger trigger="hover" placement={placement} overlay={<Tooltip id="tooltip">Logout</Tooltip>}>
+		<OverlayTrigger trigger={["hover", "focus"]} placement={placement} overlay={<Tooltip id="tooltip">Logout</Tooltip>}>
 			<button onClick={handleLogout} className="nav-item flex-center nav-link">
 				<FontAwesomeIcon icon={faSignOutAlt} />
 				<span className="nav-text ms-1">Logout</span>

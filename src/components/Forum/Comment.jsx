@@ -8,6 +8,7 @@ import { Badge } from "react-bootstrap";
 import { Url } from "../../Config/config";
 import CommentForm from "./CommentForm";
 import { getUserNameStyle } from "./Post";
+import CustomImage from "../Utenti/CustomImage";
 
 const Comment = ({ comment, currentUserId }) => {
 	const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const Comment = ({ comment, currentUserId }) => {
 	const handleDeleteComment = () => {
 		dispatch(softDeleteComment(comment.commentId));
 	};
-	const commentUserImagePath = `${Url}${comment.userImage.replace(/\\/g, "/")}`;
+	const commentUserImagePath = `${comment.userImage.replace(/\\/g, "/")}`;
 
 	const hasLikedComment = comment.likes.some((like) => like.userId === currentUserId);
 
@@ -55,7 +56,6 @@ const Comment = ({ comment, currentUserId }) => {
 	};
 
 	const postOwnerStyle = getUserNameStyle(comment.roleName);
-	console.log(comment);
 
 	const handleSaveEdit = (editedContent) => {
 		if (commentId) {
@@ -70,11 +70,18 @@ const Comment = ({ comment, currentUserId }) => {
 		<div className="comment comment p-2">
 			<div className="d-flex align-items-center justify-content-start">
 				<span className="ml-auto">
-					<img
+					{/* <img
 						src={commentUserImagePath}
 						alt="Immagine dell'utente"
 						className="user-img-comment point"
 						onClick={() => goToUserProfile(comment.userId)}
+					/> */}
+					<CustomImage
+						src={commentUserImagePath}
+						alt="Immagine dell'utente"
+						className="user-img-comment point"
+						onClick={() => goToUserProfile(comment.userId)}
+						Url={Url}
 					/>
 				</span>
 				<span className={`ms-2 fs-6 ${postOwnerStyle}`}>{comment.userName}</span>
