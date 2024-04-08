@@ -2,13 +2,14 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUtenti, deleteUser, restoreUser } from "../../redux/reducer/Utenti/utentiApi";
 import { Each } from "../Tips/Each";
-import { Button, ButtonGroup, Card, CardBody, CardGroup, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Button, Badge, Card, CardBody, Spinner, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Url } from "../../Config/config";
 import useUserRole from "../../hooks/useUserRole";
 import { setSelectedUserId } from "../../redux/reducer/Utenti/selectedUserIdSlice";
 import Loader from "../Layout/Loader";
 import CustomImage from "../Utenti/CustomImage";
+import { loadUserPreferences } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
 
 const UtentiList = () => {
 	const dispatch = useDispatch();
@@ -17,6 +18,8 @@ const UtentiList = () => {
 	const users = useSelector((state) => state.utenti.users);
 	const status = useSelector((state) => state.utenti.status);
 	const error = useSelector((state) => state.utenti.error);
+	const userPreferences = useSelector((state) => state.favorites?.userPreferences);
+	const [activeUserId, setActiveUserId] = React.useState(null);
 
 	useEffect(() => {
 		if (status === "idle" || status === "failed") {
@@ -42,6 +45,17 @@ const UtentiList = () => {
 		await dispatch(fetchUtenti());
 	};
 
+	const handleLoadPreferenze = async (userId) => {
+		const resultAction = await dispatch(loadUserPreferences(userId));
+		setActiveUserId(userId);
+		if (loadUserPreferences.fulfilled.match(resultAction)) {
+			const { data } = resultAction.payload;
+			if (data.length === 0) {
+				dispatch(setUserPreferences([]));
+			}
+		}
+	};
+
 	return (
 		<>
 			<Loader isLoading={isLoading && status} />
@@ -58,7 +72,7 @@ const UtentiList = () => {
 											<CustomImage
 												src={user.imageUrl}
 												alt={user.username}
-												className="my-custom-class"
+												className="img-md"
 												onClick={() => dispatch(setSelectedUserId(user.userId))}
 												Url={Url}
 											/>
@@ -69,9 +83,9 @@ const UtentiList = () => {
 									<Card.Text className="large-text fw-semibold">{user.username}</Card.Text>
 									<Card.Text className="small-text">Email: {user.email}</Card.Text>
 									<Card.Text className="small-text">Stato: {user.isActive ? "Attivo" : "Non attivo"}</Card.Text>
-									<Card.Text className="small-text">
+									{/* <Card.Text className="small-text">
 										Preferenze: {user.preferenzeUtentes?.length > 0 ? user.preferenzeUtentes.length : "n/n"}
-									</Card.Text>
+									</Card.Text> */}
 									<Card.Text className="small-text">
 										Post: {user.posts?.length > 0 ? user.posts.length : "n/n"}
 									</Card.Text>
@@ -102,14 +116,26 @@ const UtentiList = () => {
 												)}
 											</>
 										)}
-										{/* <Button
-											size="sm"
-											variant="outline-primary"
-											onClick={() => dispatch(setSelectedUserId(user.userId))}
-											className="p-1"
-										>
-											Modifica
-										</Button> */}
+										<Button size="sm" onClick={() => handleLoadPreferenze(user.userId)}>
+											Preferenze
+										</Button>
+										{activeUserId === user.userId && (
+											<Card.Text
+												className={`small-text flex-center flex-column gap-1 ms-2 ${
+													userPreferences && userPreferences.length > 5 ? "zone-1 overflow-x-hidden" : ""
+												}`}
+											>
+												{userPreferences && userPreferences.length > 0 ? (
+													userPreferences.map((pref) => (
+														<Badge key={pref.criptoId} className="mx-3">
+															{pref.nomeCoin} ({pref.simboloCoin})
+														</Badge>
+													))
+												) : (
+													<span>L'utente non ha coin preferite.</span>
+												)}
+											</Card.Text>
+										)}
 									</div>
 								</CardBody>
 							</Card>

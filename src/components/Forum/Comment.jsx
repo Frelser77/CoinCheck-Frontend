@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { editComment, softDeleteComment, toggleLikeComment } from "../../redux/reducer/Post/forumSlice";
 import { Button, Dropdown } from "react-bootstrap";
@@ -13,13 +13,22 @@ import CustomImage from "../Utenti/CustomImage";
 const Comment = ({ comment, currentUserId }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const [newContent, setNewContent] = useState(comment.content);
 	const [isEditing, setIsEditing] = useState(false);
+	const isLikingComment = useSelector((state) => state.posts.isLikingComment);
 
-	// useEffect(() => {}, [comment.likeCount]);
+	const addNewComment = (newComment) => {
+		setIsEditing(false); // Chiude il form di modifica dopo l'invio
+		// Aggiungi qui la logica per aggiungere il nuovo commento all'elenco dei commenti visibili
+		// Potresti voler aggiornare lo stato locale o fare un'altra chiamata per ottenere l'elenco aggiornato dei commenti
+	};
 
-	const handleLike = () => {
-		dispatch(toggleLikeComment({ commentId: comment.commentId }));
+	const handleLike = async () => {
+		if (isLikingComment) {
+			// Evita più clic durante l'elaborazione
+			return;
+		}
+		await dispatch(toggleLikeComment({ commentId: comment.commentId }));
+		// Non invertire il hasLikedComment qui. Lascia che il reducer gestisca lo stato dopo la conferma del like dal server.
 	};
 
 	const handleDeleteComment = () => {
@@ -60,22 +69,27 @@ const Comment = ({ comment, currentUserId }) => {
 	const handleSaveEdit = (editedContent) => {
 		if (commentId) {
 			dispatch(editComment({ commentId: comment.commentId, content: editedContent })).then(() => {
-				setIsEditing(false); // Chiude il form di modifica dopo il salvataggio
-				// Potresti voler forzare un aggiornamento del componente qui se necessario
+				setIsEditing(false);
 			});
 		}
 	};
+
+	const likeIcon = hasLikedComment ? (
+		<FaHeart
+			className={`me-1 point icon-like ${hasLikedComment && isLikingComment ? "like-loading" : "liked"}`}
+			onClick={handleLike}
+		/>
+	) : (
+		<FaRegHeart
+			className={`me-1 point icon-like ${!hasLikedComment && isLikingComment ? "like-loading" : ""}`}
+			onClick={handleLike}
+		/>
+	);
 
 	return (
 		<div className="comment comment p-2">
 			<div className="d-flex align-items-center justify-content-start">
 				<span className="ml-auto">
-					{/* <img
-						src={commentUserImagePath}
-						alt="Immagine dell'utente"
-						className="user-img-comment point"
-						onClick={() => goToUserProfile(comment.userId)}
-					/> */}
 					<CustomImage
 						src={commentUserImagePath}
 						alt="Immagine dell'utente"
@@ -98,21 +112,16 @@ const Comment = ({ comment, currentUserId }) => {
 			</div>
 			{isEditing ? (
 				<CommentForm
-					postId={comment.postId}
+					postId={postId}
 					commentId={comment.commentId}
 					initialContent={comment.content}
-					onSave={handleSaveEdit}
+					onSave={addNewComment}
 				/>
 			) : (
 				<>
 					<p>{comment.content}</p>
 					<div className="d-flex align-items-center justify-content-start gap-1">
-						{hasLikedComment ? (
-							<FaHeart className="me-1 point icon-like liked" onClick={handleLike} />
-						) : (
-							<FaRegHeart className="me-1 point icon-like" onClick={handleLike} />
-						)}
-
+						{likeIcon}
 						<span>{comment.likeCount} likes</span>
 					</div>
 				</>
@@ -122,17 +131,3 @@ const Comment = ({ comment, currentUserId }) => {
 };
 
 export default Comment;
-// 			<p>{comment.content}</p>
-// 			<div className="d-flex align-items-center justify-content-start gap-1">
-// 				<FaRegHeart className="mr-2 point" onClick={handleLike} />
-// 				<span>{comment.likeCount} likes</span>
-// 			</div>
-// 			<Button onClick={handleEditComment}>Modifica</Button>
-// 			<Button variant="danger" onClick={handleDeleteComment}>
-// 				Elimina
-// 			</Button>
-// 		</div>
-// 	);
-// };
-
-// export default Comment;

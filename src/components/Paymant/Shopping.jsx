@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import { Button, ButtonGroup, Card, Col, Row } from "react-bootstrap";
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
+import useUserRole from "../../hooks/useUserRole";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 const ShoppingCart = () => {
 	const dispatch = useDispatch();
@@ -13,7 +16,8 @@ const ShoppingCart = () => {
 	const loading = useSelector((state) => state.products.loading);
 	const error = useSelector((state) => state.products.error);
 	const cart = useSelector((state) => state.cart.cart);
-
+	const { role, isLoading } = useUserRole();
+	console.log("role", role);
 	useEffect(() => {
 		dispatch(fetchProducts());
 	}, [dispatch]);
@@ -40,34 +44,39 @@ const ShoppingCart = () => {
 		<Row className="g-2 p-4 my-3">
 			{products.map((product) => (
 				<Col xs={12} md={4} key={product.idprodotto}>
-					<Card className="h-100 abbonamento">
+					<Card className="h-100 abbonamento position-relative">
 						<Card.Img
 							variant="top"
 							src={product.imageUrl ? `${Url}${product.imageUrl.replace(/\\/g, "/")}` : "/placeholder.png"}
 							alt={product.tipoAbbonamento}
-							style={{ objectFit: "cover", height: "200px" }} //
+							className="img-xl"
 						/>
 						<Card.Body className="d-flex flex-column align-items-start justify-content-between">
 							<Card.Title>{product.tipoAbbonamento}</Card.Title>
-							<Card.Text>Prezzo: €{product.prezzo.toFixed(2)}</Card.Text>
-							<Card.Text>Descrizione: {product.descrizione}</Card.Text>
+							<Card.Text>€{product.prezzo.toFixed(2)}</Card.Text>
+							<Card.Text> {product.descrizione}</Card.Text>
 							<ButtonGroup>
-								<div className="btn btn-outline-success" onClick={() => handleAddToCart(product)}>
-									Premiumati
+								<div className="btn btn-body" onClick={() => handleAddToCart(product)}>
+									Aggiungi
 								</div>
 								<div className="btn btn-outline-danger" onClick={() => handleRemoveFromCart(product.idprodotto)}>
 									Rimuovi
 								</div>
-								<Link to={`/Abbonamenti/${product.idprodotto}/edit`} className="btn btn-outline-warning">
-									Edit
-								</Link>
 							</ButtonGroup>
+							{(role === "Admin" || role === "Moderatore") && (
+								<Link
+									to={`/Abbonamenti/${product.idprodotto}/edit`}
+									className="nav-link position-absolute top-0 end-0 m-2"
+								>
+									<FontAwesomeIcon icon={faEdit} />
+								</Link>
+							)}
 						</Card.Body>
 					</Card>
 				</Col>
 			))}
 			<div className="text-center mt-4">
-				<Link to="/Checkout" className="btn btn-primary">
+				<Link to="/Checkout" className="btn btn-body">
 					Procedi al Checkout
 				</Link>
 			</div>

@@ -20,9 +20,12 @@ const CommentForm = ({ postId, commentId = null, initialContent = "", onSave = (
 			? dispatch(editComment({ commentId, content: commentText }))
 			: dispatch(commentOnPost({ postId, createCommentDto: { Content: commentText } }));
 
-		action.then(() => {
-			onSave(commentText); // Passa il testo modificato a onSave
-			setCommentText(""); // Pulisci il campo di testo dopo l'invio
+		action.then((response) => {
+			// Assicurati che la risposta sia di successo prima di chiamare onSave
+			if (response.type.endsWith("fulfilled")) {
+				onSave(response.payload);
+				setCommentText("");
+			}
 		});
 	};
 

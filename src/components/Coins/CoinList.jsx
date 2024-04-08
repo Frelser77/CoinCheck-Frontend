@@ -134,7 +134,7 @@ const CryptoList = ({ showFavorites }) => {
 
 			<div className="my-2 zone-5">
 				{coinsToRender.map((coin) => {
-					const coinId = coin.id; // Assicurati che questo sia l'ID corretto
+					const coinId = coin.id;
 					const coinDetails = coinStats[coinId];
 
 					if (!coinDetails && showFavorites) {

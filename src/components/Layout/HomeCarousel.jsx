@@ -77,7 +77,12 @@ const HomeCarousel = ({ isSidebarOpen }) => {
 					<Slider {...settings}>
 						{news.slice(0, 5).map((article, index) => (
 							<Card key={index} className={`${styles.carouselContent} border-0 h-100`}>
-								<div className={styles.cardBackground} style={{ backgroundImage: `url(${article.imageurl})` }}>
+								<div
+									className={`${styles.cardBackground}`}
+									style={{
+										backgroundImage: `url(${article.imageurl})`,
+									}}
+								>
 									<div className={styles.cardDetails}>
 										<h3>{article.title}</h3>
 										<p className="truncate-multiline">{article.body}</p>

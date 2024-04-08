@@ -49,11 +49,7 @@ const CoinLinkContent = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<Col
-				xs={12}
-				md={3}
-				className="d-flex flex-column align-items-center justify-content-start volume-col gap-5 sticky-top"
-			>
+			<Col xs={12} md={3} className="d-flex flex-column align-items-center justify-content-start volume-col gap-5">
 				<UserInfoCard />
 
 				<Card className="px-2 pt-2 text-center">

@@ -76,7 +76,7 @@ function App() {
 							{role === "Admin" && <Route path="/Abbonamenti/:id/edit" element={<EditProduct />} />}
 							{/* {role === "Admin" && <Route path="/cryptoBoard" element={<CryptoDashboard />} />} */}
 							<Route path="/forum" element={<ForumHome />} />
-							<Route path="/coin/:coinId" element={<CoinDetail />} />
+							<Route path="/coin/:coinId" element={<CoinDetail isSidebarOpen={isSidebarOpen} />} />
 							<Route path="/utenti/:id" element={<DettaglioUtente />} />
 							<Route path="/Abbonamenti" element={<ShoppingCart />} />
 							<Route path="/Checkout" element={<CheckoutForm />} />

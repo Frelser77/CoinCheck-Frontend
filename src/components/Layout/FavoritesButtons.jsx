@@ -54,6 +54,7 @@ const FavoriteButton = ({ coinDetails, userId, onSave }) => {
 			<Loader isLoading={isLoading}></Loader>
 			<OverlayTrigger
 				key={tooltipPlacement}
+				trigger={["hover", "focus"]}
 				placement={tooltipPlacement}
 				overlay={<Tooltip id={`tooltip-${tooltipPlacement}`}>Watchlist</Tooltip>}
 			>

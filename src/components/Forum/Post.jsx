@@ -11,6 +11,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import CustomImage from "../Utenti/CustomImage";
+import Modal from "react-modal";
+import styles from "./post.module.css";
+Modal.setAppElement("#root");
 
 export const getUserNameStyle = (role) => {
 	switch (role) {
@@ -32,17 +35,24 @@ export const getUserNameStyle = (role) => {
 const Post = ({ post, onEdit, currentUserId }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const isLikingPost = useSelector((state) => state.posts.isLikingPost);
 	const [showCommentForm, setShowCommentForm] = useState(false);
-	const [hasLikedPost, setHasLikedPost] = useState(post.likes.some((like) => like.userId === currentUserId));
+	const [hasLikedPost, setHasLikedPost] = useState(post?.likes?.some((like) => like.userId === currentUserId));
 	const [showComments, setShowComments] = useState(false);
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [enlargedImage, setEnlargedImage] = useState(null);
 
 	useEffect(() => {
-		setHasLikedPost(post.likes.some((like) => like.userId === currentUserId));
-	}, [post.likes, currentUserId]);
+		setHasLikedPost(post?.likes?.some((like) => like.userId === currentUserId));
+	}, [post?.likes, currentUserId]);
 
 	const handleLike = async () => {
+		if (isLikingPost) {
+			return;
+		}
+
 		await dispatch(toggleLikePost({ postId: post.postId }));
-		setHasLikedPost((prevState) => !prevState); // Inverti lo stato del like
+		setHasLikedPost(!hasLikedPost);
 	};
 
 	const handleToggleComments = () => {
@@ -63,7 +73,17 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	};
 
 	const getTopComment = (comments) => {
-		return comments.slice().sort((a, b) => b.likeCount - a.likeCount)[0];
+		return comments?.slice().sort((a, b) => b.likeCount - a.likeCount)[0];
+	};
+
+	const openImageModal = (imageSrc) => {
+		setEnlargedImage(imageSrc);
+		setModalIsOpen(true);
+	};
+
+	// Funzione per chiudere il modal
+	const closeImageModal = () => {
+		setModalIsOpen(false);
 	};
 
 	const topComment = getTopComment(post.comments);
@@ -111,13 +131,6 @@ const Post = ({ post, onEdit, currentUserId }) => {
 				<Card className="mb-4 post-card position-relative">
 					<Card.Header className="d-flex align-items-center justify-content-between p-2">
 						<div className="d-flex align-items-center">
-							{/* <img
-								src={userImagePath}
-								alt={post.userName}
-								className="rounded-circle mr-2 point img-xs"
-								onClick={() => goToUserProfile(post.userId)}
-								style={{ objectFit: "cover" }}
-							/> */}
 							<CustomImage
 								src={userImagePath}
 								alt={post.userName}
@@ -132,23 +145,41 @@ const Post = ({ post, onEdit, currentUserId }) => {
 					{post.filePath && (
 						<Card.Img
 							variant="top"
-							// className="post-img"
 							src={`${Url}${post.filePath.replace(/\\/g, "/")}`}
 							alt="Post"
+							onClick={() => openImageModal(`${Url}${post.filePath.replace(/\\/g, "/")}`)} // Aggiungi questa funzione al click
 						/>
 					)}
+					{/* Modal per l'immagine ingrandita */}
+					<Modal
+						isOpen={modalIsOpen}
+						onRequestClose={closeImageModal}
+						contentLabel="Ingrandimento immagine"
+						className={`${styles.Modal}`}
+						overlayClassName={`${styles.Overlay}`}
+					>
+						<img src={enlargedImage} alt="Ingrandimento" className="img-fluid" />
+						{/* <button onClick={closeImageModal}>Chiudi</button> */}
+					</Modal>
 					<Card.Body className="p-2">
 						<Card.Text className="mt-2">{post.content}</Card.Text>
 						<div className="d-flex flex-column align-items-start justify-content-center gap-1">
 							<div className="d-flex gap-1 align-items-center justify-content-between">
 								{hasLikedPost ? (
-									<FaHeart className="me-1 point icon-like liked" onClick={handleLike} />
+									<FaHeart
+										className={`me-1 point icon-like ${isLikingPost ? "like-loading" : "liked"}`}
+										onClick={handleLike}
+									/>
 								) : (
-									<FaRegHeart className="me-1 point icon-like" onClick={handleLike} />
+									<FaRegHeart
+										className={`me-1 point icon-like ${isLikingPost ? "like-loading" : ""}`}
+										onClick={handleLike}
+									/>
 								)}
 								<FaRegComment className="me-1 point icon-comment" onClick={handleToggleComments} />
 								<span>{post.likeCount} likes</span>
 							</div>
+
 							<div className="like-profile-images d-flex align-items-start justify-content-between">
 								<div className="me-4">
 									{topThreeLikes.map((like, index) => (
@@ -163,8 +194,12 @@ const Post = ({ post, onEdit, currentUserId }) => {
 									))}
 								</div>
 								<div className="ms-3 small-text">
-									{topThreeLikes.map((like) => (
-										<span className={`like-username me-1 ${like.style}`} onClick={() => goToUserProfile(like.userId)}>
+									{topThreeLikes.map((like, index) => (
+										<span
+											key={`like-${like.likeId}-${index}`} // Assicurati che la key sia unica
+											className={`like-username me-1 ${like.style}`}
+											onClick={() => goToUserProfile(like.userId)}
+										>
 											{like.user.username}
 										</span>
 									))}

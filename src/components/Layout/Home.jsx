@@ -20,7 +20,7 @@ const Home = ({ isSidebarOpen, showFavorites }) => {
 		if (userId) {
 			dispatch(loadUserPreferences(userId));
 		} else {
-			toast.error("UserId non disponibile.");
+			// toast.error("UserId non disponibile.");
 		}
 	}, [userId, dispatch]);
 

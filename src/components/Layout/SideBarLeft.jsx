@@ -69,7 +69,6 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 			animate={{ width: isSidebarOpen ? "200px" : "100px" }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
 		>
-			{/* <div id="app-nav" className={`${sidebarClass} position-relative`}> */}
 			<div onClick={toggleSidebar} className="toggle-sidebar-icon position-relative">
 				<FontAwesomeIcon
 					icon={isSidebarOpen ? faArrowLeft : faArrowRight}
@@ -96,10 +95,10 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 				placement="right"
 				overlay={<Tooltip id="tooltip">Preferiti</Tooltip>}
 			>
-				<Button onClick={toggleFavorites} className="nav-item flex-center nav-link">
+				<div onClick={toggleFavorites} className="nav-item flex-center nav-link">
 					<FontAwesomeIcon icon={favoritesIcon} className="nav-icon" />
-					<span className="nav-text ms-2">{showFavoritesLoaded ? "Preferiti" : "Carica Preferiti"}</span>
-				</Button>
+					<span className="nav-text ms-2"> Watchlist</span>
+				</div>
 			</OverlayTrigger>
 
 			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Trade</Tooltip>}>

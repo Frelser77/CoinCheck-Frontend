@@ -1,0 +1,38 @@
+@keyframes shimmer {
+	0% {
+		background-color: #ffffff; /* Bianco */
+	}
+	25% {
+		background-color: #d2d2d2; /* Grigio chiaro */
+	}
+	50% {
+		background-color: #cccccc; /* Bianco */
+	}
+	75% {
+		background-color: #d2d2d2; /* Grigio chiaro */
+	}
+	100% {
+		background-color: #efefef; /* Bianco */
+	}
+}
+
+.shimmer {
+	animation: shimmer 2s infinite ease-in-out;
+	background: lightgray;
+	border-radius: 4px;
+}
+
+.shimmer-avatar {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+}
+
+.shimmer-text {
+	height: 10px;
+	margin-bottom: 8px;
+}
+
+.shimmer-image {
+	height: 200px;
+}

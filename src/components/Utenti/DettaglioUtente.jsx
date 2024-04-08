@@ -27,7 +27,7 @@ import FavoriteButton from "../Layout/FavoritesButtons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { BsStar, BsStarFill } from "react-icons/bs";
-import { toggleUserPreference } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
+import { loadUserPreferences, toggleUserPreference } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
 import CustomImage from "./CustomImage";
 
 export const handleFileUpload = async (file, dispatch, id, setUtente) => {
@@ -59,6 +59,8 @@ const DettaglioUtente = () => {
 	const location = useLocation();
 	const user = useSelector((state) => state.login.user);
 	const isOwner = user?.userId === parseInt(id, 10);
+	const [activeUserId, setActiveUserId] = React.useState(null);
+	const [showPreferences, setShowPreferences] = useState(false);
 
 	const handleDelete = async (userId) => {
 		dispatch(deleteUser(userId));
@@ -74,7 +76,7 @@ const DettaglioUtente = () => {
 
 	const handleImageChange = (event) => {
 		const file = event.target.files[0];
-		handleFileUpload(file, dispatch, id, setUtente); // Passa direttamente il file a handleFileUpload
+		handleFileUpload(file, dispatch, id, setUtente);
 	};
 
 	const fetchUserDetails = async () => {
@@ -111,6 +113,19 @@ const DettaglioUtente = () => {
 		navigate(`/coin/${coinId}`);
 	};
 
+	const handleLoadPreferenze = async () => {
+		setActiveUserId(id); // Usa direttamente l'ID ottenuto da useParams
+		const resultAction = await dispatch(loadUserPreferences(id));
+		if (loadUserPreferences.fulfilled.match(resultAction)) {
+			setShowPreferences(true);
+			const { data } = resultAction.payload;
+			if (data.length === 0) {
+				setShowPreferences(true);
+				dispatch(setUserPreferences([]));
+			}
+		}
+	};
+
 	// Funzione da richiamare quando l'utente clicca per aggiungere/rimuovere dalle preferenze
 	const handleToggleFavorite = async (criptoName) => {
 		try {
@@ -139,17 +154,6 @@ const DettaglioUtente = () => {
 					<Row>
 						<Col>
 							<CardBody className="d-flex flex-column align-items-start justify-content-between gap-2 sticky-top">
-								{/* <CardTitle>Dettagli Utente</CardTitle> */}
-								{/* <CardImg
-										src={
-											utente && utente.imageUrl
-												? `${Url}${utente.imageUrl.replace(/\\/g, "/")}`
-												: `${Url} uploads/profile/placeholder-profile.png`
-										}
-										alt={utente ? utente.username : "Default Image"}
-										onClick={triggerFileInput}
-										className="img-circle point img-xl"
-									/> */}
 								<OverlayTrigger
 									key="bottom"
 									placement="bottom"
@@ -173,12 +177,12 @@ const DettaglioUtente = () => {
 								<CardText className="card-text">
 									Stato account: {utente && utente.isActive ? "Attivo" : "Non attivo"}
 								</CardText>
-								<CardText className="card-text">
+								{/* <CardText className="card-text">
 									Preferenze:{" "}
-									{utente && utente.preferenzeUtentes.length > 0
+									{userPreferences && userPreferences.length > 0
 										? utente.preferenzeUtentes.length
 										: "Nessuna preferenza"}
-								</CardText>
+								</CardText> */}
 								<CardText className="card-text">
 									Post: {utente && utente.posts.length > 0 ? utente.posts.length : "Nessun post"}
 								</CardText>
@@ -221,43 +225,55 @@ const DettaglioUtente = () => {
 								{/* <Button type="submit"></Button> */}
 							</Form>
 							<h4 className="m-1">Preferiti</h4>
-							{userPreferences.map((preferenza, index) => (
-								<Card className="mt-4 other-card" key={index}>
-									<Card.Body>
-										<Row>
-											<h3>{preferenza.nomeCoin}</h3>
-											<Col xs={9} md={8} className="d-flex align-items-center justify-content-between gap-3">
-												<Card.Text>Prezzo: {preferenza.PrezzoUsd} USD</Card.Text>
-												<Card.Text>Variazione 24h: {preferenza.variazione24h}%</Card.Text>
-												<Card.Text>Volume 24h: {preferenza.volume24h}</Card.Text>
-											</Col>
-											<Col xs={3} md={4} className="d-flex justify-content-end align-items-baseline gap-2">
-												<OverlayTrigger
-													key="top"
-													placement="top"
-													overlay={<Tooltip id={`tooltip-top`}>Dettagli coin</Tooltip>}
-												>
-													<div className="btn btn-transparent" onClick={() => handleDetailsClick(preferenza.nomeCoin)}>
-														<FontAwesomeIcon className="" icon={faChartLine} />
-													</div>
-												</OverlayTrigger>
-												<OverlayTrigger
-													key={tooltipPlacement}
-													placement={tooltipPlacement}
-													overlay={<Tooltip id={`tooltip-${tooltipPlacement}`}>Watchlist</Tooltip>}
-												>
-													<div
-														className={`${isFavorited ? "btn-starred" : ""} point`}
-														onClick={() => handleToggleFavorite(preferenza.nomeCoin)}
-													>
-														{isFavorited ? <BsStarFill /> : <BsStar />}
-													</div>
-												</OverlayTrigger>
-											</Col>
-										</Row>
-									</Card.Body>
-								</Card>
-							))}
+							<Button size="sm" onClick={handleLoadPreferenze}>
+								Carica Preferenze
+							</Button>
+							{showPreferences && userPreferences && userPreferences.length > 0 ? (
+								<>
+									{userPreferences.map((preferenza, index) => (
+										<Card className="mt-4 other-card" key={index}>
+											<Card.Body>
+												<Row>
+													<h3>{preferenza.nomeCoin}</h3>
+													<Col xs={9} md={8} className="d-flex align-items-center justify-content-between gap-3">
+														<Card.Text>Prezzo: {preferenza.PrezzoUsd} USD</Card.Text>
+														<Card.Text>Variazione 24h: {preferenza.variazione24h}%</Card.Text>
+														<Card.Text>Volume 24h: {preferenza.volume24h}</Card.Text>
+													</Col>
+													<Col xs={3} md={4} className="d-flex justify-content-end align-items-baseline gap-2">
+														<OverlayTrigger
+															key="top"
+															placement="top"
+															overlay={<Tooltip id={`tooltip-top`}>Dettagli coin</Tooltip>}
+														>
+															<div
+																className="btn btn-transparent"
+																onClick={() => handleDetailsClick(preferenza.nomeCoin)}
+															>
+																<FontAwesomeIcon className="" icon={faChartLine} />
+															</div>
+														</OverlayTrigger>
+														<OverlayTrigger
+															key={tooltipPlacement}
+															placement={tooltipPlacement}
+															overlay={<Tooltip id={`tooltip-${tooltipPlacement}`}>Watchlist</Tooltip>}
+														>
+															<div
+																className={`${isFavorited ? "btn-starred" : ""} point`}
+																onClick={() => handleToggleFavorite(preferenza.nomeCoin)}
+															>
+																{isFavorited ? <BsStarFill /> : <BsStar />}
+															</div>
+														</OverlayTrigger>
+													</Col>
+												</Row>
+											</Card.Body>
+										</Card>
+									))}
+								</>
+							) : showPreferences ? (
+								<p>L'utente non ha coin preferite</p>
+							) : null}
 						</Col>
 					</Row>
 				</Card>

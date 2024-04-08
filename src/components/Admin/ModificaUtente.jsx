@@ -25,8 +25,9 @@ const ModificaUtente = ({ userId }) => {
 	const imageInputRef = useRef(null);
 	const isCurrentUser = Number(effectiveUserId) === userLoggedId;
 	const [confirmPassword, setConfirmPassword] = useState("");
-	const location = useLocation();
-	const isEditPath = location.pathname.match(/\/utenti\/\d+\/edit/);
+	const { pathname } = useLocation();
+	const isUtentiListPath = pathname === "/utentiList/";
+	const imageClass = isUtentiListPath ? "img-md" : "img-xl";
 	useEffect(() => {
 		const fetchDetails = async () => {
 			if (token && effectiveUserId) {
@@ -120,17 +121,10 @@ const ModificaUtente = ({ userId }) => {
 								<Form onSubmit={handleImageUpload}>
 									<div className="">
 										{image && (
-											// <Card.Img
-											// 	variant="top"
-											// 	className="img-circle point img-md p-2"
-											// 	src={image}
-											// 	alt={username}
-											// 	onClick={triggerFileInput}
-											// />
 											<CustomImage
 												src={image}
 												alt={username}
-												className={`img-circle point ${isEditPath ? "img-xl" : "img-xs"}`}
+												className={`img-circle point ${imageClass}`}
 												onClick={triggerFileInput}
 												// Url={Url}
 											/>

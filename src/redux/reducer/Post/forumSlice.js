@@ -3,24 +3,29 @@ import { Url } from "../../../Config/config";
 import fetchWithAuth from "../back/interceptor";
 
 // AsyncThunk per recuperare tutti i post
-export const fetchAllPosts = createAsyncThunk("posts/fetchAll", async (_, { getState, rejectWithValue }) => {
-	try {
-		const state = getState();
-		const token = state.login.token;
-		const response = await fetchWithAuth(`${Url}posts/all`, {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		if (!response.ok) throw new Error("Failed to fetch posts.");
-		return await response.json();
-	} catch (error) {
-		return rejectWithValue(error.toString());
-	}
-});
+export const fetchAllPosts = createAsyncThunk(
+	"posts/fetchAll",
+	async ({ pageIndex, pageSize }, { getState, rejectWithValue }) => {
+		try {
+			const token = getState().login.token;
+			const url = new URL(`${Url}posts/all`);
+			url.search = new URLSearchParams({ pageIndex, pageSize });
 
-// Nella tua logica di slice Redux
+			const response = await fetchWithAuth(url, {
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			if (!response.ok) throw new Error("Failed to fetch posts.");
+			return await response.json();
+		} catch (error) {
+			return rejectWithValue(error.toString());
+		}
+	}
+);
+
 export const createPost = createAsyncThunk("posts/createPost", async (formData, { getState, rejectWithValue }) => {
 	try {
 		const token = getState().login.token;
@@ -207,10 +212,13 @@ export const softDeleteComment = createAsyncThunk(
 const initialState = {
 	posts: [],
 	isLoading: false,
+	isLikingPost: false,
+	isLikingComment: false,
 	isError: false,
 	errorMessage: "",
+	pageIndex: 0,
+	hasMore: true,
 };
-
 // Crea lo slice
 const postsSlice = createSlice({
 	name: "posts",
@@ -283,50 +291,57 @@ const postsSlice = createSlice({
 				state.isError = true;
 				state.errorMessage = action.payload;
 			})
+			.addCase(toggleLikePost.pending, (state) => {
+				state.isLikingPost = true; // Solo isLikingPost diventa true
+			})
 			.addCase(toggleLikePost.fulfilled, (state, action) => {
 				const postIndex = state.posts.findIndex((post) => post.postId === action.meta.arg.postId);
 				if (postIndex !== -1) {
 					const isLikeAdded = action.payload.message === "Like added";
-					state.posts[postIndex] = {
-						...state.posts[postIndex],
-						likeCount: isLikeAdded ? state.posts[postIndex].likeCount + 1 : state.posts[postIndex].likeCount - 1,
-					};
+					state.posts[postIndex].likeCount += isLikeAdded ? 1 : -1;
 				}
-				state.isLoading = false;
-				state.isError = false;
-				state.errorMessage = "";
-			})
-			.addCase(toggleLikePost.pending, (state) => {
-				state.isLoading = true;
-				state.isError = false;
-				state.errorMessage = "";
+				state.isLikingPost = false; // Rimetti isLikingPost a false dopo il like
 			})
 			.addCase(toggleLikePost.rejected, (state, action) => {
-				state.isLoading = false;
+				state.isLikingPost = false; // Rimetti isLikingPost a false se la richiesta fallisce
 				state.isError = true;
 				state.errorMessage = action.payload;
 			})
+			.addCase(toggleLikeComment.pending, (state) => {
+				state.isLikingComment = true;
+			})
 			.addCase(toggleLikeComment.fulfilled, (state, action) => {
-				const { commentId, likesCount, likesDetails } = action.payload;
-				// Trova il post che contiene il commento aggiornato
-				const postIndex = state.posts.findIndex((post) =>
-					post.comments.some((comment) => comment.commentId === commentId)
-				);
-				if (postIndex !== -1) {
-					// Trova e aggiorna il commento specifico con i nuovi dati di like
-					const commentsUpdated = state.posts[postIndex].comments.map((comment) => {
-						if (comment.commentId === commentId) {
-							return { ...comment, likeCount: likesCount, likes: likesDetails };
-						}
-						return comment;
-					});
-					// Crea una nuova copia dell'array dei post con i commenti aggiornati
-					state.posts[postIndex] = { ...state.posts[postIndex], comments: commentsUpdated };
+				const { commentId, likesCount } = action.payload;
+				let updated = false;
+
+				// Trova e aggiorna il commento specifico con i nuovi dati di like
+				state.posts.forEach((post) => {
+					const commentIndex = post.comments.findIndex((comment) => comment.commentId === commentId);
+					if (commentIndex !== -1) {
+						post.comments[commentIndex].likeCount = likesCount;
+						// Gestisci anche l'aggiornamento dei dettagli di chi ha messo like, se necessario
+						post.comments[commentIndex].likes = action.payload.likesDetails;
+						updated = true;
+					}
+				});
+
+				if (updated) {
+					state.isLikingComment = false;
 				}
 			})
+			.addCase(toggleLikeComment.rejected, (state, action) => {
+				state.isLikingComment = false;
+				state.isError = true;
+				state.errorMessage = action.payload;
+			})
 			.addCase(fetchAllPosts.fulfilled, (state, action) => {
-				// Sostituisci i post esistenti con quelli appena recuperati
-				state.posts = action.payload;
+				const { posts, total } = action.payload; // Nota la minuscola "p" e "t"
+				if (posts.length === 0) {
+					state.hasMore = false;
+				} else {
+					state.pageIndex += 1;
+					state.posts = [...state.posts, ...posts]; // Concatena i nuovi post a quelli esistenti
+				}
 				state.isLoading = false;
 				state.isError = false;
 			})

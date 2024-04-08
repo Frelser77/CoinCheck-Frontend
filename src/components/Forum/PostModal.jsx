@@ -43,8 +43,8 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// Invoca onSubmit passando il nuovo post e il file
 		onSubmit(newPost, file);
+		dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
 	};
 
 	return (

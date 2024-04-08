@@ -112,16 +112,6 @@ export const updateUser = createAsyncThunk(
 	}
 );
 
-// Delete a user (DELETE)
-// export const deleteUser = createAsyncThunk("utenti/deleteUser", async (id, { getState, rejectWithValue }) => {
-// 	try {
-// 		const token = getState().auth.token;
-// 		return await performFetch(`/api/Utenti/${id}`, "DELETE", null, token);
-// 	} catch (error) {
-// 		return rejectWithValue(error.message);
-// 	}
-// });
-
 // Soft delete a user (PATCH)
 export const deleteUser = createAsyncThunk("utenti/softDeleteUser", async (id, { getState, rejectWithValue }) => {
 	try {

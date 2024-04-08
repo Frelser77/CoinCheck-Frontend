@@ -8,7 +8,7 @@ import {
 	fetchHistoricTrades,
 	fetchProductCandles,
 } from "../../redux/reducer/CoinbaseApi/CoinbaseApi";
-import { Row, Col, Card, CardBody, Button, Modal, OverlayTrigger, Tooltip, Badge, CardText } from "react-bootstrap";
+import { Row, Col, Card, CardBody, Container, OverlayTrigger, Tooltip, Badge, CardText } from "react-bootstrap";
 import { toast } from "react-toastify";
 import TradingViewChart from "../Layout/ChartComponent";
 import { formatNumber, formatVolume, calculatePriceChangePercentage } from "../../components/Tips/utility";
@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import Loader from "../Layout/Loader";
 
-const CoinDetail = () => {
+const CoinDetail = ({ isSidebarOpen }) => {
 	const { coinId } = useParams();
 	const dispatch = useDispatch();
 	const userId = useSelector((state) => state.login.user?.userId);
@@ -174,168 +174,109 @@ const CoinDetail = () => {
 	const saveDetails = () => handleSaveToDb(combinedCoinDetails);
 
 	return (
-		<div className="container zone-5">
-			<Loader isLoading={isLoading || loading} />
-			{combinedCoinDetails && (
-				<Card className="border-0">
-					<CardBody>
-						<Card.Title className="d-flex align-items-center justify-content-between">
-							<div className="d-flex align-items-center gap-3">
-								<h1> {combinedCoinDetails.base_currency} </h1>
-								<span className={`ms-2 ${priceChangeColor}`}>{priceChangePercentage}%</span>
-							</div>
-							<div className="d-flex justify-content-between align-items-center gap-3">
-								<h2 className="d-flex align-items-center m-0">{formatNumber(combinedCoinDetails.price)}</h2>
-								<Badge className="bg-list p-1"> {coinDetails.quote_currency}</Badge>
-								{coinDetails && (
-									<FavoriteButton coinDetails={combinedCoinDetails} userId={userId} onSave={saveDetails} />
-								)}
-								<div>
-									{(role === "Admin" || role === "Moderatore") && (
-										<OverlayTrigger
-											key="bottom"
-											placement="bottom"
-											overlay={<Tooltip id={`tooltip-bottom`}>Salva/Aggiorna coin nel DB</Tooltip>}
-										>
-											<div className="btn btn-sm btn-success text-white" onClick={saveDetails}>
-												<FontAwesomeIcon icon={faUpload} />
-											</div>
-										</OverlayTrigger>
-									)}
-								</div>
-								{/* Assicurati che combinedCoinDetails sia quello che vuoi salvare */}
-							</div>
-						</Card.Title>
+		<Container>
+			<Row>
+				<Col>
+					<Loader isLoading={isLoading || loading} />
+					{combinedCoinDetails && (
+						<Card className="border-0">
+							<CardBody>
+								<Card.Title className="d-flex align-items-center justify-content-between">
+									<div className="d-flex align-items-center gap-3">
+										<h1> {combinedCoinDetails.base_currency} </h1>
+										<span className={`ms-2 ${priceChangeColor}`}>{priceChangePercentage}%</span>
+									</div>
+									<div className="d-flex justify-content-between align-items-center gap-3">
+										<h2 className="d-flex align-items-center m-0">{formatNumber(combinedCoinDetails.price)}</h2>
+										<Badge className="bg-list p-1"> {coinDetails.quote_currency}</Badge>
+										{coinDetails && (
+											<FavoriteButton coinDetails={combinedCoinDetails} userId={userId} onSave={saveDetails} />
+										)}
+										<div>
+											{(role === "Admin" || role === "Moderatore") && (
+												<OverlayTrigger
+													key="bottom"
+													placement="bottom"
+													overlay={<Tooltip id={`tooltip-bottom`}>Salva/Aggiorna coin nel DB</Tooltip>}
+												>
+													<div className="btn btn-sm btn-success text-white" onClick={saveDetails}>
+														<FontAwesomeIcon icon={faUpload} />
+													</div>
+												</OverlayTrigger>
+											)}
+										</div>
+										{/* Assicurati che combinedCoinDetails sia quello che vuoi salvare */}
+									</div>
+								</Card.Title>
 
-						{/* TradingViewChart */}
-						<TradingViewChart
-							data={formattedData}
-							onTimeRangeChange={setSelectedTimeRange}
-							selectedTimeRange={selectedTimeRange}
-							width={790}
-							height={300}
-						/>
-						<h3 className="my-2">Dettagli aggiuntivi</h3>
-						<div className="d-flex align-items-center justify-content-between mb-2">
-							<Card.Text className="m-1 fw-semibold small-text">
-								Max 24h: {formatNumber(combinedCoinDetails.high)} {coinDetails.quote_currency}
-							</Card.Text>
-							<Card.Text className="m-1 fw-semibold small-text">
-								Min 24h: {formatNumber(combinedCoinDetails.low)} {coinDetails.quote_currency}
-							</Card.Text>
-							<Card.Text className="m-1 fw-semibold small-text">
-								V 24h: {formatVolume(combinedCoinDetails.volume)} {coinDetails.quote_currency}
-							</Card.Text>
-							<Card.Text className="m-1 fw-semibold small-text">
-								V 30g: {formatVolume(combinedCoinDetails.volume_30day)} {coinDetails.quote_currency}
-							</Card.Text>
-						</div>
-					</CardBody>
-				</Card>
-			)}
-			<h2 className="text-center mb-5 mt-1 text-white">
-				{filteredNews.length === 0 ? "Non ci sono notizie inerenti alla coin" : `Notizie su ${coinId}`}
-			</h2>
-			<Row className="mb-2">
-				{[...filteredNews].reverse().map((article, index) => (
-					<Col xs={12} md={6} lg={4} key={index} className="g-2">
-						<Card className="mb-3 border-0 h-100">
-							<Card.Body className="d-flex flex-column align-items-start justify-content-between">
-								<div className="d-flex align-items-center justify-content-start gap-2">
-									<img
-										src={article.source_info.img}
-										alt={article.source_info.name}
-										style={{ width: "45px", height: "45px" }}
-									/>
-									<h6>{article.source_info.name}</h6>
+								{/* TradingViewChart */}
+								<TradingViewChart
+									data={formattedData}
+									onTimeRangeChange={setSelectedTimeRange}
+									selectedTimeRange={selectedTimeRange}
+									height={300}
+									isSidebarOpen={isSidebarOpen}
+								/>
+								<h3 className="my-2">Dettagli aggiuntivi</h3>
+								<div className="d-flex align-items-center justify-content-between mb-2">
+									<Card.Text className="m-1 fw-semibold small-text">
+										Max 24h: {formatNumber(combinedCoinDetails.high)} {coinDetails.quote_currency}
+									</Card.Text>
+									<Card.Text className="m-1 fw-semibold small-text">
+										Min 24h: {formatNumber(combinedCoinDetails.low)} {coinDetails.quote_currency}
+									</Card.Text>
+									<Card.Text className="m-1 fw-semibold small-text">
+										V 24h: {formatVolume(combinedCoinDetails.volume)} {coinDetails.quote_currency}
+									</Card.Text>
+									<Card.Text className="m-1 fw-semibold small-text">
+										V 30g: {formatVolume(combinedCoinDetails.volume_30day)} {coinDetails.quote_currency}
+									</Card.Text>
 								</div>
-								<Card.Img variant="top" src={article.imageurl} alt={article.title} />
-								<Card.Title>{article.title}</Card.Title>
-								<Card.Text className="truncate-multiline">{article.body}</Card.Text>
-								<OverlayTrigger
-									key="right"
-									placement="right"
-									overlay={<Tooltip id={`tooltip-bottom`}>Visualizza articolo</Tooltip>}
-								>
-									<a href={article.guid} target="_blank" rel="noopener noreferrer" className="a-news">
-										{article.source}
-									</a>
-								</OverlayTrigger>
-								<div className="text-light small-text">
-									{article.tags.split("|").map((tag, tagIndex) => (
-										<span key={tagIndex}>#{tag.trim()} </span>
-									))}
-								</div>
-							</Card.Body>
+							</CardBody>
 						</Card>
-					</Col>
-				))}
+					)}
+					<h2 className="flex-center mt-5">
+						{filteredNews.length === 0 ? "Non ci sono notizie inerenti alla coin" : `Notizie su ${coinId}`}
+					</h2>
+					<Row className="mb-2">
+						{[...filteredNews].reverse().map((article, index) => (
+							<Col xs={12} md={6} lg={4} key={index} className="g-2">
+								<Card className="mb-3 border-0 h-100">
+									<Card.Body className="d-flex flex-column align-items-start justify-content-between">
+										<div className="d-flex align-items-center justify-content-start gap-2">
+											<img
+												src={article.source_info.img}
+												alt={article.source_info.name}
+												style={{ width: "45px", height: "45px" }}
+											/>
+											<h6>{article.source_info.name}</h6>
+										</div>
+										<Card.Img variant="top" src={article.imageurl} alt={article.title} />
+										<Card.Title>{article.title}</Card.Title>
+										<Card.Text className="truncate-multiline">{article.body}</Card.Text>
+										<OverlayTrigger
+											key="right"
+											placement="right"
+											overlay={<Tooltip id={`tooltip-bottom`}>Visualizza articolo</Tooltip>}
+										>
+											<a href={article.guid} target="_blank" rel="noopener noreferrer" className="a-news">
+												{article.source}
+											</a>
+										</OverlayTrigger>
+										<div className="text-light small-text">
+											{article.tags.split("|").map((tag, tagIndex) => (
+												<span key={tagIndex}>#{tag.trim()} </span>
+											))}
+										</div>
+									</Card.Body>
+								</Card>
+							</Col>
+						))}
+					</Row>
+				</Col>
 			</Row>
-		</div>
+		</Container>
 	);
 };
 
 export default CoinDetail;
-// const calculateVolumeDifference = (historicTrades) => {
-// 	let totalBuyVolume = 0;
-// 	let totalSellVolume = 0;
-
-// 	historicTrades.forEach((trade) => {
-// 		const size = parseFloat(trade.size);
-// 		if (trade.side === "buy") {
-// 			totalBuyVolume += size;
-// 		} else if (trade.side === "sell") {
-// 			totalSellVolume += size;
-// 		}
-// 	});
-
-// 	return totalBuyVolume - totalSellVolume;
-// };
-
-// // Esegui i calcoli nel posto giusto con le giuste dipendenze
-// useEffect(() => {
-// 	if (historicTrades[coinId] && historicTrades[coinId].length) {
-// 		const volumeDifference = calculateVolumeDifference(historicTrades[coinId]);
-// 		const result = `La differenza di volume è: ${volumeDifference.toFixed(2)} ed è ${
-// 			volumeDifference < 0 ? "negativa" : "positiva"
-// 		}`;
-// 		console.log(result);
-// 		// Se vuoi aggiungere il colore al testo per la visualizzazione in console
-// 		console.log(`%c${result}`, `color: ${volumeDifference < 0 ? "red" : "green"}`);
-// 	}
-// }, [historicTrades, coinId]);
-
-// const handleSaveToDb = () => {
-// 	// Estrapola i dati necessari dallo stato Redux o da variabili locali
-// 	// const stats = coinStats[coinId] || {};
-// 	// const ticker = tickers[coinId] || {};
-
-// 	// Crea il DTO utilizzando i dati raccolti
-// 	const criptovalutaDto = {
-// 		Nome: coinId, // Ad esempio, 'BTC-USD'
-// 		Simbolo: combinedCoinDetails.base_currency, // Ad esempio, 'BTC'
-// 		PrezzoUsd: combinedCoinDetails.last ? parseFloat(combinedCoinDetails.last) : null,
-// 		Variazione24h: calculateVariazione24h(parseFloat(combinedCoinDetails.open), parseFloat(combinedCoinDetails.last)),
-// 		Volume24h: combinedCoinDetails.volume ? parseFloat(combinedCoinDetails.volume) : null,
-// 	};
-// 	console.log("dto", criptovalutaDto);
-// 	// Chiama la funzione saveToDatabase passando il DTO
-// 	saveToDatabase(criptovalutaDto)
-// 		.then(() => {
-// 			// Gestisci qui la risposta del salvataggio, ad esempio mostrando un messaggio di successo o errore
-// 			console.log(`Dati della criptovaluta con id ${coinId} salvati con successo nel database.`);
-// 		})
-// 		.catch((error) => {
-// 			// Gestisci qui eventuali errori nell'invio dei dati
-// 			console.error(`Errore nel salvataggio della criptovaluta con id ${coinId}:`, error);
-// 		});
-
-// useEffect(() => {
-// 	if (coinId) {
-// 		// Supponiamo che il tuo endpoint non supporti la ricerca per coinId,
-// 		// quindi semplicemente richiediamo le ultime notizie senza filtrare per coinId.
-// 		// Se il tuo endpoint supporta filtri, modifica la chiamata di seguito.
-// 		dispatch(fetchCryptoNews());
-// 	}
-// }, [coinId, dispatch]);
-// };

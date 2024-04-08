@@ -88,6 +88,7 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 							{(role === "Admin" || role === "Moderatore") && (
 								<OverlayTrigger
 									key={`top + ${coin.id}`}
+									trigger={["hover", "focus"]}
 									placement="top"
 									overlay={<Tooltip id={`tooltip-top`}>Salva/Aggiorna coin nel DB</Tooltip>}
 								>
@@ -96,7 +97,12 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 									</div>
 								</OverlayTrigger>
 							)}
-							<OverlayTrigger key="top" placement="top" overlay={<Tooltip id={`tooltip-top`}>Dettagli coin</Tooltip>}>
+							<OverlayTrigger
+								key="top"
+								trigger={["hover", "focus"]}
+								placement="top"
+								overlay={<Tooltip id={`tooltip-top`}>Dettagli coin</Tooltip>}
+							>
 								<div className="btn btn-transparent my-auto" onClick={handleDetailsClick}>
 									<FontAwesomeIcon className="" icon={faChartLine} />
 								</div>

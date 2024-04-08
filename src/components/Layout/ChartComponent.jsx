@@ -1,13 +1,50 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createChart, CrosshairMode, PriceScaleMode } from "lightweight-charts";
 
-const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, width, height }) => {
+const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, isSidebarOpen }) => {
 	const chartContainerRef = useRef();
+	const chartRef = useRef(null); // Riferimento al grafico per accesso futuro
+	const [chartWidth, setChartWidth] = useState(null);
+
+	const updateChartWidth = () => {
+		if (chartContainerRef.current) {
+			setChartWidth(chartContainerRef.current.clientWidth);
+		}
+	};
 
 	useEffect(() => {
-		if (chartContainerRef.current && data.length > 0) {
+		const chartContainer = chartContainerRef.current;
+		let observer;
+
+		if (chartContainer) {
+			// Crea un ResizeObserver per ascoltare i cambiamenti di dimensione del contenitore
+			observer = new ResizeObserver((entries) => {
+				for (let entry of entries) {
+					const { width } = entry.contentRect;
+					setChartWidth(width);
+				}
+			});
+
+			observer.observe(chartContainer);
+		}
+
+		return () => {
+			if (observer) {
+				observer.disconnect();
+			}
+		};
+	}, []); // Questo useEffect dipende solo dal montaggio e smontaggio del componente
+
+	useEffect(() => {
+		if (chartContainerRef.current && data.length > 0 && chartWidth) {
+			// Se esiste già un grafico, rimuoverlo prima di crearne uno nuovo
+			if (chartRef.current) {
+				chartRef.current.remove();
+				chartRef.current = null;
+			}
+
 			const chart = createChart(chartContainerRef.current, {
-				width,
+				width: chartWidth,
 				height,
 				layout: {
 					backgroundColor: "#ffffff",
@@ -51,17 +88,26 @@ const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, width, h
 			});
 
 			candleSeries.setData(data);
-
 			chart.timeScale().fitContent();
 
-			return () => chart.remove();
+			// Memorizza il riferimento al grafico creato
+			chartRef.current = chart;
 		}
-	}, [data, width, height]);
+	}, [data, chartWidth, height]);
+
+	useEffect(() => {
+		// Aggiorna la larghezza del grafico se già esistente
+		if (chartRef.current) {
+			const chart = chartRef.current;
+			chart.applyOptions({ width: chartWidth });
+			chart.timeScale().fitContent();
+		}
+	}, [chartWidth]);
 
 	return (
 		<>
 			<TimeRangeSelector onChange={(e) => onTimeRangeChange(e.target.value)} selectedTimeRange={selectedTimeRange} />
-			<div ref={chartContainerRef} style={{ width, height }} />
+			<div ref={chartContainerRef} style={{ width: "100%", height }} />
 		</>
 	);
 };
