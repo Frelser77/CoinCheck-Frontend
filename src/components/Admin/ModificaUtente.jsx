@@ -110,7 +110,7 @@ const ModificaUtente = ({ userId }) => {
 	};
 
 	return (
-		<Col>
+		<Col className="d-none d-sm-block">
 			<h1 className="text-start text">Modifica Utente: {utente.username}</h1>
 			<div className=" mt-4">
 				<Card className="position-relative">
@@ -167,6 +167,7 @@ const ModificaUtente = ({ userId }) => {
 											value={email}
 											onChange={handleEmailChange}
 											placeholder="email"
+											readOnly
 										/>
 									</Form.Group>
 

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-// import { addToCart } from "../../redux/reducer/cartReducer";
 import { removeFromCart } from "../../redux/reducer/cartReducer";
 
 function Cart() {
@@ -21,12 +20,9 @@ function Cart() {
 					cartItems.map((item, index) => (
 						<Col className="col-12 " key={`${index}-prodotto`}>
 							<Card className="bg-light bg-opacity-75">
+								<Card.Img variant="top" src={item.imageUrl.replace(/uploads\\products\\/g, "").replace(/\\/g, "/")} />
 								<Card.Body>
 									<Card.Title>{item.TipoProdotto}</Card.Title>
-									{/* <div className="d-flex align-items-baseline">
-										<Card.Subtitle>Uso:</Card.Subtitle>
-										<Card.Text className="ms-2">{item.descrizioneProdotto}</Card.Text>
-									</div> */}
 									<div className="d-flex align-items-baseline">
 										<Card.Subtitle>Prezzo:</Card.Subtitle>
 										<Card.Text className="ms-2">{item.Prezzo}</Card.Text>

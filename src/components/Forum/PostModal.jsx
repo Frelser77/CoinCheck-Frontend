@@ -58,16 +58,15 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 					<Form.Group className="mb-3">
 						<Form.Control type="file" onChange={handleFileChange} />
 					</Form.Group>
-					<Form.Group className="mb-3">
+					{/* <Form.Group className="mb-3">
 						<Form.Control
 							name="title"
 							type="text"
 							value={newPost.title}
 							onChange={handleInputChange}
 							placeholder="Title"
-							required
 						/>
-					</Form.Group>
+					</Form.Group> */}
 					<Form.Group className="mb-3">
 						<Form.Control
 							as="textarea"

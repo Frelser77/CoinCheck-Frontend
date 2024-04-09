@@ -24,16 +24,24 @@ import useUserRole from "./hooks/useUserRole";
 // import "../src/App.scss";
 import "../assets/dist/css/App.min.css";
 import MyNavbar from "./components/Layout/MyNavBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ForumHome from "./components/Forum/ForumHome";
 import PageNotFound from "./components/Layout/PageNotFound";
+import MobileNavbar from "./components/Layout/MobileNavbar";
 
 function App() {
 	const { role, isLoading } = useUserRole();
 	// console.log(role);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [showFavorites, setShowFavorites] = useState(false);
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+	useEffect(() => {
+		const handleResize = () => setIsMobile(window.innerWidth < 768);
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -42,14 +50,19 @@ function App() {
 	}
 	const mainContentWidth = isSidebarOpen ? "calc(100% - 820px)" : "calc(100% - 720px)";
 
+	const adminRoutes = ["Admin"];
+	const adminAndModeratorRoutes = ["Admin", "Moderatore"];
+	const allRoutes = ["Admin", "Moderatore", "Utente", "UtenteBasic", "UtenteMedium", "UtentePro"];
+
 	return (
 		<BrowserRouter>
 			<ToasterComponent />
 			<MyNavbar />
+			{isMobile && <MobileNavbar />}
 			<RedirectToLoginIfLoggedOut />
 			<Container fluid className="">
 				<Row className="d-flex align-itmes-center justify-content-between min-vh-100">
-					{role && (
+					{!isMobile && role && (
 						<SideBarLeft
 							toggleSidebar={toggleSidebar}
 							isSidebarOpen={isSidebarOpen}
@@ -64,28 +77,34 @@ function App() {
 						transition={{ type: "spring", stiffness: 260, damping: 20 }}
 					>
 						<Routes>
-							<Route path="/" element={<Home isSidebarOpen={isSidebarOpen} showFavorites={showFavorites} />} />
+							{allRoutes.includes(role) && (
+								<Route path="/" element={<Home isSidebarOpen={isSidebarOpen} showFavorites={showFavorites} />} />
+							)}
+
 							<Route path="/login" element={<Login />} />
 							<Route path="/Register" element={<Register />} />
 
-							{/* Le seguenti sono rotte protette che richiedono autenticazione admin */}
-							{(role === "Admin" || role === "Moderatore") && <Route path="/utentiList" element={<UtentiList />} />}
-							{(role === "Admin" || role === "Moderatore" || role === "Utente") && (
-								<Route path="/utenti/:id/edit" element={<ModificaUtente />} />
+							{/* Le seguenti sono rotte protette che richiedono autenticazione admin o moderatore*/}
+							{adminAndModeratorRoutes.includes(role) && <Route path="/utentiList" element={<UtentiList />} />}
+							{adminAndModeratorRoutes.includes(role) && (
+								<Route path="/Abbonamenti/:id/edit" element={<EditProduct />} />
 							)}
-							{role === "Admin" && <Route path="/Abbonamenti/:id/edit" element={<EditProduct />} />}
-							{/* {role === "Admin" && <Route path="/cryptoBoard" element={<CryptoDashboard />} />} */}
-							<Route path="/forum" element={<ForumHome />} />
-							<Route path="/coin/:coinId" element={<CoinDetail isSidebarOpen={isSidebarOpen} />} />
-							<Route path="/utenti/:id" element={<DettaglioUtente />} />
-							<Route path="/Abbonamenti" element={<ShoppingCart />} />
-							<Route path="/Checkout" element={<CheckoutForm />} />
-							<Route path="/Carrello" element={<Cart />} />
+							{/* La seguente rotta é protetta e richiede l'autenticazione admin*/}
+							{/* {allRoutes.includes(role) && <Route path="/cryptoBoard" element={<CryptoDashboard />} />} */}
+
+							{/* Le seguenti rotte sono protette e richiedono un utente autorizzato con qualsiasi ruolo tra quelli permessi */}
+							{allRoutes.includes(role) && <Route path="/utenti/:id/edit" element={<ModificaUtente />} />}
+							{allRoutes.includes(role) && <Route path="/forum" element={<ForumHome />} />}
+							{allRoutes.includes(role) && (
+								<Route path="/coin/:coinId" element={<CoinDetail isSidebarOpen={isSidebarOpen} />} />
+							)}
+							{allRoutes.includes(role) && <Route path="/utenti/:id" element={<DettaglioUtente />} />}
+							{allRoutes.includes(role) && <Route path="/Abbonamenti" element={<ShoppingCart />} />}
+							{allRoutes.includes(role) && <Route path="/Checkout" element={<CheckoutForm />} />}
+							{allRoutes.includes(role) && <Route path="/Carrello" element={<Cart />} />}
 							<Route path="*" element={<PageNotFound />} />
 						</Routes>
 					</motion.div>
-					{/* </div> */}
-					{/* </div> */}
 					{role && <CoinsLink />}
 				</Row>
 			</Container>

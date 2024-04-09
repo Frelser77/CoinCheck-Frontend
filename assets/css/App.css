@@ -33423,4 +33423,25 @@ footer {
 
 .shimmer-image {
   height: 200px;
+}
+
+.offcanvas-backdrop.show {
+  opacity: 0.5;
+  background-color: #000;
+}
+
+.offcanvas.show,
+.offcanvas.exiting,
+.offcanvas-exit-done {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.custom-offcanvas-class.show {
+  background-color: transparent;
+  border: none;
+}
+
+.offcanvas-body {
+  padding: 0;
 }/*# sourceMappingURL=App.css.map */

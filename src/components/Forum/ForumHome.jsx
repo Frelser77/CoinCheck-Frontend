@@ -13,11 +13,32 @@ const ForumHome = () => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const [editingPost, setEditingPost] = useState(null);
 	const currentUserId = useSelector((state) => state.login.user?.userId);
-	// const loadMoreRef = useRef(null);
+	const loadMoreRef = useRef(null);
 
 	useEffect(() => {
 		dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
 	}, [dispatch]);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const first = entries[0];
+				if (first.isIntersecting) {
+					// Carica più post quando l'utente scorre fino alla fine della pagina
+					dispatch(fetchAllPosts({ pageIndex: pageIndex, pageSize: 10 }));
+				}
+			},
+			{ threshold: 1 }
+		);
+		if (loadMoreRef.current) {
+			observer.observe(loadMoreRef.current);
+		}
+		return () => {
+			if (loadMoreRef.current) {
+				observer.unobserve(loadMoreRef.current);
+			}
+		};
+	}, [dispatch, posts.length]);
 
 	const openModal = (post = null) => {
 		setEditingPost(post);
@@ -56,10 +77,10 @@ const ForumHome = () => {
 				</Row>
 			) : (
 				<Row className="zone-7">
-					{[...posts].reverse().map((post) => (
+					{posts.map((post) => (
 						<Post key={post.postId} post={post} onEdit={() => openModal(post)} currentUserId={currentUserId} />
 					))}
-					{/* <div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div> */}
+					<div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>
 				</Row>
 			)}
 			<PostModal isOpen={modalIsOpen} onClose={closeModal} onSubmit={handleModalSubmit} editingPost={editingPost} />

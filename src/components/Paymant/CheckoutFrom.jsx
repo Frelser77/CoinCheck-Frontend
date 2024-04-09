@@ -34,7 +34,18 @@ const CheckoutForm = () => {
 
 	useEffect(() => {
 		setIsLoading(true);
-		const IdProdotto = cart.length > 0 ? cart[0].idprodotto : null; // Presumiamo che il carrello non sia vuoto
+		const IdProdotto = cart.length > 0 ? cart[0].idprodotto : null;
+
+		const items = cart.map((item) => ({
+			idprodotto: item.idprodotto,
+			prezzo: item.prezzo,
+			quantita: item.quantita,
+			descrizione: item.descrizione,
+			tipoAbbonamento: item.tipoAbbonamento,
+			ImageUrl: item.imageUrl ? item.imageUrl.replace(/uploads\/products\//g, "").replace(/\\/g, "/") : null,
+		}));
+
+		console.log("Items to send:", items);
 
 		fetchWithAuth(`${localhost}checkout/create-session`, {
 			method: "POST",
@@ -42,19 +53,14 @@ const CheckoutForm = () => {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				UserId: userId.toString(), // Assicurati che questo valore sia corretto
-				IdProdotto: IdProdotto.toString(), // Assicurati che questo valore sia corretto
-				Items: cart.map((item) => ({
-					idprodotto: item.idprodotto,
-					prezzo: item.prezzo,
-					quantita: item.quantita,
-					descrizione: item.descrizione,
-					tipoAbbonamento: item.tipoAbbonamento,
-				})),
+				UserId: userId.toString(),
+				IdProdotto: IdProdotto ? IdProdotto.toString() : null,
+				Items: items,
 			}),
 		})
 			.then((response) => response.json())
 			.then((data) => {
+				console.log("Received data:", data);
 				setSessionId(data.sessionId);
 				toast.info("Sessione di pagamento creata. Premi il pulsante per procedere al pagamento.");
 			})
@@ -76,11 +82,18 @@ const CheckoutForm = () => {
 			<Loader isLoading={isLoading} />
 			<div id="checkout">
 				<div>
-					<h2>Shopping Cart</h2>
+					<h2 className="text-white">Shopping Cart</h2>
 					<ul>
 						{cart.map((item, index) => (
 							<li key={index}>
-								{item.tipoAbbonamento} - € {item.prezzo} - {item.quantita}
+								<img
+									src={`${item.imageUrl.replace(/uploads\\products\\/, "").replace(/\\/g, "/")}`}
+									alt={item.descrizione}
+									style={{ width: "100px", height: "auto" }}
+								/>
+								<span className="text-white">{item.tipoAbbonamento}</span> -{" "}
+								<span className="text-white">€{item.prezzo} </span> -{" "}
+								<span className="text-white">{item.quantita}</span>
 							</li>
 						))}
 					</ul>

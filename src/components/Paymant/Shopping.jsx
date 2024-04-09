@@ -47,7 +47,7 @@ const ShoppingCart = () => {
 					<Card className="h-100 abbonamento position-relative">
 						<Card.Img
 							variant="top"
-							src={product.imageUrl ? `${Url}${product.imageUrl.replace(/\\/g, "/")}` : "/placeholder.png"}
+							src={product.imageUrl.replace("uploads\\products\\", "")}
 							alt={product.tipoAbbonamento}
 							className="img-xl"
 						/>

@@ -89,7 +89,9 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	const topComment = getTopComment(post.comments);
 
 	// Sistemare il percorso dell'immagine
-	const userImagePath = post.userImage ? `${post.userImage.replace(/\\/g, "/")}` : "default-profile-path";
+	const userImagePath = post.userImage
+		? `${post.userImage.replace(/\\/g, "/")}?v=${post.postId}-${new Date(post.postDate).getTime()}`
+		: "";
 
 	const postOwnerStyle = getUserNameStyle(post.userRole);
 
@@ -147,7 +149,8 @@ const Post = ({ post, onEdit, currentUserId }) => {
 							variant="top"
 							src={`${Url}${post.filePath.replace(/\\/g, "/")}`}
 							alt="Post"
-							onClick={() => openImageModal(`${Url}${post.filePath.replace(/\\/g, "/")}`)} // Aggiungi questa funzione al click
+							onClick={() => openImageModal(`${Url}${post.filePath.replace(/\\/g, "/")}`)}
+							className="point"
 						/>
 					)}
 					{/* Modal per l'immagine ingrandita */}
@@ -159,7 +162,6 @@ const Post = ({ post, onEdit, currentUserId }) => {
 						overlayClassName={`${styles.Overlay}`}
 					>
 						<img src={enlargedImage} alt="Ingrandimento" className="img-fluid" />
-						{/* <button onClick={closeImageModal}>Chiudi</button> */}
 					</Modal>
 					<Card.Body className="p-2">
 						<Card.Text className="mt-2">{post.content}</Card.Text>

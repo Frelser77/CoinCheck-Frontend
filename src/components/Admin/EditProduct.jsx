@@ -6,6 +6,27 @@ import { Button, Card, Col, Form } from "react-bootstrap";
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
 
+const getSignedUrl = async (fileName) => {
+	const response = await fetch(`{backendURL}/generate-signed-url?fileName=${fileName}`);
+	if (!response.ok) {
+		throw new Error("Impossibile ottenere l'URL firmato dal server.");
+	}
+	return await response.json();
+};
+
+// Aggiungi il metodo per caricare l'immagine a Google Cloud
+const uploadImageToCloud = async (file) => {
+	const { signedUrl } = await getSignedUrl(file.name);
+	await fetch(signedUrl, {
+		method: "PUT",
+		body: file,
+		headers: {
+			"Content-Type": file.type,
+		},
+	});
+	return `https://storage.googleapis.com/immagine-abbonamenti/${file.name}`;
+};
+
 const EditProduct = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -37,6 +58,20 @@ const EditProduct = () => {
 			...prevData,
 			[name]: value,
 		}));
+	};
+
+	const handleImageChange = async (event) => {
+		const file = event.target.files[0];
+		if (!file) {
+			toast.error("Seleziona un file da caricare.");
+			return;
+		}
+		try {
+			const newImageUrl = await uploadImageToCloud(file);
+			setFormData({ ...formData, imageUrl: newImageUrl });
+		} catch (error) {
+			toast.error("Errore durante il caricamento dell'immagine: " + error.message);
+		}
 	};
 
 	const handleUpdate = () => {
@@ -75,13 +110,22 @@ const EditProduct = () => {
 							className="img-circle"
 						/>
 						<Form>
-							<Form.Group className="mb-3" controlId="formTipoAbbonamento">
+							{/* <Form.Group className="mb-3" controlId="formTipoAbbonamento">
 								<Form.Label>Tipo Abbonamento</Form.Label>
 								<Form.Control
 									type="text"
 									name="tipoAbbonamento"
 									value={formData.tipoAbbonamento}
 									onChange={handleChange}
+								/>
+							</Form.Group> */}
+							<Form.Group className="mb-3" controlId="formImageUrl">
+								<Form.Label>Immagine</Form.Label>
+								<Form.Control
+									type="file"
+									name="tipoAbbonamento"
+									// value={formData.tipoAbbonamento}
+									onChange={handleImageChange}
 								/>
 							</Form.Group>
 							<Form.Group className="mb-3" controlId="formPrezzo">

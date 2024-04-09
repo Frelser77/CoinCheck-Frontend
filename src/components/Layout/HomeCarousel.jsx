@@ -86,7 +86,9 @@ const HomeCarousel = ({ isSidebarOpen }) => {
 									<div className={styles.cardDetails}>
 										<h3>{article.title}</h3>
 										<p className="truncate-multiline">{article.body}</p>
-										<Link to={`/news/${article.id}`}>Leggi di più</Link>
+										<Link to={`${article.guid}`} target="_blanck">
+											Leggi di più
+										</Link>
 									</div>
 								</div>
 							</Card>

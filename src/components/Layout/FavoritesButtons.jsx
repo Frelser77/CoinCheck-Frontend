@@ -43,7 +43,6 @@ const FavoriteButton = ({ coinDetails, userId, onSave }) => {
 		}
 	};
 
-	// Aggiungi anche un log all'interno dell'effetto per tracciare i cambiamenti alle preferenze dell'utente
 	useEffect(() => {
 		const isCurrentlyFavorited = userPreferences.some((p) => p.nomeCoin === coinDetails.id);
 		setIsFavorited(checkIsFavorited());
@@ -58,7 +57,7 @@ const FavoriteButton = ({ coinDetails, userId, onSave }) => {
 				placement={tooltipPlacement}
 				overlay={<Tooltip id={`tooltip-${tooltipPlacement}`}>Watchlist</Tooltip>}
 			>
-				<div className={`${isFavorited ? "btn-starred" : ""} point`} onClick={handleFavoriteClick}>
+				<div className={`${isFavorited ? "btn-starred" : ""} point`} key={coinDetails.id} onClick={handleFavoriteClick}>
 					{isFavorited ? <BsStarFill /> : <BsStar />}
 				</div>
 			</OverlayTrigger>

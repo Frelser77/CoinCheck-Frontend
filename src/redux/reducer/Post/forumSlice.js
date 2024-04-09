@@ -377,7 +377,7 @@ const postsSlice = createSlice({
 			})
 			.addCase(softDeletePost.fulfilled, (state, action) => {
 				state.isLoading = false;
-				state.posts = state.posts.filter((post) => post.postId !== action.payload); // action.payload qui è postId
+				state.posts = state.posts.filter((post) => post.postId !== action.payload);
 			})
 			.addCase(softDeletePost.rejected, (state, action) => {
 				state.isLoading = false;

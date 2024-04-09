@@ -41,9 +41,8 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 	useEffect(() => {
 		function handleResize() {
 			setIsMobile(window.innerWidth < 768);
-			// Su mobile, chiudi la sidebar quando si ridimensiona la finestra
 			if (window.innerWidth < 768) {
-				setIsSidebarOpen(false);
+				isSidebarOpen(false);
 			}
 		}
 
@@ -64,7 +63,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 	return (
 		<motion.div
 			id="app-nav"
-			className={`${sidebarClass}`}
+			className={`${sidebarClass} `}
 			initial={false}
 			animate={{ width: isSidebarOpen ? "200px" : "100px" }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -72,7 +71,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 			<div onClick={toggleSidebar} className="toggle-sidebar-icon position-relative">
 				<FontAwesomeIcon
 					icon={isSidebarOpen ? faArrowLeft : faArrowRight}
-					className="position-absolute top-0 end-0 mt-2 point"
+					className="position-absolute top-0 end-0 mt-2 point "
 				/>
 			</div>
 			<div className="flex-center logo-section">

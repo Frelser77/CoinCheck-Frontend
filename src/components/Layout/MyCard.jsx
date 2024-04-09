@@ -9,6 +9,7 @@ import useUserRole from "../../hooks/useUserRole";
 import { useDispatch, useSelector } from "react-redux";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
 import { fetchProductCandles } from "../../redux/reducer/CoinbaseApi/CoinbaseApi";
+import SkeletonCard from "../Skeletorn/SkeletonCard";
 
 const MyCard = ({ coin, currency, stats, onSave }) => {
 	const { role, isLoading } = useUserRole();
@@ -33,7 +34,6 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 				})
 			).then((action) => {
 				if (action.payload) {
-					// Assumi che i dati delle candele siano nel payload
 					setCandleData(
 						action.payload.candles.map((candle) => ({
 							time: candle[0], // timestamp
@@ -45,19 +45,19 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 		}
 	}, [coin.id, dispatch]);
 
-	// Definizione dell'oggetto coinDetails nel corpo del componente
+	// Definizione dell'oggetto coinDetails
 	const coinDetails = {
-		id: coin.id,
-		base_currency: coin.base_currency,
-		last: stats.last,
-		open: stats.open,
-		volume: coin.volume,
+		id: coin?.id,
+		base_currency: coin?.base_currency,
+		last: stats?.last,
+		open: stats?.open,
+		volume: coin?.volume,
 	};
 
-	const priceChangePercentage = stats
-		? calculatePriceChangePercentage(parseFloat(stats?.open), parseFloat(stats?.last))
-		: null;
-
+	const priceChangePercentage =
+		stats && typeof stats.last !== "undefined" && stats.open
+			? calculatePriceChangePercentage(parseFloat(stats.open), parseFloat(stats.last))
+			: null;
 	const priceChangeColor = priceChangePercentage && priceChangePercentage > 0 ? "perc-success" : "perc-danger";
 
 	if (!coin || !stats || isLoading) return null;
@@ -117,21 +117,3 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 };
 
 export default MyCard;
-
-{
-	/* <div className="d-flex justify-content-between align-items-center"> */
-}
-{
-	/* <Card.Text className="mb-0">Volume: {formatVolume(coin.volume)}</Card.Text> */
-}
-{
-	/* </div> */
-}
-{
-	/* <div className="d-flex justify-content-between align-items-center mt-3">
-	<Card.Text className="mb-0">Ultimo Trade Size: {formatNumber(coin.size, 6)}</Card.Text>
-	<Card.Text className="mb-0">
-	{coin.time && `Ultimo Trade Time: ${new Date(coin.time).toLocaleString()}`}
-	</Card.Text>
-</div> */
-}

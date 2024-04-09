@@ -9,7 +9,7 @@ const SkeletornRight = () => {
 	}
 
 	return (
-		<Col className="skeletorn-right">
+		<Col className="skeletorn-right d-none d-sm-block">
 			<h1 className="text-start text">Seleziona un utente per modificare</h1>
 			<div className="mt-4">
 				<Card className="position-relative">
