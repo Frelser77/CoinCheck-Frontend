@@ -8,7 +8,7 @@ $primary: rgb(75, 86, 199);
 $success: rgb(31, 149, 102);
 $info: rgb(15, 101, 145);
 $warning: rgb(227, 154, 8);
-$danger: rgb(194, 32, 20);
+$danger: rgb(158, 32, 23);
 $light: rgb(190, 190, 190);
 $dark: rgb(34, 35, 36);
 $white: #fff;
@@ -709,4 +709,21 @@ footer {
 
 .icon-like.liked {
 	color: rgb(171, 0, 0);
+}
+
+.span-top {
+	top: -12px;
+}
+
+.dot {
+	color: $white;
+}
+
+.comment-top {
+	top: -25px;
+	right: -5px;
+}
+
+.reg-hover:hover {
+	color: $primary;
 }

@@ -9,9 +9,10 @@ import useUserRole from "../../hooks/useUserRole";
 import { useDispatch, useSelector } from "react-redux";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
 import { fetchProductCandles } from "../../redux/reducer/CoinbaseApi/CoinbaseApi";
-import SkeletonCard from "../Skeletorn/SkeletonCard";
 
-const MyCard = ({ coin, currency, stats, onSave }) => {
+const candleDataCache = new Map();
+
+const MyCard = React.memo(({ coin, currency, stats, onSave }) => {
 	const { role, isLoading } = useUserRole();
 	const navigate = useNavigate();
 	const userId = useSelector((state) => state.login.user?.userId);
@@ -19,31 +20,38 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		if (coin.id) {
+		const fetchCandleData = async () => {
 			// Prepara la data di inizio e fine per l'ultimo giorno
 			const end = new Date();
 			const start = new Date();
 			start.setDate(end.getDate() - 1);
 
-			dispatch(
-				fetchProductCandles({
-					product_id: coin.id,
-					start: start.toISOString(),
-					end: end.toISOString(),
-					granularity: 3600, // Granularità di 1 ora
-				})
-			).then((action) => {
+			if (candleDataCache.has(coin.id)) {
+				setCandleData(candleDataCache.get(coin.id));
+			} else {
+				const action = await dispatch(
+					fetchProductCandles({
+						product_id: coin.id,
+						start: start.toISOString(),
+						end: end.toISOString(),
+						granularity: 3600, // Granularità di 1 ora
+					})
+				);
 				if (action.payload) {
-					setCandleData(
-						action.payload.candles.map((candle) => ({
-							time: candle[0], // timestamp
-							value: candle[4], // close value
-						}))
-					);
+					const formattedCandleData = action.payload.candles.map((candle) => ({
+						time: candle[0], // timestamp
+						value: candle[4], // close value
+					}));
+					candleDataCache.set(coin.id, formattedCandleData);
+					setCandleData(formattedCandleData);
 				}
-			});
+			}
+		};
+
+		if (coin.id) {
+			fetchCandleData();
 		}
-	}, [coin.id, dispatch]);
+	}, [coin.id]);
 
 	// Definizione dell'oggetto coinDetails
 	const coinDetails = {
@@ -114,6 +122,6 @@ const MyCard = ({ coin, currency, stats, onSave }) => {
 			</Card>
 		</div>
 	);
-};
+});
 
 export default MyCard;

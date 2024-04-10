@@ -9,12 +9,15 @@ import { Url } from "../../Config/config";
 import CommentForm from "./CommentForm";
 import { getUserNameStyle } from "./Post";
 import CustomImage from "../Utenti/CustomImage";
+import useUserRole from "../../hooks/useUserRole";
 
 const Comment = ({ comment, currentUserId }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [isEditing, setIsEditing] = useState(false);
 	const isLikingComment = useSelector((state) => state.posts.isLikingComment);
+	const { role, isLoading } = useUserRole();
+	const userId = useSelector((state) => state.login.user?.userId);
 
 	const addNewComment = (newComment) => {
 		setIsEditing(false); // Chiude il form di modifica dopo l'invio
@@ -87,7 +90,7 @@ const Comment = ({ comment, currentUserId }) => {
 	);
 
 	return (
-		<div className="comment comment p-2">
+		<div className="comment comment p-2 position-relative">
 			<div className="d-flex align-items-center justify-content-start">
 				<span className="ml-auto">
 					<CustomImage
@@ -99,16 +102,24 @@ const Comment = ({ comment, currentUserId }) => {
 					/>
 				</span>
 				<span className={`ms-2 fs-6 ${postOwnerStyle}`}>{comment.userName}</span>
-				<Badge className="ms-auto small-text bg-dark">{getTimeDifference(comment.commentDate)}</Badge>
-				<Dropdown>
-					<Dropdown.Toggle variant="transparent" id="dropdown-basic" size="sm">
-						<span>•••</span>
-					</Dropdown.Toggle>
-					<Dropdown.Menu>
-						<Dropdown.Item onClick={() => setIsEditing(true)}>Modifica</Dropdown.Item>
-						<Dropdown.Item onClick={handleDeleteComment}>Elimina</Dropdown.Item>
-					</Dropdown.Menu>
-				</Dropdown>
+				<Badge className="ms-auto small-text bg-dark mt-2">{getTimeDifference(comment.commentDate)}</Badge>
+
+				{(role === "Admin" || role === "Moderatore" || comment.userId === userId) && (
+					<Dropdown>
+						<Dropdown.Toggle
+							variant="transparent"
+							id="dropdown-basic"
+							size="sm"
+							className="position-absolute comment-top"
+						>
+							<span className="dot">•••</span>
+						</Dropdown.Toggle>
+						<Dropdown.Menu>
+							<Dropdown.Item onClick={() => setIsEditing(true)}>Modifica</Dropdown.Item>
+							<Dropdown.Item onClick={handleDeleteComment}>Elimina</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
+				)}
 			</div>
 			{isEditing ? (
 				<CommentForm

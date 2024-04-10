@@ -61,7 +61,7 @@ export default function Register() {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<Col xs={5} className="my-3 ms-auto">
+			<Col xs={5} className="my-3 mx-auto mt-5">
 				<Card className="border border-2 shadow-sm p-3">
 					<h2 className="text-start">Registrati</h2>
 					<form onSubmit={handleSubmit}>
@@ -128,7 +128,7 @@ export default function Register() {
 							<button type="submit" className="btn btn-primary" disabled={isLoading}>
 								{isLoading ? "Registering..." : "Register"}
 							</button>
-							<NavLink to="/login" className="btn btn-body">
+							<NavLink to="/login" className="btn btn-body point">
 								Login
 							</NavLink>
 						</div>

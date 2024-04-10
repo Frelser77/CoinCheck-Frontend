@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ListGroup, Button, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { ListGroup, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
 import useHide from "../Tips/useHide";
 import { useSelector } from "react-redux";
@@ -15,14 +15,12 @@ import {
 	faCog,
 	faUserAlt,
 	faUsers,
-	faSubscript,
 	faCreditCard,
 	faStar as faSolidStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faRegularStar } from "@fortawesome/free-regular-svg-icons";
 import { faForumbee } from "@fortawesome/free-brands-svg-icons";
 import { motion } from "framer-motion";
-import { toast } from "react-toastify";
 
 const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavoritesLoaded }) => {
 	const user = useSelector((state) => state.login.user);
@@ -31,11 +29,15 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 	const { role, isLoading } = useUserRole();
 	const shouldHide = useHide(["/utentiList/", "/wallet"]);
 	// const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [favoritesIcon, setFavoritesIcon] = useState(faRegularStar);
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
 	const sidebarClass = `side-bar-left ${isMobile ? "fixed-left" : ""} ${isSidebarOpen ? "col-2" : "col-1"}`;
 
-	const favoritesIcon = showFavoritesLoaded ? faSolidStar : faRegularStar;
+	useEffect(() => {
+		// Aggiorna l'icona ogni volta che showFavoritesLoaded cambia
+		setFavoritesIcon(showFavoritesLoaded ? faSolidStar : faRegularStar);
+	}, [showFavoritesLoaded]);
 
 	// Aggiorna lo stato di isMobile in base alla larghezza della finestra
 	useEffect(() => {
@@ -53,7 +55,11 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 	}, []);
 
 	const toggleFavorites = () => {
-		setShowFavorites((prev) => !prev);
+		setShowFavorites((prev) => {
+			const newShowFavorites = !prev;
+			setFavoritesIcon(newShowFavorites ? faSolidStar : faRegularStar); // Aggiorna immediatamente l'icona
+			return newShowFavorites;
+		});
 	};
 
 	if (shouldHide) {
@@ -194,30 +200,3 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 };
 
 export default SideBarLeft;
-
-// return (
-// <Col xs={12} md={2}>
-// 	<div className="side-bar-left lg-position-fixed left-0">
-// 		<h2 className="ms-5">Menu</h2>
-// 		<ListGroup className="ms-1">
-// 			{/* Utilizza ListGroup.Item per ogni elemento della lista */}
-// 			<ListGroup.Item className="border-0">
-// 				{/* Usa il componente Button insieme al componente Link per creare un bottone che agisce come link */}
-// 				<Link to="/watchlist" className="nav-link p-0">
-// 					<div className="btn w-100 border-0 bg-list text-light">Watchlist</div>
-// 				</Link>
-// 			</ListGroup.Item>
-// 			<ListGroup.Item className="border-0">
-// 				<Link to="/wallet" className="nav-link p-0">
-// 					<div className="btn w-100 border-0 bg-list text-light">Wallet</div>
-// 				</Link>
-// 			</ListGroup.Item>
-// 			<ListGroup.Item className="border-0">
-// 				<Link to="/trade" className="nav-link p-0">
-// 					<div className="btn w-100 border-0 bg-list text-light">Trade</div>
-// 				</Link>
-// 			</ListGroup.Item>
-// 			{/* Aggiungi qui altri elementi, seguendo lo stesso schema */}
-// 		</ListGroup>
-// 	</div>
-// </Col>

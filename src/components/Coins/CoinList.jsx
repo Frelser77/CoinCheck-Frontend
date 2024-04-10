@@ -27,6 +27,7 @@ const CryptoList = ({ showFavorites }) => {
 	const allCoins = useSelector((state) => state.coinbase.coins);
 	const [initialLoading, setInitialLoading] = useState(true);
 	const [favoriteCoins, setFavoriteCoins] = useState([]);
+	const [nextFavoriteIndex, setNextFavoriteIndex] = useState(0);
 
 	const onlineCoins = coins.filter(
 		(coin) => coin.status === "online" && coin.id.endsWith("-USD") && !coin.id.startsWith("USD-")
@@ -40,21 +41,43 @@ const CryptoList = ({ showFavorites }) => {
 
 	useEffect(() => {
 		if (showFavorites) {
-			const favoriteCoins = coins
+			setNextFavoriteIndex(0); // Reimposta l'indice quando mostri i preferiti
+			const favoriteCoinsToLoad = coins
 				.filter((coin) => userPreferences.some((pref) => pref.nomeCoin === coin.id))
-				.slice(0, 10);
-			setFavoriteCoins(favoriteCoins);
+				.slice(nextFavoriteIndex, nextFavoriteIndex + 10);
+			setFavoriteCoins(favoriteCoinsToLoad);
 		}
 	}, [showFavorites, userPreferences, coins]);
 
 	useEffect(() => {
-		if (showFavorites && favoriteCoins.length < userPreferences.length) {
-			const nextFavoriteCoins = coins
-				.filter((coin) => userPreferences.some((pref) => pref.nomeCoin === coin.id))
-				.slice(favoriteCoins.length, favoriteCoins.length + 3);
-			setFavoriteCoins((prevCoins) => [...prevCoins, ...nextFavoriteCoins]);
+		if (showFavorites) {
+			const loadMoreFavorites = () => {
+				const nextIndex = nextFavoriteIndex + 10;
+				const nextFavoriteCoins = coins
+					.filter((coin) => userPreferences.some((pref) => pref.nomeCoin === coin.id))
+					.slice(nextIndex, nextIndex + 10);
+				if (nextFavoriteCoins.length > 0) {
+					setFavoriteCoins((prevCoins) => [...prevCoins, ...nextFavoriteCoins]);
+					setNextFavoriteIndex(nextIndex);
+				}
+			};
+
+			if (loadMoreRef.current) {
+				const observer = new IntersectionObserver(
+					(entries) => {
+						if (entries[0].isIntersecting && !isLoading && !fetching) {
+							loadMoreFavorites();
+						}
+					},
+					{ threshold: 0.1 }
+				);
+
+				observer.observe(loadMoreRef.current);
+
+				return () => observer.disconnect();
+			}
 		}
-	}, [showFavorites, userPreferences, coins, favoriteCoins]);
+	}, [showFavorites, isLoading, fetching, coins, userPreferences, nextFavoriteIndex]);
 
 	useEffect(() => {
 		const loadInitialCoins = async () => {
@@ -82,11 +105,9 @@ const CryptoList = ({ showFavorites }) => {
 	}, [coins, dispatch]);
 	const loadMoreCoins = useCallback(async () => {
 		if (!isLoading && !fetching && visibleCoins.length < onlineCoins.length) {
-			console.log("Inizio del caricamento di più monete...");
 			setFetching(true);
 			const newOnlineCoins = onlineCoins.filter((coin) => !visibleCoinIds.includes(coin.id));
 			const nextCoins = newOnlineCoins.slice(0, 3);
-			console.log("Nuove monete da caricare:", nextCoins);
 			setLoadingCoins(nextCoins.map((coin) => coin.id));
 
 			const fetchPromises = nextCoins.map((coin) => {
@@ -95,17 +116,14 @@ const CryptoList = ({ showFavorites }) => {
 			});
 
 			await Promise.all(fetchPromises);
-			console.log("Monete caricate, aggiornamento dello stato...");
 			setVisibleCoins((prevCoins) => {
 				const updatedVisibleCoins = [...prevCoins, ...nextCoins];
-				console.log("Stato aggiornato di visibleCoins:", updatedVisibleCoins);
 				return updatedVisibleCoins;
 			});
 			setFetching(false);
 			setLoadingCoins([]);
 			setVisibleCoinIds((prevIds) => {
 				const updatedVisibleCoinIds = [...prevIds, ...nextCoins.map((coin) => coin.id)];
-				console.log("Stato aggiornato di visibleCoinIds:", updatedVisibleCoinIds);
 				return updatedVisibleCoinIds;
 			});
 		}
@@ -140,7 +158,6 @@ const CryptoList = ({ showFavorites }) => {
 		: null;
 
 	const coinsToRender = showFavorites ? favoriteCoins : visibleCoins;
-	console.log("Coins to render:", coinsToRender);
 
 	return (
 		<>
@@ -177,7 +194,7 @@ const CryptoList = ({ showFavorites }) => {
 				{loadingCoins.map((id) => (
 					<SkeletonCard key={`loading-${id}`} />
 				))}
-				{!loadedAll && !showFavorites && <div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>}
+				{!loadedAll && <div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>}
 			</div>
 		</>
 	);

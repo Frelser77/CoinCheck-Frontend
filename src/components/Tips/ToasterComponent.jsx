@@ -14,7 +14,7 @@ const ToasterComponent = () => {
 			pauseOnFocusLoss
 			draggable
 			pauseOnHover
-			theme="light"
+			toastStyle={{ backgroundColor: "#0c0a2b", color: "#fff" }}
 		/>
 	);
 };

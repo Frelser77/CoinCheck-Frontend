@@ -235,7 +235,7 @@ const CoinDetail = ({ isSidebarOpen }) => {
 							</CardBody>
 						</Card>
 					)}
-					<h2 className="flex-center mt-5">
+					<h2 className="flex-center mt-5 text-white">
 						{filteredNews.length === 0 ? "Non ci sono notizie inerenti alla coin" : `Notizie su ${coinId}`}
 					</h2>
 					<Row className="mb-2">

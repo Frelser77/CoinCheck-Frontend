@@ -3,8 +3,11 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import saveToDatabase from "../components/Coins/saveTodb";
 import { calculatePriceChangePercentage } from "../components/Tips/utility"; // Assicurati di importare questa funzione
+import useUserRole from "./useUserRole";
 
 const useSaveToDatabase = () => {
+	const { role, isLoading } = useUserRole();
+
 	const handleSaveToDb = (coinDetails) => {
 		const criptovalutaDto = {
 			Nome: coinDetails.id,
@@ -20,10 +23,14 @@ const useSaveToDatabase = () => {
 
 		saveToDatabase(criptovalutaDto)
 			.then(() => {
-				toast.success(`Dati della criptovaluta con id ${coinDetails.id} salvati con successo nel database.`);
+				if (role === "Admin" || role === "Moderatore") {
+					toast.success(`Dati della criptovaluta con id ${coinDetails.id} salvati con successo nel database.`);
+				}
 			})
 			.catch((error) => {
-				toast.error(`Errore nel salvataggio della criptovaluta con id ${coinDetails.id}: ${error}`);
+				if (role === "Admin" || role === "Moderatore") {
+					toast.error(`Errore nel salvataggio della criptovaluta con id ${coinDetails.id}: ${error}`);
+				}
 			});
 	};
 

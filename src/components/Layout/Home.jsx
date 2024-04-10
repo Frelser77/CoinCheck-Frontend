@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 const Home = ({ isSidebarOpen, showFavorites }) => {
 	const news = useSelector((state) => state.news.news);
 	const userId = useSelector((state) => state.login.user?.userId);
+	const userPreferences = useSelector((state) => state.favorites?.userPreferences);
 	const dispatch = useDispatch();
 
 	useEffect(() => {

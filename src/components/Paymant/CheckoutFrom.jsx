@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSelector } from "react-redux";
 import { Url } from "../../Config/config";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Loader from "../Layout/Loader";
 import fetchWithAuth from "../../redux/reducer/back/interceptor";
@@ -80,29 +81,34 @@ const CheckoutForm = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<div id="checkout">
-				<div>
-					<h2 className="text-white">Shopping Cart</h2>
-					<ul>
+			<Container id="checkout">
+				<Row className="justify-content-center mt-4">
+					<Col xs={12} md={5}>
+						<h2 className="text-white text-center">Shopping Cart</h2>
 						{cart.map((item, index) => (
-							<li key={index}>
-								<img
+							<Card key={index} className="mb-4">
+								<Card.Img
+									variant="top"
 									src={`${item.imageUrl.replace(/uploads\\products\\/, "").replace(/\\/g, "/")}`}
 									alt={item.descrizione}
-									style={{ width: "100px", height: "auto" }}
+									className="img-xl mx-auto"
 								/>
-								<span className="text-white">{item.tipoAbbonamento}</span> -{" "}
-								<span className="text-white">€{item.prezzo} </span> -{" "}
-								<span className="text-white">{item.quantita}</span>
-							</li>
+								<Card.Body>
+									<Card.Title>{item.tipoAbbonamento}</Card.Title>
+									<Card.Text>
+										Prezzo: €{item.prezzo} - Quantità: {item.quantita}
+									</Card.Text>
+									<Card.Text>{item.descrizione}</Card.Text>
+								</Card.Body>
+							</Card>
 						))}
-					</ul>
-				</div>
-
-				<button className="btn btn-primary" onClick={() => handleCheckout(sessionId)}>
-					Checkout
-				</button>
-			</div>
+						<button class="button__loader" onClick={() => handleCheckout(sessionId)}>
+							Checkout
+							<span class="button__text">Loading...</span>
+						</button>
+					</Col>
+				</Row>
+			</Container>
 		</>
 	);
 };

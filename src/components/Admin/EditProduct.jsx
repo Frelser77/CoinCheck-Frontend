@@ -96,6 +96,12 @@ const EditProduct = () => {
 			toast.error("Eliminazione fallita: " + error.message);
 		}
 	};
+
+	const imageUrl = productToEdit.imageUrl
+		? productToEdit.imageUrl
+				.replace(/\\/g, "/") // Sostituisce tutti i backslash con slash
+				.replace(/uploads\/products\//, "") // Rimuove la parte specifica dell'URL
+		: "/placeholder.png";
 	return (
 		<div className="d-flex align-items-center justify-content-center">
 			<Col xs={12} md={4} className="mt-3">
@@ -105,10 +111,11 @@ const EditProduct = () => {
 					</Card.Header>
 					<Card.Body>
 						<Card.Img
-							src={productToEdit.imageUrl ? `${Url}${productToEdit.imageUrl.replace(/\\/g, "/")}` : "/placeholder.png"}
+							src={imageUrl} // Utilizza la variabile imageUrl
 							alt={productToEdit.tipoAbbonamento}
 							className="img-circle"
 						/>
+
 						<Form>
 							{/* <Form.Group className="mb-3" controlId="formTipoAbbonamento">
 								<Form.Label>Tipo Abbonamento</Form.Label>

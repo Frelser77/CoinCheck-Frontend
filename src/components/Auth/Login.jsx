@@ -118,7 +118,7 @@ function Login() {
 										placeholder="Password"
 									/>
 									<button
-										className="btn btn-transparent position-absolute top-50 end-0"
+										className="btn-transparent bg-transparent border-0 me-1 mt-1 position-absolute top-50 end-0"
 										type="button"
 										onClick={toggleShowPassword}
 									>
@@ -129,10 +129,12 @@ function Login() {
 									Login
 								</button>
 							</form>
-							<p>Non sei ancora registrato?</p>
-							<NavLink to="/Register" className="btn btn-primary">
-								Registrati
-							</NavLink>
+							<div className="d-flex align-items-center justify-content-end gap-2">
+								<p className="p-0 m-0">Non sei ancora registrato?</p>
+								<NavLink to="/Register" className="nav-link reg-hover">
+									Registrati
+								</NavLink>
+							</div>
 						</CardBody>
 					</Card>
 				</Col>

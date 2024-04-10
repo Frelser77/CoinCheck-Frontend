@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import CustomImage from "../Utenti/CustomImage";
 import Modal from "react-modal";
 import styles from "./post.module.css";
+import useUserRole from "../../hooks/useUserRole";
 Modal.setAppElement("#root");
 
 export const getUserNameStyle = (role) => {
@@ -41,6 +42,8 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	const [showComments, setShowComments] = useState(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const [enlargedImage, setEnlargedImage] = useState(null);
+	const { role, isLoading } = useUserRole();
+	const userId = useSelector((state) => state.login.user?.userId);
 
 	useEffect(() => {
 		setHasLikedPost(post?.likes?.some((like) => like.userId === currentUserId));
@@ -207,15 +210,17 @@ const Post = ({ post, onEdit, currentUserId }) => {
 									))}
 								</div>
 							</div>
-							<Dropdown className="edit-icon position-absolute top-0 end-0 m-2 point">
-								<Dropdown.Toggle variant="transparent" id="dropdown-basic" size="sm">
-									<span>•••</span>
-								</Dropdown.Toggle>
-								<Dropdown.Menu>
-									<Dropdown.Item onClick={() => onEdit(post)}>Modifica</Dropdown.Item>
-									<Dropdown.Item onClick={handleSoftDelete}>Elimina</Dropdown.Item>
-								</Dropdown.Menu>
-							</Dropdown>
+							{(role === "Admin" || role === "Moderatore" || post.userId === userId) && (
+								<Dropdown className="edit-icon position-absolute span-top end-0 m-2 point">
+									<Dropdown.Toggle variant="transparent" id="dropdown-basic" size="sm">
+										<span className="dot">•••</span>
+									</Dropdown.Toggle>
+									<Dropdown.Menu>
+										<Dropdown.Item onClick={() => onEdit(post)}>Modifica</Dropdown.Item>
+										<Dropdown.Item onClick={handleSoftDelete}>Elimina</Dropdown.Item>
+									</Dropdown.Menu>
+								</Dropdown>
+							)}
 						</div>
 						{showCommentForm && <CommentForm postId={post.postId} postOwnerStyle={postOwnerStyle} />}
 					</Card.Body>
