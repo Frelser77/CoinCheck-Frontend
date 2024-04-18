@@ -33284,13 +33284,14 @@ footer {
   color: #9794be;
 }
 
-.ReactModal__Content--after-open {
-  padding: 0 !important;
-}
-
 .post-modal .modal-content {
   background-color: #0c0a2b;
   color: #fff;
+}
+
+.img-post {
+  height: 500px;
+  width: auto;
 }
 
 #app-nav {
@@ -33511,6 +33512,7 @@ footer {
 
 .offcanvas-body {
   padding: 0;
+  width: 200px;
 }
 
 .button__loader {

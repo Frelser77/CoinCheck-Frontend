@@ -82,14 +82,13 @@ const HomeCarousel = ({ isSidebarOpen }) => {
 									style={{
 										backgroundImage: `url(${article.imageurl})`,
 									}}
-								>
-									<div className={styles.cardDetails}>
-										<h3>{article.title}</h3>
-										<p className="truncate-multiline">{article.body}</p>
-										<Link to={`${article.guid}`} target="_blanck">
-											Leggi di più
-										</Link>
-									</div>
+								></div>
+								<div className={styles.cardDetails}>
+									<h3 className={styles.title}>{article.title}</h3>
+									<p className={`${styles.articleContent} truncate-multiline`}>{article.body}</p>
+									<Link to={`${article.guid}`} target="_blanck" className="ms-auto mt-5">
+										Leggi di più
+									</Link>
 								</div>
 							</Card>
 						))}

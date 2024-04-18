@@ -102,9 +102,9 @@ const CheckoutForm = () => {
 								</Card.Body>
 							</Card>
 						))}
-						<button class="button__loader" onClick={() => handleCheckout(sessionId)}>
+						<button className="button__loader" onClick={() => handleCheckout(sessionId)}>
 							Checkout
-							<span class="button__text">Loading...</span>
+							<span className="button__text">Loading...</span>
 						</button>
 					</Col>
 				</Row>

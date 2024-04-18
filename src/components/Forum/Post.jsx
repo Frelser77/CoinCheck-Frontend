@@ -44,6 +44,7 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	const [enlargedImage, setEnlargedImage] = useState(null);
 	const { role, isLoading } = useUserRole();
 	const userId = useSelector((state) => state.login.user?.userId);
+	const [comments, setComments] = useState([]);
 
 	useEffect(() => {
 		setHasLikedPost(post?.likes?.some((like) => like.userId === currentUserId));
@@ -130,6 +131,10 @@ const Post = ({ post, onEdit, currentUserId }) => {
 		else return "comments";
 	};
 
+	const updateCommentInList = (updatedComment) => {
+		setComments(comments.map((c) => (c.commentId === updatedComment.commentId ? updatedComment : c)));
+	};
+
 	return (
 		<Row className="justify-content-center">
 			<Col xs={12} md={6} lg={8}>
@@ -153,7 +158,7 @@ const Post = ({ post, onEdit, currentUserId }) => {
 							src={`${Url}${post.filePath.replace(/\\/g, "/")}`}
 							alt="Post"
 							onClick={() => openImageModal(`${Url}${post.filePath.replace(/\\/g, "/")}`)}
-							className="point"
+							className="point img-post"
 						/>
 					)}
 					{/* Modal per l'immagine ingrandita */}
@@ -164,7 +169,7 @@ const Post = ({ post, onEdit, currentUserId }) => {
 						className={`${styles.Modal}`}
 						overlayClassName={`${styles.Overlay}`}
 					>
-						<img src={enlargedImage} alt="Ingrandimento" className="img-fluid" />
+						<img src={enlargedImage} alt="Ingrandimento" className={`img-fluid ${styles.imgPost} `} />
 					</Modal>
 					<Card.Body className="p-2">
 						<Card.Text className="mt-2">{post.content}</Card.Text>
@@ -234,10 +239,23 @@ const Post = ({ post, onEdit, currentUserId }) => {
 							{showComments
 								? // Mostra tutti i commenti se showComments è true
 								  post.comments?.map((comment) => (
-										<Comment key={comment.commentId} comment={comment} currentUserId={currentUserId} />
+										<Comment
+											key={comment.commentId}
+											comment={comment}
+											currentUserId={currentUserId}
+											postId={post.id}
+											updateCommentInList={updateCommentInList}
+										/>
 								  ))
 								: // Mostra solo il commento con più like
-								  topComment && <Comment comment={topComment} currentUserId={currentUserId} />}
+								  topComment && (
+										<Comment
+											comment={topComment}
+											currentUserId={currentUserId}
+											postId={post.id}
+											updateCommentInList={updateCommentInList}
+										/>
+								  )}
 						</div>
 					</Card.Footer>
 				</Card>

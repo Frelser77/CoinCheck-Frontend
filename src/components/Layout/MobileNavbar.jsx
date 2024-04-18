@@ -9,6 +9,7 @@ const MobileNavbar = ({ showFavorites, setShowFavorites }) => {
 	const [show, setShow] = useState(false);
 	const path = useLocation().pathname;
 	const { token, id } = useParams();
+	const showIcon = useLocation().pathname === "/utentiList/";
 
 	useEffect(() => {
 		const offCanvasElement = document.querySelector(".offcanvas.show");
@@ -41,9 +42,11 @@ const MobileNavbar = ({ showFavorites, setShowFavorites }) => {
 
 	return (
 		<>
-			<Button variant="body" onClick={handleShow} className="d-md-none btn-mobile">
-				<FontAwesomeIcon icon={faBars} />
-			</Button>
+			{!showIcon && (
+				<Button variant="body" onClick={handleShow} className="d-md-none btn-mobile">
+					<FontAwesomeIcon icon={faBars} />
+				</Button>
+			)}
 			<Container>
 				<Row>
 					<Col>

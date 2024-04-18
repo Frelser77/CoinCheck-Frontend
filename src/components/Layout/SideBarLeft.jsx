@@ -117,7 +117,13 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 				placement="right"
 				overlay={<Tooltip id="tooltip">Preferiti</Tooltip>}
 			>
-				<div onClick={(toggleFavorites, toggleSidebar)} className="nav-item flex-center nav-link">
+				<div
+					onClick={() => {
+						toggleFavorites();
+						closeSidebar();
+					}}
+					className="nav-item flex-center nav-link"
+				>
 					<FontAwesomeIcon icon={favoritesIcon} className="nav-icon" />
 					<span className="nav-text ms-2"> Watchlist</span>
 				</div>

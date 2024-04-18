@@ -746,11 +746,15 @@ footer {
 	color: lighten($body, 40%);
 }
 
-.ReactModal__Content--after-open {
-	padding: 0 !important;
-}
-
 .post-modal .modal-content {
 	background-color: $all;
 	color: $white;
+}
+
+.img-post {
+	height: 500px;
+	width: auto;
+}
+
+.ReactModal__Content--after-open {
 }

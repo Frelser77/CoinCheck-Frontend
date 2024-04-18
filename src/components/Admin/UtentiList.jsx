@@ -10,6 +10,7 @@ import { setSelectedUserId } from "../../redux/reducer/Utenti/selectedUserIdSlic
 import Loader from "../Layout/Loader";
 import CustomImage from "../Utenti/CustomImage";
 import { loadUserPreferences } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
+import { useMediaQuery } from "react-responsive";
 
 const UtentiList = () => {
 	const dispatch = useDispatch();
@@ -20,6 +21,8 @@ const UtentiList = () => {
 	console.log(role, isLoading);
 	const userPreferences = useSelector((state) => state.favorites?.userPreferences);
 	const [activeUserId, setActiveUserId] = React.useState(null);
+	const isLargeScreen = useMediaQuery({ query: "(min-width: 992px)" });
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (status === "failed" || status === "idle") {
@@ -56,6 +59,16 @@ const UtentiList = () => {
 		}
 	};
 
+	const handleImageClick = (userId) => {
+		if (!isLargeScreen) {
+			dispatch(setSelectedUserId(userId));
+			navigate(`/utenti/${userId}/edit`);
+		} else {
+			// Qui puoi mantenere il comportamento attuale per schermi grandi
+			dispatch(setSelectedUserId(userId));
+		}
+	};
+
 	return (
 		<>
 			<Loader isLoading={isLoading && status} />
@@ -73,7 +86,7 @@ const UtentiList = () => {
 												src={user.imageUrl}
 												alt={user.username}
 												className="img-md"
-												onClick={() => dispatch(setSelectedUserId(user.userId))}
+												onClick={() => handleImageClick(user.userId)}
 												Url={Url}
 											/>
 										</div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { editComment, softDeleteComment, toggleLikeComment } from "../../redux/reducer/Post/forumSlice";
+import { editComment, fetchAllPosts, softDeleteComment, toggleLikeComment } from "../../redux/reducer/Post/forumSlice";
 import { Button, Dropdown } from "react-bootstrap";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Badge } from "react-bootstrap";
@@ -11,18 +11,17 @@ import { getUserNameStyle } from "./Post";
 import CustomImage from "../Utenti/CustomImage";
 import useUserRole from "../../hooks/useUserRole";
 
-const Comment = ({ comment, currentUserId }) => {
+const Comment = ({ comment, currentUserId, postId, updateCommentInList }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [isEditing, setIsEditing] = useState(false);
 	const isLikingComment = useSelector((state) => state.posts.isLikingComment);
 	const { role, isLoading } = useUserRole();
 	const userId = useSelector((state) => state.login.user?.userId);
+	const [content, setContent] = useState(comment.content);
 
 	const addNewComment = (newComment) => {
-		setIsEditing(false); // Chiude il form di modifica dopo l'invio
-		// Aggiungi qui la logica per aggiungere il nuovo commento all'elenco dei commenti visibili
-		// Potresti voler aggiornare lo stato locale o fare un'altra chiamata per ottenere l'elenco aggiornato dei commenti
+		setIsEditing(false);
 	};
 
 	const handleLike = async () => {
@@ -68,14 +67,6 @@ const Comment = ({ comment, currentUserId }) => {
 	};
 
 	const postOwnerStyle = getUserNameStyle(comment.roleName);
-
-	const handleSaveEdit = (editedContent) => {
-		if (commentId) {
-			dispatch(editComment({ commentId: comment.commentId, content: editedContent })).then(() => {
-				setIsEditing(false);
-			});
-		}
-	};
 
 	const likeIcon = hasLikedComment ? (
 		<FaHeart
