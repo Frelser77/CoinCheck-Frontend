@@ -35,10 +35,10 @@ const Home = ({ isSidebarOpen, showFavorites }) => {
 	return (
 		<>
 			<Row>
-				<Col md={7}>
+				<Col xs={12} lg={7} className="order-md-1 order-lg-0">
 					<HomeCarousel isSidebarOpen={isSidebarOpen} />
 				</Col>
-				<Col md={5}>
+				<Col xs={12} lg={5} className="d-none d-md-block order-md-0 order-lg-1">
 					<WalletCard />
 				</Col>
 			</Row>

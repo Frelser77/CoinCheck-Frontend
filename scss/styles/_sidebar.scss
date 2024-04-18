@@ -5,8 +5,9 @@
 }
 
 .side-bar-left .nav-item {
-	margin: 20px;
-	padding: 15px 5px;
+	margin-inline: 15px;
+	margin-block: 16px;
+	padding: 10px 5px;
 	color: #adadad;
 	cursor: pointer;
 	border-radius: 5px;
@@ -21,7 +22,13 @@
 .side-bar-left #logo {
 	width: 50%;
 	height: auto;
-	margin: 25px 0 22px 0;
+	margin: 20px 0 0 0;
+}
+
+@media (max-width: 768px) {
+	.side-bar-left #logo {
+		width: auto;
+	}
 }
 
 // .side-bar-left {
@@ -60,4 +67,20 @@
 
 .text {
 	color: white;
+}
+
+.side-back {
+	color: #adadad;
+}
+
+.btn-mobile {
+	position: absolute;
+	z-index: 1500;
+	top: 10px;
+	right: 10px;
+}
+
+.offcanvas-body {
+	background-color: $all;
+	padding: 0;
 }

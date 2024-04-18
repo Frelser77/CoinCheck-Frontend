@@ -32,7 +32,7 @@ import CustomImage from "./CustomImage";
 
 export const handleFileUpload = async (file, dispatch, id, setUtente) => {
 	if (!file) {
-		toast.error("Devi selezionare un file."); // Usato toast.error per coerenza
+		toast.error("Devi selezionare un file.");
 		return;
 	}
 
@@ -150,7 +150,8 @@ const DettaglioUtente = () => {
 	return (
 		<Row className="zone-8">
 			<Col xs={12}>
-				<Card>
+				<h1 className="text-center text-light">Profilo {utente.username}</h1>
+				<Card className="my-1">
 					<Row>
 						<Col>
 							<CardBody className="d-flex flex-column align-items-start justify-content-between gap-2 sticky-top">
@@ -164,7 +165,7 @@ const DettaglioUtente = () => {
 										src={
 											utente && utente.imageUrl
 												? `${utente.imageUrl.replace(/\\/g, "/")}`
-												: `uploads/profile/placeholder-profile.png`
+												: `${Url}uploads/profile/placeholder-profile.png`
 										}
 										alt={utente ? utente.username : "Default Image"}
 										onClick={triggerFileInput}
@@ -177,12 +178,6 @@ const DettaglioUtente = () => {
 								<CardText className="card-text">
 									Stato account: {utente && utente.isActive ? "Attivo" : "Non attivo"}
 								</CardText>
-								{/* <CardText className="card-text">
-									Preferenze:{" "}
-									{userPreferences && userPreferences.length > 0
-										? utente.preferenzeUtentes.length
-										: "Nessuna preferenza"}
-								</CardText> */}
 								<CardText className="card-text">
 									Post: {utente && utente.posts.length > 0 ? utente.posts.length : "Nessun post"}
 								</CardText>
@@ -212,7 +207,6 @@ const DettaglioUtente = () => {
 						<Col className="">
 							<Form onSubmit={(event) => handleFileUpload(event, dispatch, id, setUtente)}>
 								<FormGroup>
-									{/* <FormLabel>Carica Immagine</FormLabel> */}
 									<FormControl
 										type="file"
 										name="file"
@@ -222,12 +216,11 @@ const DettaglioUtente = () => {
 										onChange={handleImageChange}
 									/>
 								</FormGroup>
-								{/* <Button type="submit"></Button> */}
 							</Form>
 							<h4 className="m-1">Preferiti</h4>
-							<Button size="sm" onClick={handleLoadPreferenze}>
+							<button className="btn btn-sm btn-body" onClick={handleLoadPreferenze}>
 								Carica Preferenze
-							</Button>
+							</button>
 							{showPreferences && userPreferences && userPreferences.length > 0 ? (
 								<>
 									{userPreferences.map((preferenza, index) => (

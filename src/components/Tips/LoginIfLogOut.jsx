@@ -7,11 +7,15 @@ function RedirectToLoginIfLoggedOut() {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const publicPaths = ["/login", "/Register"];
+	const publicPaths = ["/login", "/Register", "/reset-password"];
 
 	useEffect(() => {
+		const pathIsPublic =
+			publicPaths.some((path) => location.pathname.startsWith(path)) ||
+			/\/reset-password\/.+\/.+/.test(location.pathname); // Aggiunto controllo per path dinamici
+
 		// Se non c'è token e non siamo già su una pagina pubblica, reindirizza a /login
-		if (!token && !publicPaths.includes(location.pathname)) {
+		if (!token && !pathIsPublic) {
 			navigate("/login");
 		} else {
 			console.log("No redirect needed.");

@@ -33,6 +33,12 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
 	const sidebarClass = `side-bar-left ${isMobile ? "fixed-left" : ""} ${isSidebarOpen ? "col-2" : "col-1"}`;
+	const closeSidebar = () => {
+		if (isSidebarOpen) {
+			// Controlla se la sidebar è aperta
+			toggleSidebar(false); // Chiudi la sidebar
+		}
+	};
 
 	useEffect(() => {
 		// Aggiorna l'icona ogni volta che showFavoritesLoaded cambia
@@ -74,23 +80,34 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 			animate={{ width: isSidebarOpen ? "200px" : "100px" }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
 		>
-			<div onClick={toggleSidebar} className="toggle-sidebar-icon position-relative">
+			<div
+				onClick={() => {
+					toggleSidebar(false);
+				}}
+				className="toggle-sidebar-icon position-relative"
+			>
 				<FontAwesomeIcon
 					icon={isSidebarOpen ? faArrowLeft : faArrowRight}
-					className="position-absolute top-0 end-0 mt-2 point "
+					className="position-absolute top-0 end-0 mt-2 point side-back"
 				/>
 			</div>
-			<div className="flex-center logo-section">
-				<img id="logo" src="" alt="Logo" />
-			</div>
+			<Link to={"/"} className="flex-center logo-section">
+				<img
+					id="logo"
+					src="../../assets/img/png-prova-dark-mode.png"
+					alt="Logo"
+					className="point"
+					onClick={() => closeSidebar()}
+				/>
+			</Link>
 			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Home</Tooltip>}>
-				<Link to="/" className="nav-item flex-center nav-link">
+				<Link to="/" className="nav-item flex-center nav-link" onClick={() => closeSidebar()}>
 					<FontAwesomeIcon icon={faHome} className="nav-icon" />
 					<span className="nav-text ms-2">Home</span>
 				</Link>
 			</OverlayTrigger>
 			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Forum</Tooltip>}>
-				<Link to="/forum" className="nav-item flex-center nav-link">
+				<Link to="/forum" className="nav-item flex-center nav-link" onClick={() => closeSidebar()}>
 					<FontAwesomeIcon icon={faForumbee} className="nav-icon" />
 					<span className="nav-text ms-2">Forum</span>
 				</Link>
@@ -100,14 +117,14 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 				placement="right"
 				overlay={<Tooltip id="tooltip">Preferiti</Tooltip>}
 			>
-				<div onClick={toggleFavorites} className="nav-item flex-center nav-link">
+				<div onClick={(toggleFavorites, toggleSidebar)} className="nav-item flex-center nav-link">
 					<FontAwesomeIcon icon={favoritesIcon} className="nav-icon" />
 					<span className="nav-text ms-2"> Watchlist</span>
 				</div>
 			</OverlayTrigger>
 
 			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Trade</Tooltip>}>
-				<Link to="/wallet" className="nav-item flex-center nav-link">
+				<Link to="/wallet" className="nav-item flex-center nav-link" onClick={() => closeSidebar()}>
 					<FontAwesomeIcon icon={faWallet} className="nav-icon" />
 					<span className="nav-text ms-2">Wallet</span>
 				</Link>
@@ -117,7 +134,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 				placement="right"
 				overlay={<Tooltip id="tooltip">Abbonamenti</Tooltip>}
 			>
-				<NavLink to="/abbonamenti" className="nav-item flex-center nav-link">
+				<NavLink to="/abbonamenti" className="nav-item flex-center nav-link" onClick={() => closeSidebar()}>
 					<FontAwesomeIcon icon={faCreditCard} className="nav-icon" />
 					<span className="nav-text ms-2">Abbonati</span>
 				</NavLink>
@@ -130,7 +147,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 							placement="right"
 							overlay={<Tooltip id="tooltip">Utenti</Tooltip>}
 						>
-							<NavLink className="nav-item flex-center nav-link" to="/utentiList/">
+							<NavLink className="nav-item flex-center nav-link" onClick={() => closeSidebar()} to="/utentiList/">
 								<FontAwesomeIcon icon={faUsers} className="nav-icon" />
 								<span className="nav-text ms-2">Utenti</span>
 							</NavLink>
@@ -163,7 +180,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 			<div className="flex-center gap-1 flex-column">
 				<LogoutButton />
 				<OverlayTrigger
-					trigger="click" // Puoi cambiare a "hover" se vuoi che si attivi con l'hover
+					trigger="click"
 					placement="right"
 					overlay={
 						<Tooltip id="settings-tooltip">
@@ -172,6 +189,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 									as={Link}
 									to={`/utenti/${userId}`}
 									className="nav-item flex-center align-items-start gap-2 my-item"
+									onClick={() => closeSidebar()}
 								>
 									<FontAwesomeIcon icon={faUserAlt} className="nav-icon" />
 									<span> Profilo {user.username}</span>
@@ -180,6 +198,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 									as={Link}
 									to={`/utenti/${userId}/edit`}
 									className="nav-item flex-center align-items-start gap-2 my-item"
+									onClick={() => closeSidebar()}
 								>
 									<FontAwesomeIcon icon={faUserAlt} className="nav-icon" />
 									<span> Edit {user.username} </span>

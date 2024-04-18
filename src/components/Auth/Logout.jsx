@@ -46,9 +46,11 @@ const LogoutButton = () => {
 				placement={placement}
 				overlay={<Tooltip id="tooltip">Logout</Tooltip>}
 			>
-				<button onClick={openModal} className="nav-item flex-center nav-link">
-					<FontAwesomeIcon icon={faSignOutAlt} />
-					<span className="nav-text ms-1">Logout</span>
+				<button onClick={openModal} className="nav-item flex-center nav-link logout-text">
+					<div className="logout-text">
+						<FontAwesomeIcon icon={faSignOutAlt} />
+						<span className="ms-1">Logout</span>
+					</div>
 				</button>
 			</OverlayTrigger>
 			<Modal

@@ -21,7 +21,7 @@ const MyNavbar = () => {
 			<Container>
 				<Navbar.Brand>
 					<NavLink to="/" className="nav-link">
-						LOGO
+						<img id="logo" src="../../assets/img/png-prova-dark-mode.png" alt="Logo" className="point" />
 					</NavLink>
 				</Navbar.Brand>
 				<NavLink to="/abbonamenti" className="nav-link">

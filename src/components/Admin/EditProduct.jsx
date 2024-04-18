@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProduct, deleteProduct } from "../../redux/reducer/Abbonamenti/abbonamentoFetch";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Card, Col, Form } from "react-bootstrap";
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
+import fetchWithAuth from "../../redux/reducer/back/interceptor";
 
 const getSignedUrl = async (fileName) => {
-	const response = await fetch(`{backendURL}/generate-signed-url?fileName=${fileName}`);
+	// Usa la funzione personalizzata che include l'header di autorizzazione
+	const response = await fetchWithAuth(`${Url}Abbonamenti/generate-signed-url?fileName=${fileName}`);
 	if (!response.ok) {
 		throw new Error("Impossibile ottenere l'URL firmato dal server.");
 	}
@@ -31,7 +33,7 @@ const EditProduct = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { id } = useParams();
-	const products = useSelector((state) => state.products.products); // Esempio di come potresti recuperare i prodotti
+	const products = useSelector((state) => state.products?.products);
 
 	if (!products) {
 		return <div>Loading products...</div>;
@@ -44,12 +46,24 @@ const EditProduct = () => {
 		return <div>Product not found! Please check the URL or go back to the product list.</div>;
 	}
 
+	useEffect(() => {
+		if (productToEdit) {
+			setFormData({
+				tipoAbbonamento: productToEdit.tipoAbbonamento,
+				quantita: productToEdit.quantita,
+				prezzo: productToEdit.prezzo,
+				descrizione: productToEdit.descrizione,
+				ImageUrl: productToEdit.imageUrl,
+			});
+		}
+	}, [productToEdit]);
+
 	const [formData, setFormData] = useState({
 		tipoAbbonamento: productToEdit.tipoAbbonamento || "",
 		quantita: productToEdit.quantita || "",
 		prezzo: productToEdit.prezzo || "",
 		descrizione: productToEdit.descrizione || "",
-		imageUrl: productToEdit.imageUrl || "",
+		ImageUrl: productToEdit.imageUrl || "",
 	});
 
 	const handleChange = (e) => {
@@ -68,23 +82,36 @@ const EditProduct = () => {
 		}
 		try {
 			const newImageUrl = await uploadImageToCloud(file);
-			setFormData({ ...formData, imageUrl: newImageUrl });
+			if (newImageUrl) {
+				setFormData((prevFormData) => ({
+					...prevFormData,
+					ImageUrl: newImageUrl, // Assicurati che newImageUrl non sia undefined
+				}));
+				toast.success("Immagine caricata con successo!");
+			} else {
+				throw new Error("Errore durante il ritorno del nuovo URL immagine");
+			}
 		} catch (error) {
 			toast.error("Errore durante il caricamento dell'immagine: " + error.message);
 		}
 	};
 
-	const handleUpdate = () => {
-		dispatch(updateProduct({ id: productToEdit.idprodotto, data: formData }))
-			.unwrap()
-			.then(() => {
-				navigate("/abbonamenti");
-				toast.success("Prodotto aggiornato con successo!");
-			})
-			.catch((error) => {
-				console.error("Update failed: ", error);
-				toast.error("Aggiornamento fallito: " + error.message);
-			});
+	const handleUpdate = async (event) => {
+		event.preventDefault();
+		// Crea un oggetto FormData
+		const data = new FormData();
+		// Aggiungi i dati al FormData
+		Object.keys(formData).forEach((key) => {
+			data.append(key, formData[key]);
+		});
+
+		try {
+			await dispatch(updateProduct({ id: productToEdit.idprodotto, data })).unwrap();
+			toast.success("Prodotto aggiornato con successo!");
+			navigate("/abbonamenti");
+		} catch (error) {
+			toast.error("Aggiornamento fallito: " + error.message);
+		}
 	};
 
 	const handleDelete = async () => {
@@ -102,6 +129,8 @@ const EditProduct = () => {
 				.replace(/\\/g, "/") // Sostituisce tutti i backslash con slash
 				.replace(/uploads\/products\//, "") // Rimuove la parte specifica dell'URL
 		: "/placeholder.png";
+
+	const imageUrlWithTimestamp = `${imageUrl}?timestamp=${new Date().getTime()}`;
 	return (
 		<div className="d-flex align-items-center justify-content-center">
 			<Col xs={12} md={4} className="mt-3">
@@ -110,34 +139,16 @@ const EditProduct = () => {
 						<h2>Edit Product</h2>
 					</Card.Header>
 					<Card.Body>
-						<Card.Img
-							src={imageUrl} // Utilizza la variabile imageUrl
-							alt={productToEdit.tipoAbbonamento}
-							className="img-circle"
-						/>
+						<Card.Img src={imageUrlWithTimestamp} alt={productToEdit.tipoAbbonamento} className="img-circle" />
 
 						<Form>
-							{/* <Form.Group className="mb-3" controlId="formTipoAbbonamento">
-								<Form.Label>Tipo Abbonamento</Form.Label>
-								<Form.Control
-									type="text"
-									name="tipoAbbonamento"
-									value={formData.tipoAbbonamento}
-									onChange={handleChange}
-								/>
-							</Form.Group> */}
 							<Form.Group className="mb-3" controlId="formImageUrl">
 								<Form.Label>Immagine</Form.Label>
-								<Form.Control
-									type="file"
-									name="tipoAbbonamento"
-									// value={formData.tipoAbbonamento}
-									onChange={handleImageChange}
-								/>
+								<Form.Control type="file" name="image" onChange={handleImageChange} />
 							</Form.Group>
 							<Form.Group className="mb-3" controlId="formPrezzo">
 								<Form.Label>Prezzo</Form.Label>
-								<Form.Control type="number" name="prezzo" value={formData.prezzo} onChange={handleChange} />
+								<Form.Control type="number" step="0.01" name="prezzo" value={formData.prezzo} onChange={handleChange} />
 							</Form.Group>
 							<Form.Group className="mb-3" controlId="formDescrizione">
 								<Form.Label>Descrizione</Form.Label>

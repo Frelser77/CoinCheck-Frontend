@@ -48,7 +48,7 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 	};
 
 	return (
-		<Modal show={isOpen} onHide={onClose}>
+		<Modal show={isOpen} onHide={onClose} className="post-modal">
 			<Modal.Header closeButton>
 				<Modal.Title>{editingPost ? "Modifica Post" : "Crea Post"}</Modal.Title>
 			</Modal.Header>
@@ -58,17 +58,9 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 					<Form.Group className="mb-3">
 						<Form.Control type="file" onChange={handleFileChange} />
 					</Form.Group>
-					{/* <Form.Group className="mb-3">
-						<Form.Control
-							name="title"
-							type="text"
-							value={newPost.title}
-							onChange={handleInputChange}
-							placeholder="Title"
-						/>
-					</Form.Group> */}
 					<Form.Group className="mb-3">
 						<Form.Control
+							style={{ resize: "none", height: "150px" }}
 							as="textarea"
 							name="content"
 							value={newPost.content}
@@ -76,14 +68,15 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 							placeholder="What's on your mind?"
 							rows={3}
 							required
+							title="Write a post"
 						/>
 					</Form.Group>
 				</Modal.Body>
 				<Modal.Footer>
-					<Button variant="secondary" onClick={onClose}>
+					<Button variant="danger" onClick={onClose}>
 						Chiudi
 					</Button>
-					<Button variant="primary" type="submit">
+					<Button variant="body" type="submit">
 						Salva Post
 					</Button>
 				</Modal.Footer>

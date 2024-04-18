@@ -32,13 +32,13 @@ const Footer = () => {
 								</a>
 							</li>
 							<li>
-								<a href="/contact" className="text-light">
-									Contattaci
+								<a href="/privacy" className="text-light">
+									Privacy
 								</a>
 							</li>
 							<li>
-								<a href="/privacy" className="text-light">
-									Privacy Policy
+								<a href="/contact" className="text-light">
+									Contattaci
 								</a>
 							</li>
 						</ul>
@@ -46,7 +46,7 @@ const Footer = () => {
 					<Col
 						xs={12}
 						md={4}
-						className="d-flex flex-column justify-content-center justify-content-md-end align-items-end"
+						className="d-flex flex-column justify-content-center justify-content-lg-end align-items-center align-items-lg-end"
 					>
 						<h6>
 							Ringraziamenti speciali a:
@@ -72,8 +72,11 @@ const Footer = () => {
 					</Col>
 				</Row>
 
-				<Row className="p-4">
-					<Col xs={12} className="d-flex justify-content-center justify-content-md-between">
+				<Row className="">
+					<Col
+						xs={12}
+						className="d-flex flex-column flex-lg-row justify-content-center justify-content-center justify-content-lg-between"
+					>
 						<div className="d-flex justify-content-center justify-content-md-center">
 							<a href="https://www.facebook.com/" className="text-light me-2" target="_blanck">
 								<FontAwesomeIcon icon={faFacebookF} />
@@ -91,16 +94,12 @@ const Footer = () => {
 							</a>
 						</div>
 
-						{/* <div className="d-flex justify-content-center justify-content-md-center"> */}
-						<h6>© {year} CoinCheck. Tutti i diritti riservati</h6>
-						{/* </div> */}
-						<p className="small-text text-light">Ultimo login: {formattedDate}</p>
+						<div className="d-flex align-items-center flex-column flex-lg-row justify-content-center justify-content-lg-center">
+							<h6>© {year} CoinCheck. Tutti i diritti riservati</h6>
+							<p className="small-text text-light">Ultimo login: {formattedDate}</p>
+						</div>
 					</Col>
 				</Row>
-
-				{/* <Row className="">
-					<Col xs={12} className="d-flex justify-content-between align-items-center"></Col>
-				</Row> */}
 			</Container>
 		</footer>
 	);

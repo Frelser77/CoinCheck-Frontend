@@ -85,7 +85,7 @@ function Login() {
 		<>
 			<Loader isLoading={isLoading} />
 			<Row className="d-flex aling-items-center justify-content-center">
-				<Col xs={12} md={5} className=" my-5">
+				<Col xs={9} md={5} className=" my-5">
 					<Card className="border border-2 shadow-sm p-3">
 						<CardBody>
 							<CardTitle className="text-center fs-2">Login</CardTitle>
@@ -133,6 +133,11 @@ function Login() {
 								<p className="p-0 m-0">Non sei ancora registrato?</p>
 								<NavLink to="/Register" className="nav-link reg-hover">
 									Registrati
+								</NavLink>
+							</div>
+							<div className="text-center mt-3">
+								<NavLink to="/reset-password" className="text-decoration-none">
+									Hai dimenticato la password?
 								</NavLink>
 							</div>
 						</CardBody>

@@ -16,6 +16,7 @@ import cryptoNewsReducer, { resetCryptoNewsState } from "../reducer/CryptocCompa
 import favoritesReducer from "../reducer/CryptoDataBase/favoriteSlice";
 import { selectedUserIdSlice } from "../reducer/Utenti/selectedUserIdSlice";
 import forumSlice from "../reducer/Post/forumSlice";
+import passwordResetReducer from "../ResetPassword/passwordResetSlice";
 // Il tuo middleware per controllare la scadenza del token
 const checkTokenExpirationMiddleware = (store) => (next) => (action) => {
 	const token = store.getState().login.token;
@@ -87,6 +88,7 @@ const rootReducer = combineReducers({
 	// userPreferences: userPreferencesReducer,
 	selectedUserId: selectedUserIdSlice.reducer,
 	posts: forumSlice,
+	passwordReset: passwordResetReducer,
 	// Altri reducers qui se necessario
 });
 

@@ -8,7 +8,7 @@ import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
 import useUserRole from "../../hooks/useUserRole";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faCartPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const ShoppingCart = () => {
 	const dispatch = useDispatch();
@@ -41,28 +41,34 @@ const ShoppingCart = () => {
 	if (loading) return <div>Loading products...</div>;
 
 	return (
-		<Row className="g-2 p-4 my-3">
+		<Row className="g-2 mt-0 mt-lg-2">
+			<div className="text-center text-white">
+				<h2>
+					Acquista <strong>SUBITO</strong> uno dei nostri abbonamenti
+				</h2>
+				<p>Ti garantiranno dei vantaggi e alcune piccolezze nell'app!</p>
+			</div>
 			{products.map((product) => (
-				<Col xs={12} md={4} key={product.idprodotto}>
-					<Card className="h-100 abbonamento position-relative">
+				<Col xs={12} sm={4} key={product.idprodotto}>
+					<Card className="h-100 position-relative">
 						<Card.Img
 							variant="top"
 							src={product.imageUrl.replace("uploads\\products\\", "")}
 							alt={product.tipoAbbonamento}
-							className="img-xl"
+							className="mx-auto abbonamento"
 						/>
 						<Card.Body className="d-flex flex-column align-items-start justify-content-between">
 							<Card.Title>{product.tipoAbbonamento}</Card.Title>
 							<Card.Text>€{product.prezzo.toFixed(2)}</Card.Text>
 							<Card.Text> {product.descrizione}</Card.Text>
-							<ButtonGroup>
-								<div className="btn btn-body" onClick={() => handleAddToCart(product)}>
-									Aggiungi
-								</div>
-								<div className="btn btn-outline-danger" onClick={() => handleRemoveFromCart(product.idprodotto)}>
-									Rimuovi
-								</div>
-							</ButtonGroup>
+							<div className="d-flex align-items-center justify-content-between gap-4 gap-lg-3 mx-auto">
+								<button className="btn btn-body btn-sm" onClick={() => handleAddToCart(product)}>
+									<FontAwesomeIcon icon={faCartPlus} /> <span className="d-block d-sm-none d-lg-block">Aggiungi </span>
+								</button>
+								<button className="btn btn-danger btn-sm" onClick={() => handleRemoveFromCart(product.idprodotto)}>
+									<FontAwesomeIcon icon={faTrash} /> <span className="d-block d-sm-none d-lg-block">Rimuovi </span>
+								</button>
+							</div>
 							{(role === "Admin" || role === "Moderatore") && (
 								<Link
 									to={`/Abbonamenti/${product.idprodotto}/edit`}
@@ -75,9 +81,9 @@ const ShoppingCart = () => {
 					</Card>
 				</Col>
 			))}
-			<div className="text-center mt-4">
+			<div className="text-center my-2">
 				<Link to="/Checkout" className="btn btn-body">
-					Procedi al Checkout
+					Checkout
 				</Link>
 			</div>
 		</Row>

@@ -29,6 +29,8 @@ import { motion } from "framer-motion";
 import ForumHome from "./components/Forum/ForumHome";
 import PageNotFound from "./components/Layout/PageNotFound";
 import MobileNavbar from "./components/Layout/MobileNavbar";
+import ResetPasswordPage from "./components/ResetPassword/ResetPasswordPage";
+import NotLoggedReset from "./components/ResetPassword/NotLoggedReset";
 
 function App() {
 	const { role, isLoading } = useUserRole();
@@ -58,7 +60,7 @@ function App() {
 		<BrowserRouter>
 			<ToasterComponent />
 			<MyNavbar />
-			{isMobile && <MobileNavbar />}
+			{isMobile && <MobileNavbar showFavorites={showFavorites} setShowFavorites={setShowFavorites} />}
 			<RedirectToLoginIfLoggedOut />
 			<Container fluid className="">
 				<Row className="d-flex align-itmes-center justify-content-between min-vh-100">
@@ -83,6 +85,8 @@ function App() {
 
 							<Route path="/login" element={<Login />} />
 							<Route path="/Register" element={<Register />} />
+							<Route path="/reset-password" element={<NotLoggedReset />} />
+							<Route path="/reset-password/:token/:userId" element={<ResetPasswordPage />} />
 
 							{/* Le seguenti sono rotte protette che richiedono autenticazione admin o moderatore*/}
 							{adminAndModeratorRoutes.includes(role) && <Route path="/utentiList" element={<UtentiList />} />}

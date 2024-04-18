@@ -13,19 +13,19 @@ import { loadUserPreferences } from "../../redux/reducer/CryptoDataBase/favorite
 
 const UtentiList = () => {
 	const dispatch = useDispatch();
-	const { role, isLoading } = useUserRole();
-	console.log(role, isLoading);
 	const users = useSelector((state) => state.utenti.users);
 	const status = useSelector((state) => state.utenti.status);
 	const error = useSelector((state) => state.utenti.error);
+	const { role, isLoading } = useUserRole();
+	console.log(role, isLoading);
 	const userPreferences = useSelector((state) => state.favorites?.userPreferences);
 	const [activeUserId, setActiveUserId] = React.useState(null);
 
 	useEffect(() => {
-		if (status === "idle" || status === "failed") {
+		if (status === "failed" || status === "idle") {
 			dispatch(fetchUtenti());
 		}
-	}, [dispatch, status]);
+	}, [dispatch, status, role]);
 
 	if (status === "loading" || isLoading) {
 		return <Loader isLoading={true} />;

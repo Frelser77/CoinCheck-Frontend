@@ -78,8 +78,8 @@ const MyCard = React.memo(({ coin, currency, stats, onSave }) => {
 		<div className="bg-all p-1">
 			<Card className="rounded-0 other-card">
 				<Card.Body>
-					<Row className="">
-						<Col xs={12} md={5} className="d-flex align-items-center justify-content-between gap-3">
+					<Row className="d-flex">
+						<Col md={12} lg={5} className="d-flex align-items-center justify-content-between gap-3">
 							<Card.Title className="my-auto fs-6">{coin.display_name}</Card.Title>
 							<Card.Text className={`fs-6 mx-2  my-auto ${priceChangeColor}`}>{priceChangePercentage}%</Card.Text>
 							<ResponsiveContainer width="50%" height={30}>
@@ -89,10 +89,20 @@ const MyCard = React.memo(({ coin, currency, stats, onSave }) => {
 								</LineChart>
 							</ResponsiveContainer>
 						</Col>
-						<Col xs={12} md={2} className="text-center my-auto">
-							<span className="mx-2">{formatNumber(coin.price, 2, 2)} </span> {currency}
+						<Col
+							xs={12}
+							md={5}
+							lg={2}
+							className="my-auto d-flex align-items-start justify-content-center flex-column my-auto"
+						>
+							<span className="d-inline-block">{formatNumber(coin.price, 2, 2)} </span> {currency}
 						</Col>
-						<Col xs={12} md={5} className="d-flex justify-content-around align-items-center gap-2">
+						<Col
+							xs={12}
+							md={7}
+							lg={5}
+							className="d-flex justify-content-lg-around justify-content-end align-items-center gap-2"
+						>
 							{(role === "Admin" || role === "Moderatore") && (
 								<OverlayTrigger
 									key={`top + ${coin.id}`}

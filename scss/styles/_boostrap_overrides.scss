@@ -540,8 +540,8 @@ footer {
 }
 
 .abbonamento:hover {
-	transform: scale(1.02);
-	box-shadow: 0px 10px 10px 0 rgba(0, 0, 0, 0.6);
+	transform: scale(1.2);
+	// box-shadow: 0px 10px 10px 0 rgba(0, 0, 0, 0.6);
 }
 
 .other-card.card {
@@ -726,4 +726,31 @@ footer {
 
 .reg-hover:hover {
 	color: $primary;
+}
+
+.slick-prev {
+	left: 10px;
+}
+.slick-next {
+	right: 10px;
+}
+
+.logout-text {
+	color: white;
+}
+.logout-text:hover {
+	color: #000;
+}
+
+.navbar-nav .nav-link.show {
+	color: lighten($body, 40%);
+}
+
+.ReactModal__Content--after-open {
+	padding: 0 !important;
+}
+
+.post-modal .modal-content {
+	background-color: $all;
+	color: $white;
 }

@@ -20,13 +20,11 @@ export const updateProduct = createAsyncThunk("products/updateProduct", async ({
 	try {
 		const response = await fetchWithAuth(`${Url}Abbonamenti/${id}`, {
 			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
+			body: data, // "data" è già un oggetto FormData
 		});
 		if (!response.ok) throw new Error("Network response was not ok");
-		return {};
+		if (response.status === 204) return {}; // ritorna un oggetto vuoto se la risposta è 204
+		return await response.json();
 	} catch (error) {
 		return rejectWithValue(error.message);
 	}

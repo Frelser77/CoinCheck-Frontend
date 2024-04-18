@@ -136,22 +136,24 @@ const CryptoList = ({ showFavorites }) => {
 	useEffect(() => {
 		const observer = new IntersectionObserver(
 			(entries) => {
-				if (entries[0].isIntersecting && !isLoading && !fetching && !loadedAll) {
+				if (entries[0].isIntersecting && !isLoading && !fetching && !loadedAll && !showFavorites) {
 					loadMoreCoins();
 				}
 			},
-			{ threshold: 0.1 } // Configurazione soglia di intersezione
+			{ threshold: 0.1 }
 		);
 
 		if (loadMoreRef.current) {
 			observer.observe(loadMoreRef.current);
 		}
+
+		// Disconnect the observer if all coins are loaded or when showing favorites
 		return () => {
 			if (loadMoreRef.current) {
 				observer.unobserve(loadMoreRef.current);
 			}
 		};
-	}, [loadMoreCoins, isLoading, fetching, loadedAll]);
+	}, [loadMoreCoins, isLoading, fetching, loadedAll, showFavorites]);
 
 	const filteredCoins = showFavorites
 		? coins.filter((coin) => userPreferences.some((pref) => pref.nomeCoin === coin.id))
@@ -194,7 +196,11 @@ const CryptoList = ({ showFavorites }) => {
 				{loadingCoins.map((id) => (
 					<SkeletonCard key={`loading-${id}`} />
 				))}
-				{!loadedAll && <div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>}
+				<div
+					ref={loadMoreRef}
+					className={!loadedAll || !showFavorites ? "" : "d-none"}
+					style={{ height: "10px", marginTop: "50px" }}
+				></div>
 			</div>
 		</>
 	);
