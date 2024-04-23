@@ -95,7 +95,9 @@ const MyCard = React.memo(({ coin, currency, stats, onSave }) => {
 							lg={2}
 							className="my-auto d-flex align-items-start justify-content-center flex-column my-auto"
 						>
-							<span className="d-inline-block">{formatNumber(coin.price, 2, 2)} </span> {currency}
+							<span className="d-inline-block">
+								{formatNumber(coin.price, 2, 2)} {currency}
+							</span>
 						</Col>
 						<Col
 							xs={12}
@@ -110,7 +112,7 @@ const MyCard = React.memo(({ coin, currency, stats, onSave }) => {
 									placement="top"
 									overlay={<Tooltip id={`tooltip-top`}>Salva/Aggiorna coin nel DB</Tooltip>}
 								>
-									<div className="btn btn-sm btn-success text-white  my-auto" onClick={saveCoinDetails}>
+									<div className="nav-link mylink text-light point my-auto" onClick={saveCoinDetails}>
 										<FontAwesomeIcon icon={faUpload} />
 									</div>
 								</OverlayTrigger>
@@ -121,7 +123,7 @@ const MyCard = React.memo(({ coin, currency, stats, onSave }) => {
 								placement="top"
 								overlay={<Tooltip id={`tooltip-top`}>Dettagli coin</Tooltip>}
 							>
-								<div className="btn btn-transparent my-auto" onClick={handleDetailsClick}>
+								<div className="nav-link point detlink my-auto" onClick={handleDetailsClick}>
 									<FontAwesomeIcon className="" icon={faChartLine} />
 								</div>
 							</OverlayTrigger>

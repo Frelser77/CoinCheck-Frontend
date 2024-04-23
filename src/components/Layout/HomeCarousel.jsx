@@ -70,7 +70,7 @@ const HomeCarousel = ({ isSidebarOpen }) => {
 	};
 
 	return (
-		<>
+		<div className="mx-auto">
 			<Loader isLoading={isLoading} />
 			<motion.div className="d-flex align-items-center" transition={{ type: "spring", stiffness: 260, damping: 20 }}>
 				<div className={`${styles.carouselWrapper}`}>
@@ -95,7 +95,7 @@ const HomeCarousel = ({ isSidebarOpen }) => {
 					</Slider>
 				</div>
 			</motion.div>
-		</>
+		</div>
 	);
 };
 

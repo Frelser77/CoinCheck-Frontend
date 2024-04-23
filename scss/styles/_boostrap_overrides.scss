@@ -22,6 +22,7 @@ $list: rgb(34, 34, 36);
 $body: #353353;
 $all: #0c0a2b;
 $allight: #f3f5d4;
+$gold: #c0a868;
 /* role color */
 $color-admin-start: #009ffd;
 $color-admin-end: #2a2a72;
@@ -74,6 +75,7 @@ $theme-colors: (
 	"pro": $color-pro,
 	"pro-dark": $color-pro-dark,
 	"pro-darker": $color-pro-darker,
+	"gold": $gold,
 );
 
 // Definisci i tuoi valori di spaziatura
@@ -719,13 +721,41 @@ footer {
 	color: $white;
 }
 
+.mylink {
+	text-decoration: none;
+	color: lighten($primary, 20%);
+	&:hover {
+		color: $gold;
+		text-decoration: underline;
+	}
+}
+
+.form-control::placeholder {
+	color: lighten($primary, 20%);
+}
+.form-control {
+	background: transparent;
+	border: none;
+	border-bottom: 1px solid #ced4da; /* Stile della linea dell'input */
+	/* ... altre proprietà ... */
+}
+
+.form-label {
+	color: lighten($primary, 20%) !important;
+	opacity: 0.8;
+	position: absolute;
+	top: -15px;
+	left: 10px;
+}
+.form-control:focus,
+.form-control:not(:placeholder-shown) {
+	outline: none;
+	box-shadow: none;
+}
+
 .comment-top {
 	top: -25px;
 	right: -5px;
-}
-
-.reg-hover:hover {
-	color: $primary;
 }
 
 .slick-prev {
@@ -756,5 +786,111 @@ footer {
 	width: auto;
 }
 
-.ReactModal__Content--after-open {
+#root:before {
+	-webkit-background-attachment: fixed;
+	background-attachment: fixed;
+	background-image: url(/assets/img/png-prova-dark-mode.png);
+	background-position: 50%;
+	background-repeat: repeat;
+	background-size: 5%;
+	bottom: 0;
+	content: "";
+	left: 0;
+	opacity: 0.2;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: -1;
+}
+
+.yscroll-none {
+	overflow-y: hidden;
+}
+
+.xscroll-none {
+	overflow-x: hidden;
+}
+
+.no-scrol {
+	overflow-y: hidden;
+	overflow-x: hidden;
+}
+
+.no-scrollbar {
+	scrollbar-width: none; /* Nasconde la scrollbar su Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+	display: none; /* Nasconde la scrollbar su WebKit browsers come Chrome e Safari */
+}
+
+.text-underline {
+	text-decoration: underline;
+}
+
+// input[type="file"] {
+// }
+
+.Toastify__close-button svg {
+	fill: $gold !important; // Applica il colore dorato alla X
+}
+
+.Toastify__close-button:hover svg {
+	fill: $gold !important;
+}
+
+.Toastify--animate-icon svg {
+	fill: $gold !important;
+}
+
+.Toastify__toast-body > div:last-child {
+	color: lighten($primary, 20%) !important;
+}
+
+.Toastify__progress-bar--wrp {
+	background-color: darken($primary, 20%) !important;
+}
+
+.Toastify__progress-bar--success {
+	background-color: lighten($primary, 20%) !important;
+}
+
+.button-range {
+	margin: 0 4px;
+	border: 0;
+	cursor: pointer;
+	background-color: #999fdf;
+	color: #000;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.button-range:hover {
+	background-color: #777bdf; /* Colore più scuro per l'hover */
+	color: #fff;
+	border: 0;
+}
+
+.button-range.selected {
+	background-color: lighten(#0c0a2b, 10%); /* Colore di sfondo per il bottone selezionato */
+	color: #c0a868; /* Colore del testo per il bottone selezionato */
+	border: 0;
+}
+
+.detlink {
+	color: $black;
+	&:hover {
+		color: $gold;
+	}
+}
+
+.bronze {
+	color: #cd7f32; /* Bronzo */
+}
+
+.silver {
+	color: #c0c0c0; /* Argento */
+}
+
+.gold {
+	color: $gold; /* Oro */
 }

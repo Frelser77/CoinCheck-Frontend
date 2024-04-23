@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toggleLikePost, commentOnPost, softDeletePost } from "../../redux/reducer/Post/forumSlice";
@@ -33,7 +33,11 @@ export const getUserNameStyle = (role) => {
 	}
 };
 
-const Post = ({ post, onEdit, currentUserId }) => {
+const postAreEqual = (prevProps, nextProps) =>
+	prevProps.post.id === nextProps.post.id &&
+	JSON.stringify(prevProps.post.comments) === JSON.stringify(nextProps.post.comments);
+
+const Post = memo(({ post, onEdit, currentUserId }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const isLikingPost = useSelector((state) => state.posts.isLikingPost);
@@ -45,18 +49,61 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	const { role, isLoading } = useUserRole();
 	const userId = useSelector((state) => state.login.user?.userId);
 	const [comments, setComments] = useState([]);
+	const likingPostId = useSelector((state) => state.posts.likingPostId);
+	const isLikingThisPost = post.postId === likingPostId;
+	const [topThreeLikes, setTopThreeLikes] = useState([]);
+	const [localComments, setLocalComments] = useState(post.comments);
 
 	useEffect(() => {
-		setHasLikedPost(post?.likes?.some((like) => like.userId === currentUserId));
-	}, [post?.likes, currentUserId]);
+		setLocalComments(post.comments);
+	}, [post.comments]);
+
+	useEffect(() => {
+		if (post?.likes?.length > 0) {
+			// Mappa i likes per arricchirli con il ruolo dell'utente
+			const enrichedLikes = post.likes.map((like) => ({
+				...like,
+				style: getUserNameStyle(like.user?.roleName || ""),
+			}));
+
+			// Filtra i primi tre likes per mostrarli in modo prominente
+			const topThreeLikes = enrichedLikes.slice(0, 3);
+			setTopThreeLikes(topThreeLikes);
+
+			// Verifica se l'utente corrente ha messo like al post
+			const userHasLiked = post.likes.some((like) => like.userId === currentUserId);
+			setHasLikedPost(userHasLiked);
+		}
+	}, [post.likes, currentUserId]);
 
 	const handleLike = async () => {
 		if (isLikingPost) {
 			return;
 		}
 
-		await dispatch(toggleLikePost({ postId: post.postId }));
-		setHasLikedPost(!hasLikedPost);
+		try {
+			const response = await dispatch(toggleLikePost({ postId: post.postId })).unwrap();
+			if (response && response.likesDetails) {
+				// Aggiorna il conteggio dei likes e il loro dettaglio
+				const updatedTopThreeLikes = response.likesDetails.slice(0, 3).map((like) => ({
+					...like,
+					style: getUserNameStyle(like.user?.ruoloNome || ""),
+				}));
+				setTopThreeLikes(updatedTopThreeLikes);
+
+				// Aggiorna se l'utente corrente ha messo il like
+				const userHasLikedPost = response.likesDetails.some((like) => like.userId === currentUserId);
+				setHasLikedPost(userHasLikedPost);
+			}
+		} catch (error) {
+			console.error("Error updating like:", error);
+			toast.error("Errore nell'aggiornamento del like.");
+		}
+	};
+
+	const handleAddComment = (newComment) => {
+		const updatedComments = [...localComments, newComment];
+		setLocalComments(updatedComments);
 	};
 
 	const handleToggleComments = () => {
@@ -95,15 +142,15 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	// Sistemare il percorso dell'immagine
 	const userImagePath = post.userImage
 		? `${post.userImage.replace(/\\/g, "/")}?v=${post.postId}-${new Date(post.postDate).getTime()}`
-		: "";
+		: " ";
 
 	const postOwnerStyle = getUserNameStyle(post.userRole);
 
-	const topThreeLikes =
-		post.likes?.slice(0, 3).map((like) => {
-			const style = like.user ? getUserNameStyle(like.user.roleName) : "";
-			return { ...like, style };
-		}) || [];
+	// const topThreeLikes =
+	// 	post.likes?.slice(0, 3).map((like) => {
+	// 		const style = like.user ? getUserNameStyle(like.user.roleName) : "";
+	// 		return { ...like, style };
+	// 	}) || [];
 
 	const getTimeDifference = (date) => {
 		const now = new Date();
@@ -132,136 +179,139 @@ const Post = ({ post, onEdit, currentUserId }) => {
 	};
 
 	const updateCommentInList = (updatedComment) => {
-		setComments(comments.map((c) => (c.commentId === updatedComment.commentId ? updatedComment : c)));
+		// Aggiorna i commenti nello stato locale o globale qui
+		setComments(comments.map((comment) => (comment.id === updatedComment.id ? updatedComment : comment)));
 	};
 
 	return (
-		<Row className="justify-content-center">
-			<Col xs={12} md={6} lg={8}>
-				<Card className="mb-4 post-card position-relative">
-					<Card.Header className="d-flex align-items-center justify-content-between p-2">
-						<div className="d-flex align-items-center">
-							<CustomImage
-								src={userImagePath}
-								alt={post.userName}
-								className="mr-2 point user-img-post"
-								onClick={() => goToUserProfile(post.userId)}
-								Url={Url}
+		// <Row className="justify-content-center">
+		// <Col xs={12} sm={8}>
+		<Card className="mb-4 post-card position-relative">
+			<Card.Header className="d-flex align-items-center justify-content-between p-2">
+				<div className="d-flex align-items-center">
+					<CustomImage
+						src={userImagePath}
+						alt={post.userName}
+						className="mr-2 point user-img-post"
+						onClick={() => goToUserProfile(post.userId)}
+						Url={Url}
+					/>
+					<strong className={`ms-2 ${postOwnerStyle}`}>{post.userName}</strong>
+				</div>
+				<small className="ms-auto">{getTimeDifference(new Date(post.postDate))}</small>
+			</Card.Header>
+			{post.filePath && (
+				<Card.Img
+					variant="top"
+					src={`${Url}${post.filePath.replace(/\\/g, "/")}`}
+					alt="Post"
+					onClick={() => openImageModal(`${Url}${post.filePath.replace(/\\/g, "/")}`)}
+					className="point img-post"
+				/>
+			)}
+			{/* Modal per l'immagine ingrandita */}
+			<Modal
+				isOpen={modalIsOpen}
+				onRequestClose={closeImageModal}
+				contentLabel="Ingrandimento immagine"
+				className={`${styles.Modal}`}
+				overlayClassName={`${styles.Overlay}`}
+			>
+				<img src={enlargedImage} alt="Ingrandimento" className={`img-fluid ${styles.imgPost} `} />
+			</Modal>
+			<Card.Body className="p-2">
+				<Card.Text className="mt-2">{post.content}</Card.Text>
+				<div className="d-flex flex-column align-items-start justify-content-center gap-1">
+					<div className="d-flex gap-1 align-items-center justify-content-between">
+						{hasLikedPost ? (
+							<FaHeart
+								className={`me-1 point icon-like ${isLikingThisPost ? "like-loading" : "liked"}`}
+								onClick={handleLike}
 							/>
-							<strong className={`ms-2 ${postOwnerStyle}`}>{post.userName}</strong>
-						</div>
-						<small className="ms-auto">{getTimeDifference(new Date(post.postDate))}</small>
-					</Card.Header>
-					{post.filePath && (
-						<Card.Img
-							variant="top"
-							src={`${Url}${post.filePath.replace(/\\/g, "/")}`}
-							alt="Post"
-							onClick={() => openImageModal(`${Url}${post.filePath.replace(/\\/g, "/")}`)}
-							className="point img-post"
-						/>
-					)}
-					{/* Modal per l'immagine ingrandita */}
-					<Modal
-						isOpen={modalIsOpen}
-						onRequestClose={closeImageModal}
-						contentLabel="Ingrandimento immagine"
-						className={`${styles.Modal}`}
-						overlayClassName={`${styles.Overlay}`}
-					>
-						<img src={enlargedImage} alt="Ingrandimento" className={`img-fluid ${styles.imgPost} `} />
-					</Modal>
-					<Card.Body className="p-2">
-						<Card.Text className="mt-2">{post.content}</Card.Text>
-						<div className="d-flex flex-column align-items-start justify-content-center gap-1">
-							<div className="d-flex gap-1 align-items-center justify-content-between">
-								{hasLikedPost ? (
-									<FaHeart
-										className={`me-1 point icon-like ${isLikingPost ? "like-loading" : "liked"}`}
-										onClick={handleLike}
-									/>
-								) : (
-									<FaRegHeart
-										className={`me-1 point icon-like ${isLikingPost ? "like-loading" : ""}`}
-										onClick={handleLike}
-									/>
-								)}
-								<FaRegComment className="me-1 point icon-comment" onClick={handleToggleComments} />
-								<span>{post.likeCount} likes</span>
-							</div>
+						) : (
+							<FaRegHeart
+								className={`me-1 point icon-like ${isLikingThisPost ? "like-loading" : ""}`}
+								onClick={handleLike}
+							/>
+						)}
+						<FaRegComment className="me-1 point icon-comment" onClick={handleToggleComments} />
+						<span>{post.likeCount} likes</span>
+					</div>
 
-							<div className="like-profile-images d-flex align-items-start justify-content-between">
-								<div className="me-4">
-									{topThreeLikes.map((like, index) => (
-										<CustomImage
-											key={like.likeId}
-											src={`${like.user.imageUrl.replace(/\\/g, "/")}`}
-											alt={`Like by ${like.user.username}`}
-											className={`profile-image  ${index > 0 ? "overlapped" : ""}`}
-											onClick={() => goToUserProfile(like.userId)}
-											Url={Url}
-										/>
-									))}
-								</div>
-								<div className="ms-3 small-text">
-									{topThreeLikes.map((like, index) => (
-										<span
-											key={`like-${like.likeId}-${index}`} // Assicurati che la key sia unica
-											className={`like-username me-1 ${like.style}`}
-											onClick={() => goToUserProfile(like.userId)}
-										>
-											{like.user.username}
-										</span>
-									))}
-								</div>
-							</div>
-							{(role === "Admin" || role === "Moderatore" || post.userId === userId) && (
-								<Dropdown className="edit-icon position-absolute span-top end-0 m-2 point">
-									<Dropdown.Toggle variant="transparent" id="dropdown-basic" size="sm">
-										<span className="dot">•••</span>
-									</Dropdown.Toggle>
-									<Dropdown.Menu>
-										<Dropdown.Item onClick={() => onEdit(post)}>Modifica</Dropdown.Item>
-										<Dropdown.Item onClick={handleSoftDelete}>Elimina</Dropdown.Item>
-									</Dropdown.Menu>
-								</Dropdown>
-							)}
+					<div className="like-profile-images d-flex align-items-start justify-content-between">
+						<div className="me-4">
+							{topThreeLikes.map((like, index) => (
+								<CustomImage
+									key={like.likeId}
+									src={`${like.user.imageUrl.replace(/\\/g, "/")}`}
+									alt={`Like by ${like.user.username}`}
+									className={`profile-image point  ${index > 0 ? "overlapped" : ""}`}
+									onClick={() => goToUserProfile(like.userId)}
+									Url={Url}
+								/>
+							))}
 						</div>
-						{showCommentForm && <CommentForm postId={post.postId} postOwnerStyle={postOwnerStyle} />}
-					</Card.Body>
-					<Card.Footer className="p-2">
-						<div className="comments-section">
-							<div className="point" onClick={handleComments}>
-								{post.comments?.length > 0
-									? `${post.comments.length} ${getDifferentComments(post.comments)}`
-									: "No comments yet."}
-							</div>
-							{showComments
-								? // Mostra tutti i commenti se showComments è true
-								  post.comments?.map((comment) => (
-										<Comment
-											key={comment.commentId}
-											comment={comment}
-											currentUserId={currentUserId}
-											postId={post.id}
-											updateCommentInList={updateCommentInList}
-										/>
-								  ))
-								: // Mostra solo il commento con più like
-								  topComment && (
-										<Comment
-											comment={topComment}
-											currentUserId={currentUserId}
-											postId={post.id}
-											updateCommentInList={updateCommentInList}
-										/>
-								  )}
+						<div className="ms-3 small-text">
+							{topThreeLikes.map((like, index) => (
+								<span
+									key={`like-${like.likeId}-${index}`} // Assicurati che la key sia unica
+									className={`like-username point me-1 ${like.style}`}
+									onClick={() => goToUserProfile(like.userId)}
+								>
+									{like.user.username}
+								</span>
+							))}
 						</div>
-					</Card.Footer>
-				</Card>
-			</Col>
-		</Row>
+					</div>
+					{(role === "Admin" || role === "Moderatore" || post.userId === userId) && (
+						<Dropdown className="edit-icon position-absolute span-top end-0 m-2 point">
+							<Dropdown.Toggle variant="transparent" id="dropdown-basic" size="sm">
+								<span className="dot">•••</span>
+							</Dropdown.Toggle>
+							<Dropdown.Menu>
+								<Dropdown.Item onClick={() => onEdit(post)}>Modifica</Dropdown.Item>
+								<Dropdown.Item onClick={handleSoftDelete}>Elimina</Dropdown.Item>
+							</Dropdown.Menu>
+						</Dropdown>
+					)}
+				</div>
+				{showCommentForm && (
+					<CommentForm postId={post.postId} postOwnerStyle={postOwnerStyle} onAddComment={handleAddComment} />
+				)}
+			</Card.Body>
+			<Card.Footer className="p-2">
+				<div className="comments-section">
+					<div className="point" onClick={handleComments}>
+						{post.comments?.length > 0
+							? `${post.comments.length} ${getDifferentComments(post.comments)}`
+							: "No comments yet."}
+					</div>
+					{showComments
+						? // Mostra tutti i commenti se showComments è true
+						  post.comments?.map((comment) => (
+								<Comment
+									key={comment.commentId}
+									comment={comment}
+									currentUserId={currentUserId}
+									postId={post.id}
+									updateCommentInList={updateCommentInList}
+								/>
+						  ))
+						: // Mostra solo il commento con più like
+						  topComment && (
+								<Comment
+									comment={topComment}
+									currentUserId={currentUserId}
+									postId={post.id}
+									updateCommentInList={updateCommentInList}
+								/>
+						  )}
+				</div>
+			</Card.Footer>
+		</Card>
+		// </Col>
+		// </Row>
 	);
-};
+}, postAreEqual);
 
 export default Post;

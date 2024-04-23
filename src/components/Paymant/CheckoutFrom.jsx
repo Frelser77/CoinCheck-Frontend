@@ -16,7 +16,7 @@ const stripePromise = loadStripe(
 const CheckoutForm = () => {
 	const cart = useSelector((state) => state.cart.cart);
 	console.log(cart);
-	const userId = useSelector((state) => state.login.user.userId);
+	const userId = useSelector((state) => state.login.user?.userId);
 	const [isLoading, setIsLoading] = useState(true);
 	const [sessionId, setSessionId] = useState("");
 
@@ -78,33 +78,50 @@ const CheckoutForm = () => {
 	// 	return <div>Loading...</div>;
 	// }
 
+	const getSubscriptionClass = (subscriptionType) => {
+		switch (subscriptionType) {
+			case "Basic":
+				return "bronze";
+			case "Medium":
+				return "silver";
+			case "Pro":
+				return "gold";
+			default:
+				return ""; // Nessuna classe se non corrisponde
+		}
+	};
+
 	return (
 		<>
 			<Loader isLoading={isLoading} />
 			<Container id="checkout">
 				<Row className="justify-content-center mt-4">
 					<Col xs={12} md={5}>
-						<h2 className="text-white text-center">Shopping Cart</h2>
 						{cart.map((item, index) => (
-							<Card key={index} className="mb-4">
-								<Card.Img
-									variant="top"
-									src={`${item.imageUrl.replace(/uploads\\products\\/, "").replace(/\\/g, "/")}`}
-									alt={item.descrizione}
-									className="img-xl mx-auto"
-								/>
-								<Card.Body>
-									<Card.Title>{item.tipoAbbonamento}</Card.Title>
-									<Card.Text>
-										Prezzo: €{item.prezzo} - Quantità: {item.quantita}
-									</Card.Text>
-									<Card.Text>{item.descrizione}</Card.Text>
-								</Card.Body>
-							</Card>
+							<React.Fragment key={index}>
+								<h2 className="text-white text-center">
+									Checkout abbonamento{" "}
+									<span className={getSubscriptionClass(item.tipoAbbonamento)}>{item.tipoAbbonamento}</span>
+								</h2>
+								<Card className="mb-4">
+									<Card.Img
+										variant="top"
+										src={`${item.imageUrl.replace(/uploads\\products\\/, "").replace(/\\/g, "/")}`}
+										alt={item.descrizione}
+										className="img-xl mx-auto"
+									/>
+									<Card.Body>
+										<Card.Title>{item.tipoAbbonamento}</Card.Title>
+										<Card.Text>
+											Prezzo: €{item.prezzo} - Quantità: {item.quantita}
+										</Card.Text>
+										<Card.Text>{item.descrizione}</Card.Text>
+									</Card.Body>
+								</Card>
+							</React.Fragment>
 						))}
-						<button className="button__loader" onClick={() => handleCheckout(sessionId)}>
-							Checkout
-							<span className="button__text">Loading...</span>
+						<button className="nav-link mylink text-gold my-3 mx-auto" onClick={() => handleCheckout(sessionId)}>
+							Prosegui con il Checkout
 						</button>
 					</Col>
 				</Row>

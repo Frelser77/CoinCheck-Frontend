@@ -74,10 +74,10 @@
 }
 
 .btn-mobile {
-	position: absolute;
+	position: fixed;
 	z-index: 1500;
-	top: 10px;
-	right: 10px;
+	top: 50%;
+	right: 0;
 }
 
 .offcanvas-body {

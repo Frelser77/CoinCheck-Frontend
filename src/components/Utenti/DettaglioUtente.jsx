@@ -18,6 +18,7 @@ import {
 	ListGroup,
 	OverlayTrigger,
 	Tooltip,
+	Container,
 } from "react-bootstrap";
 import { Url } from "../../Config/config";
 import { toast } from "react-toastify";
@@ -29,8 +30,10 @@ import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { BsStar, BsStarFill } from "react-icons/bs";
 import { loadUserPreferences, toggleUserPreference } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
 import CustomImage from "./CustomImage";
+import useUserRole from "../../hooks/useUserRole";
+import ReactModal from "react-modal";
 
-export const handleFileUpload = async (file, dispatch, id, setUtente) => {
+export const handleFileUpload = async (file, dispatch, id, setUtente, setImageUrl) => {
 	if (!file) {
 		toast.error("Devi selezionare un file.");
 		return;
@@ -40,10 +43,13 @@ export const handleFileUpload = async (file, dispatch, id, setUtente) => {
 		const result = await dispatch(uploadProfileImage({ userId: id, file })).unwrap();
 		toast.success("Immagine caricata con successo!");
 		setUtente((utente) => ({ ...utente, imageUrl: result.imagePath }));
+		setImageUrl(result.imagePath);
 	} catch (error) {
 		toast.error("Impossibile caricare l'immagine");
 	}
 };
+
+ReactModal.setAppElement("#root");
 
 const DettaglioUtente = () => {
 	const { id } = useParams();
@@ -51,7 +57,7 @@ const DettaglioUtente = () => {
 	const [utente, setUtente] = useState(null);
 	const token = useToken();
 	const userPreferences = useSelector((state) => state.favorites.userPreferences);
-	const isLoading = useSelector((state) => state.favorites.loading);
+	const isLoadingfav = useSelector((state) => state.favorites.loading);
 	const error = useSelector((state) => state.favorites.error);
 	const [isLoadingDetails, setIsLoadingDetails] = useState(true);
 	const navigate = useNavigate();
@@ -61,11 +67,18 @@ const DettaglioUtente = () => {
 	const isOwner = user?.userId === parseInt(id, 10);
 	const [activeUserId, setActiveUserId] = React.useState(null);
 	const [showPreferences, setShowPreferences] = useState(false);
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const { role, isLoading } = useUserRole();
+	const isAdminOrModerator = role === "Admin" || role === "Moderatore";
+
+	const openModal = () => setModalIsOpen(true);
+	const closeModal = () => setModalIsOpen(false);
 
 	const handleDelete = async (userId) => {
 		dispatch(deleteUser(userId));
+		closeModal();
 		await fetchUserDetails();
-		toast.success("Utente eliminato con successo!");
+		toast.success("Utente disattivato con successo. Hai 14 giorni per riattivarlo prima della cancellazione totale.");
 	};
 
 	const handleRestore = async (userId) => {
@@ -148,9 +161,9 @@ const DettaglioUtente = () => {
 	}
 
 	return (
-		<Row className="zone-8">
+		<Row className="">
 			<Col xs={12}>
-				<h1 className="text-center text-light">Profilo {utente.username}</h1>
+				<h1 className="text-center text-gold">Profilo {utente.username}</h1>
 				<Card className="my-1">
 					<Row>
 						<Col>
@@ -175,33 +188,57 @@ const DettaglioUtente = () => {
 								</OverlayTrigger>
 								<CardText className="card-text">Username: {utente && utente.username}</CardText>
 								<CardText className="card-text">Email: {utente && utente.email}</CardText>
-								<CardText className="card-text">
-									Stato account: {utente && utente.isActive ? "Attivo" : "Non attivo"}
-								</CardText>
+								<div className="flex-center gap-2">
+									<CardText className="card-text  p-0">Stato account: </CardText>
+									<CardText
+										className={`card-text mb-3 p-0 ${utente && utente.isActive ? "text-gold" : "text-primary"}`}
+									>
+										{utente && utente.isActive ? "Attivo" : "Non attivo"}
+									</CardText>
+								</div>
 								<CardText className="card-text">
 									Post: {utente && utente.posts.length > 0 ? utente.posts.length : "Nessun post"}
 								</CardText>
 								<Card.Text>
 									Ultimo Accesso: {utente && utente.logAttivita && utente.logAttivita[utente.logAttivita.length - 1]}
 								</Card.Text>
-								{isOwner && (
-									<>
-										<div className="d-flex align-items-center justify-content-start gap-2">
-											{utente.isActive ? (
-												<Button variant="outline-danger" onClick={() => handleDelete(utente.userId)}>
-													Soft Delete
-												</Button>
-											) : (
-												<Button variant="outline-success" onClick={() => handleRestore(utente.userId)}>
-													Restore
-												</Button>
-											)}
-											<Button variant="outline-primary" onClick={() => navigate(`/utenti/${utente.userId}/edit`)}>
-												Modifica
+								{(isOwner || isAdminOrModerator) && (
+									<div className="flex-center gap-2">
+										{utente.isActive ? (
+											<Button className="nav-link text-gold mylink" onClick={openModal}>
+												Disattiva
 											</Button>
-										</div>
-									</>
+										) : (
+											<Button className="nav-link text-gold mylink" onClick={() => handleRestore(utente.userId)}>
+												Riattiva
+											</Button>
+										)}
+										<Button className="nav-link mylink" onClick={() => navigate(`/utenti/${utente.userId}/edit`)}>
+											Modifica
+										</Button>
+									</div>
 								)}
+								<ReactModal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Conferma Disattivazione">
+									<Container>
+										<Row>
+											<Col xs={12}>
+												<h2 className="text-gold">Sei sicuro?</h2>
+												<p>
+													Disattivando l'account, <span className="text-gold text-underline">hai 14 giorni</span> per
+													riattivarlo prima della cancellazione totale.
+												</p>
+											</Col>
+											<Col xs={12} className="flex-center flex-column flex-md-row justify-content-md-between">
+												<button className="nav-link text-gold mylink" onClick={handleDelete}>
+													Sì, disattiva
+												</button>
+												<button className="nav-link  mylink" onClick={closeModal}>
+													Annulla
+												</button>
+											</Col>
+										</Row>
+									</Container>
+								</ReactModal>
 							</CardBody>
 						</Col>
 						<Col className="">
@@ -218,11 +255,11 @@ const DettaglioUtente = () => {
 								</FormGroup>
 							</Form>
 							<h4 className="m-1">Preferiti</h4>
-							<button className="btn btn-sm btn-body" onClick={handleLoadPreferenze}>
+							<button className="nav-link mylink text-gold text-underline" onClick={handleLoadPreferenze}>
 								Carica Preferenze
 							</button>
 							{showPreferences && userPreferences && userPreferences.length > 0 ? (
-								<>
+								<div className="zone-4 mb-">
 									{userPreferences.map((preferenza, index) => (
 										<Card className="mt-4 other-card" key={index}>
 											<Card.Body>
@@ -263,7 +300,7 @@ const DettaglioUtente = () => {
 											</Card.Body>
 										</Card>
 									))}
-								</>
+								</div>
 							) : showPreferences ? (
 								<p>L'utente non ha coin preferite</p>
 							) : null}

@@ -62,8 +62,8 @@ function App() {
 			<MyNavbar />
 			{isMobile && <MobileNavbar showFavorites={showFavorites} setShowFavorites={setShowFavorites} />}
 			<RedirectToLoginIfLoggedOut />
-			<Container fluid className="">
-				<Row className="d-flex align-itmes-center justify-content-between min-vh-100">
+			<Container fluid>
+				<Row className="d-flex align-itmes-center justify-content-between  bef-logo">
 					{!isMobile && role && (
 						<SideBarLeft
 							toggleSidebar={toggleSidebar}
@@ -73,7 +73,7 @@ function App() {
 					)}
 
 					<motion.div
-						className={`col-xs-12 col-md-${isSidebarOpen ? "7" : "8"}`}
+						className={`col-xs-12 col-md-${isSidebarOpen ? "7" : "8"} zone-6 no-scrollbar xscroll-none`}
 						style={{ flexGrow: 1 }}
 						animate={{ width: mainContentWidth }}
 						transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -105,7 +105,7 @@ function App() {
 							{allRoutes.includes(role) && <Route path="/utenti/:id" element={<DettaglioUtente />} />}
 							{allRoutes.includes(role) && <Route path="/Abbonamenti" element={<ShoppingCart />} />}
 							{allRoutes.includes(role) && <Route path="/Checkout" element={<CheckoutForm />} />}
-							{allRoutes.includes(role) && <Route path="/Carrello" element={<Cart />} />}
+							{/* {allRoutes.includes(role) && <Route path="/Carrello" element={<Cart />} />} */}
 							<Route path="*" element={<PageNotFound />} />
 						</Routes>
 					</motion.div>

@@ -84,19 +84,21 @@ function Login() {
 	return (
 		<>
 			<Loader isLoading={isLoading} />
-			<Row className="d-flex aling-items-center justify-content-center">
-				<Col xs={9} md={5} className=" my-5">
-					<Card className="border border-2 shadow-sm p-3">
+			<Row className="d-flex aling-items-center justify-content-center zone-7 no-scrollbar">
+				<Col xs={9} sm={7} md={6} lg={5} className="my-5">
+					<Card className="p-3 login-card">
 						<CardBody>
-							<CardTitle className="text-center fs-2">Login</CardTitle>
+							<CardTitle className="text-center fs-2 text-primary">Login</CardTitle>
 							<form onSubmit={handleSubmit} className="mt-5">
-								<div className="mb-3">
-									<label htmlFor="usernameInput" className="form-label">
-										Username:
-									</label>
+								<div className="mb-3 position-relative">
+									{credentials.username && (
+										<label htmlFor="usernameInput" className="form-label">
+											Username
+										</label>
+									)}
 									<input
 										type="text"
-										className="form-control"
+										className="form-control text-gold bg-transparent border-primary"
 										id="usernameInput"
 										autoComplete="username"
 										value={credentials.username}
@@ -104,39 +106,43 @@ function Login() {
 										placeholder="Username"
 									/>
 								</div>
-								<div className="mb-3  position-relative">
-									<label htmlFor="passwordInput" className="form-label">
-										Password:
-									</label>
+								<div className="mb-3 position-relative">
+									{credentials.password && (
+										<label htmlFor="passwordInput" className="form-label">
+											Password
+										</label>
+									)}
 									<input
 										type={showPassword ? "text" : "password"}
-										className="form-control"
+										className="form-control bg-transparent border-primary text-gold"
 										id="passwordInput"
-										value={credentials.password}
 										autoComplete="current-password"
+										value={credentials.password}
 										onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
 										placeholder="Password"
 									/>
 									<button
-										className="btn-transparent bg-transparent border-0 me-1 mt-1 position-absolute top-50 end-0"
+										className="btn-transparent bg-transparent text-gold border-0 me-1 mt-1 eye-icon"
 										type="button"
 										onClick={toggleShowPassword}
 									>
 										<FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
 									</button>
 								</div>
-								<button type="submit" className="btn btn-primary">
-									Login
-								</button>
+								<div className="d-flex align-items-center  justify-content-center justify-content-md-start">
+									<button type="submit" className="nav-link text-gold mylink my-2">
+										Login
+									</button>
+								</div>
 							</form>
-							<div className="d-flex align-items-center justify-content-end gap-2">
-								<p className="p-0 m-0">Non sei ancora registrato?</p>
-								<NavLink to="/Register" className="nav-link reg-hover">
+							<div className="d-flex align-items-center flex-column flex-md-row justify-content-end gap-2">
+								<p className="p-0 m-0 text-gold">Non sei ancora registrato?</p>
+								<NavLink to="/Register" className="nav-link mylink my-2">
 									Registrati
 								</NavLink>
 							</div>
 							<div className="text-center mt-3">
-								<NavLink to="/reset-password" className="text-decoration-none">
+								<NavLink to="/reset-password" className="text-gold mylink my-2">
 									Hai dimenticato la password?
 								</NavLink>
 							</div>

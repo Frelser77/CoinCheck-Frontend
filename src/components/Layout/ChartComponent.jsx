@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createChart, CrosshairMode, PriceScaleMode } from "lightweight-charts";
+import TimeRangeSelector from "./TimeRangeSelector"; // Assicurati di importare il componente corretto
 
 const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, isSidebarOpen }) => {
 	const chartContainerRef = useRef();
@@ -17,7 +18,6 @@ const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, 
 		let observer;
 
 		if (chartContainer) {
-			// Crea un ResizeObserver per ascoltare i cambiamenti di dimensione del contenitore
 			observer = new ResizeObserver((entries) => {
 				for (let entry of entries) {
 					const { width } = entry.contentRect;
@@ -33,70 +33,57 @@ const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, 
 				observer.disconnect();
 			}
 		};
-	}, []); // Questo useEffect dipende solo dal montaggio e smontaggio del componente
+	}, []); // Dipendenza solo al montaggio e smontaggio
 
 	useEffect(() => {
 		if (chartContainerRef.current && data.length > 0 && chartWidth) {
-			// Se esiste già un grafico, rimuoverlo prima di crearne uno nuovo
 			if (chartRef.current) {
-				chartRef.current.remove();
+				chartRef.current.remove(); // Rimuove il grafico esistente se viene ridimensionato o i dati cambiano
 				chartRef.current = null;
 			}
 
+			// Crea il grafico con le opzioni per uno sfondo scuro
 			const chart = createChart(chartContainerRef.current, {
 				width: chartWidth,
 				height,
 				layout: {
-					backgroundColor: "#ffffff",
-					textColor: "#333",
+					backgroundColor: "#FAEBD7",
+					textColor: "#696969", // Testo chiaro per contrasto
 				},
 				grid: {
 					vertLines: {
-						color: "#ebebeb",
+						color: "#696969", // Linee verticali più scure
 					},
 					horzLines: {
-						color: "#ebebeb",
+						color: "#696969", // Linee orizzontali più scure
 					},
 				},
 				priceScale: {
-					scaleMargins: {
-						top: 0.1,
-						bottom: 0.1,
-					},
 					borderVisible: false,
 					autoScale: true,
-					mode: PriceScaleMode.Normal,
-					entireTextOnly: true,
-					priceFormat: {
-						type: "custom",
-						formatter: (price) => parseFloat(price).toFixed(8),
-					},
-				},
-				crosshair: {
-					mode: CrosshairMode.Normal,
 				},
 				timeScale: {
 					timeVisible: true,
 					secondsVisible: false,
 				},
+				crosshair: {
+					mode: CrosshairMode.Normal,
+				},
 			});
 
 			const candleSeries = chart.addCandlestickSeries({
-				upColor: "green",
-				downColor: "red",
-				wickUpColor: "green",
+				upColor: "green", // Colore per il prezzo in aumento
+				downColor: "red", // Colore per il prezzo in diminuzione
+				borderVisible: true,
 			});
 
 			candleSeries.setData(data);
 			chart.timeScale().fitContent();
-
-			// Memorizza il riferimento al grafico creato
 			chartRef.current = chart;
 		}
 	}, [data, chartWidth, height]);
 
 	useEffect(() => {
-		// Aggiorna la larghezza del grafico se già esistente
 		if (chartRef.current) {
 			const chart = chartRef.current;
 			chart.applyOptions({ width: chartWidth });
@@ -104,21 +91,17 @@ const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, 
 		}
 	}, [chartWidth]);
 
+	// Gestore per il cambio di time range
+	const handleTimeRangeChange = (newRange) => {
+		onTimeRangeChange(newRange);
+	};
+
 	return (
-		<>
-			<TimeRangeSelector onChange={(e) => onTimeRangeChange(e.target.value)} selectedTimeRange={selectedTimeRange} />
+		<div className="flex-center flex-column">
+			<TimeRangeSelector onChange={handleTimeRangeChange} selectedTimeRange={selectedTimeRange} />
 			<div ref={chartContainerRef} style={{ width: "100%", height }} />
-		</>
+		</div>
 	);
 };
-
-const TimeRangeSelector = ({ onChange, selectedTimeRange }) => (
-	<select onChange={onChange} value={selectedTimeRange}>
-		<option value="1D">1D</option>
-		<option value="1W">1W</option>
-		<option value="1M">1M</option>
-		<option value="3M">3M</option>
-	</select>
-);
 
 export default TradingViewChart;

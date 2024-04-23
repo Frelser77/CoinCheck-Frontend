@@ -52,7 +52,7 @@ const UserInfoCard = () => {
 						</Col>
 						<Col>
 							<Card.Body>
-								<Card.Title>{user.username}</Card.Title>
+								<Card.Title className="fs-3">{user.username}</Card.Title>
 							</Card.Body>
 						</Col>
 					</Row>

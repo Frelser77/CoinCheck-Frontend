@@ -10,13 +10,9 @@ const CustomImage = ({ src, alt, className, onClick }) => {
 	const additionalClass = isPlaceholder ? "inverted-image" : "";
 
 	// Imposta il percorso dell'immagine
-	const imagePath = isPlaceholder
-		? `${Url}uploads/profile/placeholder-profile.png`
-		: `${Url}${src.replace(/\\/g, "/")}`;
+	const imagePath = src ? `${Url}${src.replace(/\\/g, "/")}` : `${Url}uploads/profile/placeholder-profile.png`; // O il percorso di un'immagine placeholder
 
-	return (
-		<img onClick={onClick} className={`img-circle point ${additionalClass} ${className}`} src={imagePath} alt={alt} />
-	);
+	return <img onClick={onClick} className={`img-circle point ${className}`} src={imagePath} alt={alt} />;
 };
 
 export default CustomImage;

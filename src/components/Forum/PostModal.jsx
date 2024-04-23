@@ -3,11 +3,14 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { Url } from "../../Config/config";
+import { useDispatch } from "react-redux";
+import { fetchAllPosts } from "../../redux/reducer/Post/forumSlice";
 
 const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 	const [newPost, setNewPost] = useState({ title: "", content: "" });
 	const [file, setFile] = useState(null);
 	const [imagePreview, setImagePreview] = useState(null);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		if (editingPost) {
@@ -44,19 +47,19 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		onSubmit(newPost, file);
-		dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
+		await dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
 	};
 
 	return (
 		<Modal show={isOpen} onHide={onClose} className="post-modal">
 			<Modal.Header closeButton>
-				<Modal.Title>{editingPost ? "Modifica Post" : "Crea Post"}</Modal.Title>
+				<Modal.Title className="text-gold">{editingPost ? "Modifica Post" : "Crea Post"}</Modal.Title>
 			</Modal.Header>
 			<Form onSubmit={handleSubmit}>
 				<Modal.Body>
 					{imagePreview && <img src={imagePreview} alt="Preview" className="img-fluid" />}
 					<Form.Group className="mb-3">
-						<Form.Control type="file" onChange={handleFileChange} />
+						<Form.Control className="nav-link mylink text-gold p-1 border-0" type="file" onChange={handleFileChange} />
 					</Form.Group>
 					<Form.Group className="mb-3">
 						<Form.Control
@@ -72,13 +75,13 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 						/>
 					</Form.Group>
 				</Modal.Body>
-				<Modal.Footer>
-					<Button variant="danger" onClick={onClose}>
+				<Modal.Footer className="border-0 flex-center flex-column flex-lg-row justify-content-lg-between">
+					<button className="nav-link mylink text-gold text-underline" onClick={onClose}>
 						Chiudi
-					</Button>
-					<Button variant="body" type="submit">
+					</button>
+					<button className="nav-link mylink" type="submit">
 						Salva Post
-					</Button>
+					</button>
 				</Modal.Footer>
 			</Form>
 		</Modal>

@@ -6,6 +6,7 @@ import SkeletonCard from "../Skeletorn/SkeletonCard";
 // import fetchNews, { fetchCryptoNews } from "../../redux/reducer/CryptocCompareApi/fetchNews";
 import useSaveToDatabase from "../../hooks/saveToDatabase";
 import Loader from "../Layout/Loader";
+import { Col, Row } from "react-bootstrap";
 
 const mainCoinIds = ["BTC-USD", "ETH-USD", "USDT-USD", "SOL-USD", "XRP-USD"];
 
@@ -162,47 +163,49 @@ const CryptoList = ({ showFavorites }) => {
 	const coinsToRender = showFavorites ? favoriteCoins : visibleCoins;
 
 	return (
-		<>
-			<Loader isLoading={isLoading && initialLoading} />
+		<Row>
+			<Col>
+				<Loader isLoading={isLoading && initialLoading} />
 
-			<div className="my-2 zone-5">
-				{coinsToRender
-					.filter((coin) => {
-						// Se stiamo mostrando i preferiti, filtra solo le monete preferite
-						if (showFavorites) {
-							return userPreferences.some((pref) => pref.nomeCoin === coin.id);
-						}
-						// Altrimenti, mostra tutte le monete
-						return true;
-					})
-					.map((coin) => {
-						const coinId = coin.id;
-						const coinDetails = coinStats[coinId];
+				<div className="my-2 zone-5 no-scrollbar p-0">
+					{coinsToRender
+						.filter((coin) => {
+							// Se stiamo mostrando i preferiti, filtra solo le monete preferite
+							if (showFavorites) {
+								return userPreferences.some((pref) => pref.nomeCoin === coin.id);
+							}
+							// Altrimenti, mostra tutte le monete
+							return true;
+						})
+						.map((coin) => {
+							const coinId = coin.id;
+							const coinDetails = coinStats[coinId];
 
-						if (!coinDetails && showFavorites) {
-							return null;
-						}
+							if (!coinDetails && showFavorites) {
+								return null;
+							}
 
-						return (
-							<Card
-								coin={{ ...coin, ...tickers[coinId], ...coinDetails }}
-								currency="USD"
-								stats={coinDetails}
-								key={`loaded-${coinId}`}
-								onSave={handleSaveToDb}
-							/>
-						);
-					})}
-				{loadingCoins.map((id) => (
-					<SkeletonCard key={`loading-${id}`} />
-				))}
-				<div
-					ref={loadMoreRef}
-					className={!loadedAll || !showFavorites ? "" : "d-none"}
-					style={{ height: "10px", marginTop: "50px" }}
-				></div>
-			</div>
-		</>
+							return (
+								<Card
+									coin={{ ...coin, ...tickers[coinId], ...coinDetails }}
+									currency="USD"
+									stats={coinDetails}
+									key={`loaded-${coinId}`}
+									onSave={handleSaveToDb}
+								/>
+							);
+						})}
+					{loadingCoins.map((id) => (
+						<SkeletonCard key={`loading-${id}`} />
+					))}
+					<div
+						ref={loadMoreRef}
+						className={!loadedAll || !showFavorites ? "" : "d-none"}
+						style={{ height: "10px", marginTop: "50px" }}
+					></div>
+				</div>
+			</Col>
+		</Row>
 	);
 };
 

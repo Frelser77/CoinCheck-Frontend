@@ -1,19 +1,19 @@
-// ForumHome.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllPosts, createPost, updatePost } from "../../redux/reducer/Post/forumSlice";
 import Post from "./Post";
 import PostModal from "./PostModal";
-import { Button, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import PostSkeleton from "../Skeletorn/PostSkeleton";
 
 const ForumHome = () => {
 	const dispatch = useDispatch();
-	const { posts, isLoading, isError, errorMessage } = useSelector((state) => state.posts);
+	const { posts, isLoading, hasMore } = useSelector((state) => state.posts);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const [editingPost, setEditingPost] = useState(null);
+	const [pageIndex, setPageIndex] = useState(0);
+	const observerRef = useRef(null);
 	const currentUserId = useSelector((state) => state.login.user?.userId);
-	const loadMoreRef = useRef(null);
 
 	useEffect(() => {
 		dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
@@ -22,23 +22,29 @@ const ForumHome = () => {
 	useEffect(() => {
 		const observer = new IntersectionObserver(
 			(entries) => {
-				const first = entries[0];
-				if (first.isIntersecting) {
-					// Carica più post quando l'utente scorre fino alla fine della pagina
-					dispatch(fetchAllPosts({ pageIndex: pageIndex, pageSize: 10 }));
+				if (entries[0].isIntersecting && hasMore && !isLoading) {
+					setPageIndex((prevPageIndex) => prevPageIndex + 1);
 				}
 			},
-			{ threshold: 1 }
+			{ threshold: 0.1 }
 		);
-		if (loadMoreRef.current) {
-			observer.observe(loadMoreRef.current);
+
+		if (observerRef.current) {
+			observer.observe(observerRef.current);
 		}
+
 		return () => {
-			if (loadMoreRef.current) {
-				observer.unobserve(loadMoreRef.current);
+			if (observerRef.current) {
+				observer.unobserve(observerRef.current);
 			}
 		};
-	}, [dispatch, posts.length]);
+	}, [hasMore, isLoading]);
+
+	useEffect(() => {
+		if (pageIndex > 0) {
+			dispatch(fetchAllPosts({ pageIndex, pageSize: 10 }));
+		}
+	}, [pageIndex, dispatch]);
 
 	const openModal = (post = null) => {
 		setEditingPost(post);
@@ -57,8 +63,8 @@ const ForumHome = () => {
 			Object.keys(post).forEach((key) => formData.append(key, post[key]));
 			if (file) formData.append("file", file);
 			dispatch(createPost(formData)).then(() => {
-				// Ricarica i post dopo averne creato uno nuovo
 				dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
+				setPageIndex(0);
 			});
 		}
 		closeModal();
@@ -66,23 +72,24 @@ const ForumHome = () => {
 
 	return (
 		<Container>
-			<Button variant="primary" onClick={() => openModal()}>
-				Crea Post
-			</Button>
-			{isLoading ? (
-				<Row className="zone-7">
-					{Array.from({ length: 3 }, (_, index) => (
-						<PostSkeleton key={`skeleton-${index}`} />
-					))}
-				</Row>
-			) : (
-				<Row className="zone-7">
-					{posts.map((post) => (
-						<Post key={post.postId} post={post} onEdit={() => openModal(post)} currentUserId={currentUserId} />
-					))}
-					<div ref={loadMoreRef} style={{ height: "10px", marginTop: "50px" }}></div>
-				</Row>
-			)}
+			<Row className="zone-6 no-scrollbar">
+				<div className="d-flex align-items-center justify-content-start mt-3">
+					<button
+						className="nav-link mylink text-gold text-underline my-3 px-3 py-1 position-fixed top-0 left-0"
+						onClick={() => openModal()}
+					>
+						Crea Post
+					</button>
+				</div>
+				<Col xs={10} sm={5} className="mx-auto">
+					{isLoading && pageIndex === 0
+						? Array.from({ length: 3 }, (_, index) => <PostSkeleton key={index} />)
+						: posts.map((post) => (
+								<Post key={post.postId} post={post} onEdit={() => openModal(post)} currentUserId={currentUserId} />
+						  ))}
+				</Col>
+				<div ref={observerRef} style={{ height: 20 }} />
+			</Row>
 			<PostModal isOpen={modalIsOpen} onClose={closeModal} onSubmit={handleModalSubmit} editingPost={editingPost} />
 		</Container>
 	);

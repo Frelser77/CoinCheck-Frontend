@@ -10,7 +10,7 @@ import Modal from "react-modal";
 
 Modal.setAppElement("#root");
 
-const LogoutButton = () => {
+const LogoutButton = ({ closeSidebar }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.login?.user);
@@ -49,7 +49,7 @@ const LogoutButton = () => {
 				<button onClick={openModal} className="nav-item flex-center nav-link logout-text">
 					<div className="logout-text">
 						<FontAwesomeIcon icon={faSignOutAlt} />
-						<span className="ms-1">Logout</span>
+						<span className="nav-text ms-1">Logout</span>
 					</div>
 				</button>
 			</OverlayTrigger>
@@ -60,15 +60,27 @@ const LogoutButton = () => {
 				overlayClassName="ReactModal__Overlay--after-open"
 				className="ReactModal__Content--after-open"
 			>
-				<p>Sei sicuro di voler effettuare il logout?</p>
-				<div className="flex-center gap-2">
-					<button onClick={handleLogout} className="btn btn-primary">
-						<FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
-						<span className="nav-text ms-1">Logout</span>
+				<p className="text-white fs-4">Sei sicuro di voler effettuare il logout?</p>
+				<div className="flex-center gap-5">
+					<button
+						onClick={() => {
+							handleLogout();
+							closeSidebar();
+						}}
+						className="nav-link text-gold mylink text-underline"
+					>
+						<FontAwesomeIcon icon={faSignOutAlt} className="" />
+						<span className="nav-text d-none d-md-block">Logout</span>
 					</button>
-					<button onClick={closeModal} className="btn btn-danger">
-						<FontAwesomeIcon icon={faTimes} className="me-2" />
-						<span className="nav-text ms-1 text-white">Annulla </span>
+					<button
+						onClick={() => {
+							closeSidebar();
+							closeModal();
+						}}
+						className="nav-link mylink"
+					>
+						<FontAwesomeIcon icon={faTimes} className="" />
+						<span className="nav-texttext-white d-none d-md-block">Annulla </span>
 					</button>
 				</div>
 			</Modal>

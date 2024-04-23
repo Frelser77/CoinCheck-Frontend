@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 // import CoinsFetcher from "./CoinList";
 import CryptoList from "../Coins/CoinList";
 import SideBarLeft from "./SideBarLeft";
@@ -33,7 +33,7 @@ const Home = ({ isSidebarOpen, showFavorites }) => {
 	}, [news]);
 
 	return (
-		<>
+		<Container>
 			<Row>
 				<Col xs={12} lg={7} className="order-md-1 order-lg-0">
 					<HomeCarousel isSidebarOpen={isSidebarOpen} />
@@ -43,7 +43,7 @@ const Home = ({ isSidebarOpen, showFavorites }) => {
 				</Col>
 			</Row>
 			<CryptoList showFavorites={showFavorites} />
-		</>
+		</Container>
 	);
 };
 

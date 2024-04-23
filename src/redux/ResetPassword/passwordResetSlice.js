@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Url } from "../../Config/config";
 
-// Thunk per inviare la richiesta di reset della password
 export const sendPasswordResetRequest = createAsyncThunk(
 	"passwordReset/sendRequest",
 	async (email, { rejectWithValue }) => {
@@ -17,14 +16,15 @@ export const sendPasswordResetRequest = createAsyncThunk(
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.Message || "Network response was not ok");
+				throw new Error(data.message || "Network response was not ok");
 			}
 
-			if (!data.Success) {
-				throw new Error(data.Message);
+			if (!data.success) {
+				// Assicurati che sia tutto minuscolo
+				throw new Error(data.message || "Operation failed without a specific message");
 			}
 
-			return data.Message;
+			return data.message;
 		} catch (err) {
 			return rejectWithValue(err.message);
 		}

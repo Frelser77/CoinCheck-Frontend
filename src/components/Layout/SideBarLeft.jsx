@@ -100,19 +100,25 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 					onClick={() => closeSidebar()}
 				/>
 			</Link>
-			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Home</Tooltip>}>
+			{/* <OverlayTrigger key={userId + Math.random()} trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Home</Tooltip>}>
 				<Link to="/" className="nav-item flex-center nav-link" onClick={() => closeSidebar()}>
 					<FontAwesomeIcon icon={faHome} className="nav-icon" />
 					<span className="nav-text ms-2">Home</span>
 				</Link>
-			</OverlayTrigger>
-			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Forum</Tooltip>}>
+			</OverlayTrigger> */}
+			<OverlayTrigger
+				key={userId + Math.random()}
+				trigger={["hover", "focus"]}
+				placement="right"
+				overlay={<Tooltip id="tooltip">Forum</Tooltip>}
+			>
 				<Link to="/forum" className="nav-item flex-center nav-link" onClick={() => closeSidebar()}>
 					<FontAwesomeIcon icon={faForumbee} className="nav-icon" />
 					<span className="nav-text ms-2">Forum</span>
 				</Link>
 			</OverlayTrigger>
 			<OverlayTrigger
+				key={userId + Math.random()}
 				trigger={["hover", "focus"]}
 				placement="right"
 				overlay={<Tooltip id="tooltip">Preferiti</Tooltip>}
@@ -129,13 +135,19 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 				</div>
 			</OverlayTrigger>
 
-			<OverlayTrigger trigger={["hover", "focus"]} placement="right" overlay={<Tooltip id="tooltip">Trade</Tooltip>}>
+			<OverlayTrigger
+				key={userId + Math.random()}
+				trigger={["hover", "focus"]}
+				placement="right"
+				overlay={<Tooltip id="tooltip">Trade</Tooltip>}
+			>
 				<Link to="/wallet" className="nav-item flex-center nav-link" onClick={() => closeSidebar()}>
 					<FontAwesomeIcon icon={faWallet} className="nav-icon" />
 					<span className="nav-text ms-2">Wallet</span>
 				</Link>
 			</OverlayTrigger>
 			<OverlayTrigger
+				key={userId + Math.random()}
 				trigger={["hover", "focus"]}
 				placement="right"
 				overlay={<Tooltip id="tooltip">Abbonamenti</Tooltip>}
@@ -149,6 +161,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 				<>
 					{(role === "Admin" || role === "Moderatore") && (
 						<OverlayTrigger
+							key={userId + Math.random()}
 							trigger={["hover", "focus"]}
 							placement="right"
 							overlay={<Tooltip id="tooltip">Utenti</Tooltip>}
@@ -164,6 +177,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 			) : (
 				<>
 					<OverlayTrigger
+						key={userId + Math.random()}
 						trigger={["hover", "focus"]}
 						placement="right"
 						overlay={<Tooltip id="tooltip">Accedi</Tooltip>}
@@ -173,6 +187,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 						</NavLink>
 					</OverlayTrigger>
 					<OverlayTrigger
+						key={userId + Math.random()}
 						trigger={["hover", "focus"]}
 						placement="right"
 						overlay={<Tooltip id="tooltip">Registrati</Tooltip>}
@@ -184,8 +199,9 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 				</>
 			)}
 			<div className="flex-center gap-1 flex-column">
-				<LogoutButton />
+				<LogoutButton closeSidebar={closeSidebar} />
 				<OverlayTrigger
+					key={userId + Math.random()}
 					trigger="click"
 					placement="right"
 					overlay={

@@ -1,65 +1,62 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { editComment, fetchAllPosts, softDeleteComment, toggleLikeComment } from "../../redux/reducer/Post/forumSlice";
-import { Button, Dropdown } from "react-bootstrap";
+import { editComment, softDeleteComment, toggleLikeComment } from "../../redux/reducer/Post/forumSlice";
+import { Dropdown, Badge } from "react-bootstrap";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { Badge } from "react-bootstrap";
 import { Url } from "../../Config/config";
 import CommentForm from "./CommentForm";
 import { getUserNameStyle } from "./Post";
 import CustomImage from "../Utenti/CustomImage";
 import useUserRole from "../../hooks/useUserRole";
 
-const Comment = ({ comment, currentUserId, postId, updateCommentInList }) => {
+const arePropsEqual = (prevProps, nextProps) =>
+	prevProps.comment === nextProps.comment && prevProps.currentUserId === nextProps.currentUserId;
+
+const Comment = memo(({ comment, currentUserId, postId, updateCommentInList }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [isEditing, setIsEditing] = useState(false);
 	const isLikingComment = useSelector((state) => state.posts.isLikingComment);
-	const { role, isLoading } = useUserRole();
-	const userId = useSelector((state) => state.login.user?.userId);
-	const [content, setContent] = useState(comment.content);
+	const [isLiking, setIsLiking] = useState(false);
+	const { role } = useUserRole();
 
-	const addNewComment = (newComment) => {
+	const onSave = async (newContent) => {
+		const resultAction = await dispatch(editComment({ commentId: comment.commentId, content: newContent }));
+		if (resultAction.meta.requestStatus === "fulfilled") {
+			updateCommentInList(resultAction.payload);
+		}
 		setIsEditing(false);
 	};
 
 	const handleLike = async () => {
-		if (isLikingComment) {
-			// Evita più clic durante l'elaborazione
-			return;
+		if (isLiking) return; // Prevenire clic multipli durante l'operazione
+		setIsLiking(true);
+		const resultAction = await dispatch(toggleLikeComment({ commentId: comment.commentId }));
+		if (resultAction.meta.requestStatus === "fulfilled") {
+			// Aggiorna solo il like del commento corrente
+			setIsLiking(false);
 		}
-		await dispatch(toggleLikeComment({ commentId: comment.commentId }));
-		// Non invertire il hasLikedComment qui. Lascia che il reducer gestisca lo stato dopo la conferma del like dal server.
 	};
 
 	const handleDeleteComment = () => {
 		dispatch(softDeleteComment(comment.commentId));
 	};
-	const commentUserImagePath = `${comment.userImage.replace(/\\/g, "/")}`;
 
-	const hasLikedComment = comment.likes.some((like) => like.userId === currentUserId);
+	const commentUserImagePath = `${comment.userImage.replace(/\\/g, "/")}`;
+	const liked = comment.likes.some((like) => like.userId === currentUserId);
 
 	const getTimeDifference = (date) => {
 		const now = new Date();
 		const commentDate = new Date(date);
 		const differenceInSeconds = Math.floor((now - commentDate) / 1000);
-		const minutes = Math.floor(differenceInSeconds / 60);
-		const hours = Math.floor(minutes / 60);
-		const days = Math.floor(hours / 24);
-		const hasLikedComment = comment.likes.some((like) => like.userId === currentUserId);
-
-		if (days === 1) {
-			return `${days} giorno fa`;
-		} else if (days > 0) {
-			return `${days} giorni fa`;
-		} else if (hours > 0) {
-			return `${hours} ore fa`;
-		} else if (minutes > 0) {
-			return `${minutes} minuti fa`;
-		} else {
-			return "pochi secondi fa";
-		}
+		return differenceInSeconds < 60
+			? "pochi secondi fa"
+			: differenceInSeconds < 3600
+			? `${Math.floor(differenceInSeconds / 60)} minuti fa`
+			: differenceInSeconds < 86400
+			? `${Math.floor(differenceInSeconds / 3600)} ore fa`
+			: `${Math.floor(differenceInSeconds / 86400)} giorni fa`;
 	};
 
 	const goToUserProfile = (userId) => {
@@ -68,34 +65,25 @@ const Comment = ({ comment, currentUserId, postId, updateCommentInList }) => {
 
 	const postOwnerStyle = getUserNameStyle(comment.roleName);
 
-	const likeIcon = hasLikedComment ? (
-		<FaHeart
-			className={`me-1 point icon-like ${hasLikedComment && isLikingComment ? "like-loading" : "liked"}`}
-			onClick={handleLike}
-		/>
+	const likeIcon = liked ? (
+		<FaHeart className={`me-1 point icon-like ${isLiking ? "like-loading" : "liked"}`} onClick={handleLike} />
 	) : (
-		<FaRegHeart
-			className={`me-1 point icon-like ${!hasLikedComment && isLikingComment ? "like-loading" : ""}`}
-			onClick={handleLike}
-		/>
+		<FaRegHeart className={`me-1 point icon-like ${isLiking ? "like-loading" : ""}`} onClick={handleLike} />
 	);
 
 	return (
-		<div className="comment comment p-2 position-relative">
+		<div className="comment p-2 position-relative">
 			<div className="d-flex align-items-center justify-content-start">
-				<span className="ml-auto">
-					<CustomImage
-						src={commentUserImagePath}
-						alt="Immagine dell'utente"
-						className="user-img-comment point"
-						onClick={() => goToUserProfile(comment.userId)}
-						Url={Url}
-					/>
-				</span>
+				<CustomImage
+					src={commentUserImagePath}
+					alt="Immagine dell'utente"
+					className="user-img-comment point"
+					onClick={() => goToUserProfile(comment.userId)}
+					Url={Url}
+				/>
 				<span className={`ms-2 fs-6 ${postOwnerStyle}`}>{comment.userName}</span>
 				<Badge className="ms-auto small-text bg-dark mt-2">{getTimeDifference(comment.commentDate)}</Badge>
-
-				{(role === "Admin" || role === "Moderatore" || comment.userId === userId) && (
+				{(role === "Admin" || role === "Moderatore" || comment.userId === currentUserId) && (
 					<Dropdown>
 						<Dropdown.Toggle
 							variant="transparent"
@@ -117,7 +105,7 @@ const Comment = ({ comment, currentUserId, postId, updateCommentInList }) => {
 					postId={postId}
 					commentId={comment.commentId}
 					initialContent={comment.content}
-					onSave={addNewComment}
+					onSave={(newComment) => updateCommentInList(newComment)}
 				/>
 			) : (
 				<>
@@ -130,6 +118,6 @@ const Comment = ({ comment, currentUserId, postId, updateCommentInList }) => {
 			)}
 		</div>
 	);
-};
+}, arePropsEqual);
 
 export default Comment;

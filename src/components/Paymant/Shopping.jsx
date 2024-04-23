@@ -41,12 +41,15 @@ const ShoppingCart = () => {
 	if (loading) return <div>Loading products...</div>;
 
 	return (
-		<Row className="g-2 mt-0 mt-lg-2">
+		<Row className="g-2 mt-0 mt-lg-2 zone-7 no-scroll no-scrollbar">
 			<div className="text-center text-white">
 				<h2>
-					Acquista <strong>SUBITO</strong> uno dei nostri abbonamenti
+					Acquista <strong className="text-gold">SUBITO</strong> uno dei nostri abbonamenti
 				</h2>
-				<p>Ti garantiranno dei vantaggi e alcune piccolezze nell'app!</p>
+				<p>
+					Ti <strong className="mylink">garantiranno</strong> dei vantaggi e alcune piccolezze{" "}
+					<span className="text-underline"> nell'app!</span>
+				</p>
 			</div>
 			{products.map((product) => (
 				<Col xs={12} sm={4} key={product.idprodotto}>
@@ -58,14 +61,14 @@ const ShoppingCart = () => {
 							className="mx-auto abbonamento"
 						/>
 						<Card.Body className="d-flex flex-column align-items-start justify-content-between">
-							<Card.Title>{product.tipoAbbonamento}</Card.Title>
+							<Card.Title className="text-gold">{product.tipoAbbonamento}</Card.Title>
 							<Card.Text>€{product.prezzo.toFixed(2)}</Card.Text>
 							<Card.Text> {product.descrizione}</Card.Text>
 							<div className="d-flex align-items-center justify-content-between gap-4 gap-lg-3 mx-auto">
-								<button className="btn btn-body btn-sm" onClick={() => handleAddToCart(product)}>
+								<button className="nav-link mylink text-gold text-underline" onClick={() => handleAddToCart(product)}>
 									<FontAwesomeIcon icon={faCartPlus} /> <span className="d-block d-sm-none d-lg-block">Aggiungi </span>
 								</button>
-								<button className="btn btn-danger btn-sm" onClick={() => handleRemoveFromCart(product.idprodotto)}>
+								<button className="nav-link mylink" onClick={() => handleRemoveFromCart(product.idprodotto)}>
 									<FontAwesomeIcon icon={faTrash} /> <span className="d-block d-sm-none d-lg-block">Rimuovi </span>
 								</button>
 							</div>
@@ -82,7 +85,7 @@ const ShoppingCart = () => {
 				</Col>
 			))}
 			<div className="text-center my-2">
-				<Link to="/Checkout" className="btn btn-body">
+				<Link to="/Checkout" className="nav-link text-gold mylink text-underline my-3">
 					Checkout
 				</Link>
 			</div>

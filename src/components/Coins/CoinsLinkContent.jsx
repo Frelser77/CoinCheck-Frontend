@@ -6,7 +6,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
 import { formatVolume } from "../Tips/utility";
-import { CardTitle, Container, Col, Row, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { CardTitle, Container, Col, Row, OverlayTrigger, Tooltip, CardText } from "react-bootstrap";
 import Loader from "../Layout/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
@@ -73,14 +73,18 @@ const CoinLinkContent = () => {
 														<Card.Body className="container">
 															<Row>
 																<Col xs={6}>
-																	<CardTitle as="h6">{coin.display_name}</CardTitle>
+																	<CardTitle as="h6" className="text-gold">
+																		{coin.display_name}
+																	</CardTitle>
 																</Col>
 																<Col xs={2}>
 																	<span className="fs-6">
-																		<FontAwesomeIcon icon={faExchangeAlt} />
+																		<FontAwesomeIcon icon={faExchangeAlt} className="text-light" />
 																	</span>
 																</Col>
-																<Col xs={4}>{formatVolume(coin.volume)}</Col>
+																<Col xs={4}>
+																	<CardText className="text-gold">{formatVolume(coin.volume)}</CardText>
+																</Col>
 															</Row>
 														</Card.Body>
 													</Card>

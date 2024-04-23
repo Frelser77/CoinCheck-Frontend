@@ -42,7 +42,7 @@ const NotLoggedReset = () => {
 					</button>
 				</InputGroup>
 			</Form>
-			<NavLink to="/login" className="text-white">
+			<NavLink to="/login" className="nav-link mylink point log-ind">
 				Login
 			</NavLink>
 		</div>

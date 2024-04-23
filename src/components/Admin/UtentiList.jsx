@@ -11,6 +11,7 @@ import Loader from "../Layout/Loader";
 import CustomImage from "../Utenti/CustomImage";
 import { loadUserPreferences } from "../../redux/reducer/CryptoDataBase/favoriteSlice";
 import { useMediaQuery } from "react-responsive";
+import { toast } from "react-toastify";
 
 const UtentiList = () => {
 	const dispatch = useDispatch();
@@ -18,7 +19,6 @@ const UtentiList = () => {
 	const status = useSelector((state) => state.utenti.status);
 	const error = useSelector((state) => state.utenti.error);
 	const { role, isLoading } = useUserRole();
-	console.log(role, isLoading);
 	const userPreferences = useSelector((state) => state.favorites?.userPreferences);
 	const [activeUserId, setActiveUserId] = React.useState(null);
 	const isLargeScreen = useMediaQuery({ query: "(min-width: 992px)" });
@@ -54,7 +54,7 @@ const UtentiList = () => {
 		if (loadUserPreferences.fulfilled.match(resultAction)) {
 			const { data } = resultAction.payload;
 			if (data.length === 0) {
-				dispatch(setUserPreferences([]));
+				dispatch(loadUserPreferences([]));
 			}
 		}
 	};
@@ -72,8 +72,8 @@ const UtentiList = () => {
 	return (
 		<>
 			<Loader isLoading={isLoading && status} />
-			<Row className="zone-7 p-1 mt-3">
-				<h2 className="text-center text">Lista Utenti</h2>
+			<Row className="zone-6 no-scrollbar p-2 mt-3">
+				<h2 className="text-center text text-gold">Lista Utenti</h2>
 				<Each
 					of={users || []}
 					render={(user) => (

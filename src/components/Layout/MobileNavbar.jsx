@@ -10,6 +10,16 @@ const MobileNavbar = ({ showFavorites, setShowFavorites }) => {
 	const path = useLocation().pathname;
 	const { token, id } = useParams();
 	const showIcon = useLocation().pathname === "/utentiList/";
+	const [showButton, setShowButton] = useState(true);
+
+	useEffect(() => {
+		const pathsToHideButton = ["/login", "/Register", "/reset-password", `/reset-password/${token}/${id}`];
+
+		// Controlla se il path attuale è uno di quelli che non devono mostrare il pulsante
+		const shouldHideButton = pathsToHideButton.includes(path) || (path.includes("/reset-password/") && token && id);
+
+		setShowButton(!shouldHideButton); // Se deve nascondere il pulsante, setShowButton sarà false
+	}, [path, token, id]);
 
 	useEffect(() => {
 		const offCanvasElement = document.querySelector(".offcanvas.show");
@@ -18,19 +28,7 @@ const MobileNavbar = ({ showFavorites, setShowFavorites }) => {
 		}
 	}, [show]);
 
-	const handleClose = () => setShow(false);
-	const handleShow = () => setShow(true);
-
-	useEffect(() => {
-		if (
-			path === "/login" ||
-			path === "/register" ||
-			path === "/reset-password" ||
-			(path === `/reset-password/${token}/${id}` && token && id)
-		) {
-			return null;
-		}
-	}, [path, token]);
+	const handleToggle = () => setShow((prev) => !prev);
 
 	const options = [
 		{
@@ -42,10 +40,12 @@ const MobileNavbar = ({ showFavorites, setShowFavorites }) => {
 
 	return (
 		<>
-			{!showIcon && (
-				<Button variant="body" onClick={handleShow} className="d-md-none btn-mobile">
-					<FontAwesomeIcon icon={faBars} />
-				</Button>
+			{showButton && (
+				<>
+					<button onClick={handleToggle} className="btn d-md-none btn-mobile btn-body">
+						<img src="/assets/img/icon-16.png" alt="logo" className="img-fluid" />
+					</button>
+				</>
 			)}
 			<Container>
 				<Row>
@@ -56,7 +56,7 @@ const MobileNavbar = ({ showFavorites, setShowFavorites }) => {
 									isSidebarOpen={show}
 									setShowFavorites={setShowFavorites}
 									showFavoritesLoaded={showFavorites}
-									toggleSidebar={handleClose}
+									toggleSidebar={handleToggle}
 								/>
 							</Offcanvas.Body>
 						</Offcanvas>

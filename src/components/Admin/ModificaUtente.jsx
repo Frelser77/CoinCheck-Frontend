@@ -11,6 +11,14 @@ import SkeletornRight from "../Skeletorn/SkeletornRight";
 import CustomImage from "../Utenti/CustomImage";
 import { sendPasswordResetRequest } from "../../redux/ResetPassword/passwordResetSlice";
 
+function normalizeImageUrl(imageUrl) {
+	if (!imageUrl.startsWith("http")) {
+		// Rimuove slash duplicati ma preserva quello dopo il protocollo http(s):
+		imageUrl = `${imageUrl.replace(/([^:]\/)\/+/g, "$1")}`;
+	}
+	return imageUrl;
+}
+
 const ModificaUtente = ({ userId }) => {
 	const { id: routeParamId } = useParams();
 	const effectiveUserId = userId || routeParamId;
@@ -21,6 +29,7 @@ const ModificaUtente = ({ userId }) => {
 	const [email, setEmail] = useState("");
 	const [image, setImage] = useState("");
 	const [utente, setUtente] = useState(null);
+	const [imageUrl, setImageUrl] = useState("");
 	const userLoggedId = useSelector((state) => state.login.user?.userId);
 	const isCurrentUser = Number(effectiveUserId) === userLoggedId;
 	const imageInputRef = useRef(null);
@@ -28,6 +37,22 @@ const ModificaUtente = ({ userId }) => {
 	const isUtentiListPath = pathname === "/utentiList/";
 	const imageClass = isUtentiListPath ? "img-md" : "img-xl";
 	const visibility = isUtentiListPath ? "d-none d-lg-block" : "d-block ";
+	const defaultImage = "/images/default.png";
+	// useEffect(() => {
+	// 	// Quando il componente si smonta o l'immagine cambia, revoca l'URL
+	// 	return () => {
+	// 		if (image) {
+	// 			URL.revokeObjectURL(image);
+	// 		}
+	// 	};
+	// }, [image]);
+
+	useEffect(() => {
+		if (utente && utente.imageUrl) {
+			setImageUrl(normalizeImageUrl(utente.imageUrl));
+		}
+	}, [utente]);
+
 	useEffect(() => {
 		const fetchDetails = async () => {
 			if (token && effectiveUserId) {
@@ -36,9 +61,7 @@ const ModificaUtente = ({ userId }) => {
 					setUtente(utenteDetails);
 					setUsername(utenteDetails.username);
 					setEmail(utenteDetails.email);
-					const imageUrl = utenteDetails.imageUrl.startsWith("http")
-						? utenteDetails.imageUrl
-						: `${utenteDetails.imageUrl.replace(/\\/g, "/")}`;
+					const imageUrl = normalizeImageUrl(utenteDetails.imageUrl);
 					setImage(imageUrl);
 				} catch (error) {
 					console.error("Failed to fetch the user details", error);
@@ -54,7 +77,13 @@ const ModificaUtente = ({ userId }) => {
 		return <SkeletornRight />;
 	}
 
-	const handleImageUpload = (event) => handleFileUpload(event, dispatch, effectiveUserId, setUtente);
+	const handleImageUpload = async (event) => {
+		event.preventDefault(); // Previene il comportamento di submit predefinito
+		const file = event.target.files[0];
+		if (file) {
+			await handleFileUpload(file, dispatch, effectiveUserId, setUtente);
+		}
+	};
 
 	const handleUsernameChange = (e) => {
 		setUsername(e.target.value);
@@ -65,7 +94,7 @@ const ModificaUtente = ({ userId }) => {
 	const handleImageChange = (event) => {
 		const file = event.target.files[0];
 		if (file) {
-			setImage(URL.createObjectURL(file));
+			handleFileUpload(file, dispatch, effectiveUserId, setUtente, setImageUrl);
 		}
 	};
 
@@ -97,15 +126,16 @@ const ModificaUtente = ({ userId }) => {
 
 	const handleResetPasswordRequest = async (email) => {
 		try {
-			await dispatch(sendPasswordResetRequest(email)).unwrap();
-			toast.success("Se l'email corrisponde ad un account, ti abbiamo inviato un link per il reset della password.");
+			const message = await dispatch(sendPasswordResetRequest(email)).unwrap();
+			toast.success(message);
 		} catch (error) {
-			toast.error("Errore nella richiesta di reset della password.");
+			console.error("Error during password reset request:", error); // Aggiungi per capire l'errore
+			toast.error("Errore nella richiesta di reset della password: " + error.toString());
 		}
 	};
 
 	return (
-		<Col className={visibility}>
+		<Col lg={4} className={visibility}>
 			<h1 className="text-start text">Modifica Utente: {utente.username}</h1>
 			<div className=" mt-4">
 				<Card className="position-relative my-2">
@@ -116,7 +146,7 @@ const ModificaUtente = ({ userId }) => {
 									<div className="">
 										{image && (
 											<CustomImage
-												src={image}
+												src={imageUrl || defaultImage}
 												alt={username}
 												className={`img-circle point mx-auto ${imageClass}`}
 												onClick={triggerFileInput}
@@ -143,7 +173,7 @@ const ModificaUtente = ({ userId }) => {
 						<Col xs={12} lg={7}>
 							<Card.Body>
 								<Form onSubmit={handleSubmit} className="d-flex flex-column gap-2">
-									<Form.Group>
+									<Form.Group className="position-relative my-2">
 										<Form.Label className="label">Username</Form.Label>
 										<Form.Control
 											type="text"
@@ -151,9 +181,10 @@ const ModificaUtente = ({ userId }) => {
 											value={username}
 											onChange={handleUsernameChange}
 											placeholder="username"
+											className="bg-transparent border-primary text-gold"
 										/>
 									</Form.Group>
-									<Form.Group>
+									<Form.Group className="position-relative my-2">
 										<Form.Label className="label">Email</Form.Label>
 										<Form.Control
 											type="email"
@@ -162,6 +193,7 @@ const ModificaUtente = ({ userId }) => {
 											onChange={handleEmailChange}
 											placeholder="email"
 											readOnly
+											className="bg-transparent border-primary text-gold"
 										/>
 									</Form.Group>
 									<div className="flex-center my-1">

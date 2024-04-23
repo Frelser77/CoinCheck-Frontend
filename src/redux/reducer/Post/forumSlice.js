@@ -26,6 +26,7 @@ export const fetchAllPosts = createAsyncThunk(
 	}
 );
 
+// Thunk per creare un post
 export const createPost = createAsyncThunk("posts/createPost", async (formData, { getState, rejectWithValue }) => {
 	try {
 		const token = getState().login.token;
@@ -214,6 +215,7 @@ const initialState = {
 	isLoading: false,
 	isLikingPost: false,
 	isLikingComment: false,
+	likingPostId: null,
 	isError: false,
 	errorMessage: "",
 	pageIndex: 0,
@@ -263,7 +265,12 @@ const postsSlice = createSlice({
 				state.isLoading = false;
 				state.isError = false;
 				state.errorMessage = "";
-				state.posts.unshift(action.payload); // Aggiunge il nuovo post all'inizio dell'array
+				const newPostWithUserDetails = {
+					...action.payload, // Questo contiene il nuovo post con i dettagli dell'utente
+					userRole: action.payload.userRole, // Aggiungi questa riga se userRole non è già nel payload
+					// Assicurati che l'oggetto action.payload abbia tutte le informazioni dell'utente
+				};
+				state.posts.unshift(newPostWithUserDetails); // Aggiungi il nuovo post all'inizio dell'array
 			})
 			.addCase(createPost.rejected, (state, action) => {
 				state.isLoading = false;
@@ -291,21 +298,20 @@ const postsSlice = createSlice({
 				state.isError = true;
 				state.errorMessage = action.payload;
 			})
-			.addCase(toggleLikePost.pending, (state) => {
-				state.isLikingPost = true; // Solo isLikingPost diventa true
+			.addCase(toggleLikePost.pending, (state, action) => {
+				state.likingPostId = action.meta.arg.postId; // Imposta l'ID del post che sta aggiornando i like
 			})
 			.addCase(toggleLikePost.fulfilled, (state, action) => {
+				// Aggiorna solo il post specifico che ha cambiato lo stato di like
 				const postIndex = state.posts.findIndex((post) => post.postId === action.meta.arg.postId);
 				if (postIndex !== -1) {
-					const isLikeAdded = action.payload.message === "Like added";
-					state.posts[postIndex].likeCount += isLikeAdded ? 1 : -1;
+					state.posts[postIndex].likeCount = action.payload.likeCount;
+					state.posts[postIndex].likes = action.payload.likesDetails;
 				}
-				state.isLikingPost = false; // Rimetti isLikingPost a false dopo il like
+				state.likingPostId = null; // Azione completata, resetta l'ID
 			})
 			.addCase(toggleLikePost.rejected, (state, action) => {
-				state.isLikingPost = false; // Rimetti isLikingPost a false se la richiesta fallisce
-				state.isError = true;
-				state.errorMessage = action.payload;
+				state.likingPostId = null; // Azione fallita, resetta l'ID
 			})
 			.addCase(toggleLikeComment.pending, (state) => {
 				state.isLikingComment = true;
@@ -398,6 +404,20 @@ const postsSlice = createSlice({
 				state.isLoading = false;
 				state.isError = true;
 				state.errorMessage = action.error.message;
+			})
+			.addCase(editComment.fulfilled, (state, action) => {
+				// Assicurati che action.payload contenga postId e commentId come previsto
+				const { postId, commentId } = action.payload;
+
+				// Trova il post a cui il commento appartiene
+				const postIndex = state.posts.findIndex((post) => post.postId === postId);
+				if (postIndex !== -1) {
+					// Trova e aggiorna il commento all'interno di quel post
+					const commentIndex = state.posts[postIndex].comments.findIndex((comment) => comment.commentId === commentId);
+					if (commentIndex !== -1) {
+						state.posts[postIndex].comments[commentIndex] = action.payload; // Aggiorna il commento con i dati restituiti dall'API
+					}
+				}
 			});
 	},
 });

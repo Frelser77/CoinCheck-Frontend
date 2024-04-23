@@ -179,11 +179,11 @@ const CoinDetail = ({ isSidebarOpen }) => {
 				<Col>
 					<Loader isLoading={isLoading || loading} />
 					{combinedCoinDetails && (
-						<Card className="border-0">
+						<Card className="border-0 mt-3">
 							<CardBody>
 								<Card.Title className="d-flex align-items-center justify-content-between">
 									<div className="d-flex align-items-center gap-3">
-										<h1> {combinedCoinDetails.base_currency} </h1>
+										<h1 className="text-gold"> {combinedCoinDetails.base_currency} </h1>
 										<span className={`ms-2 ${priceChangeColor}`}>{priceChangePercentage}%</span>
 									</div>
 									<div className="d-flex justify-content-between align-items-center gap-3">
