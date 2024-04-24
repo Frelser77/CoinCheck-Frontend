@@ -72,8 +72,8 @@ const Footer = () => {
 					</Col>
 				</Row>
 
-				<Row className="">
-					<Col xs={12} className="d-flex flex-column flex-lg-row justify-content-center justify-content-lg-between">
+				<Row className="pb-4">
+					<Col xs={12} className="d-flex flex-column flex-lg-row justify-content-center justify-content-lg-around">
 						<div className="d-flex justify-content-center justify-content-lg-center">
 							<a href="https://www.facebook.com/" className="text-light me-2" target="_blanck">
 								<FontAwesomeIcon icon={faFacebookF} />
@@ -93,9 +93,9 @@ const Footer = () => {
 
 						<div className="d-flex align-items-center flex-column flex-lg-row justify-content-center justify-content-lg-center">
 							<h6>© {year} CoinCheck. Tutti i diritti riservati</h6>
-							{formattedDate && <p className="small-text text-light">Ultimo login: {formattedDate}</p>}
 						</div>
 					</Col>
+					{formattedDate && <p className="small-text text-light">Ultimo login: {formattedDate}</p>}
 				</Row>
 			</Container>
 		</footer>

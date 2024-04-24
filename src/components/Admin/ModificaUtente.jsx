@@ -135,8 +135,8 @@ const ModificaUtente = ({ userId }) => {
 	};
 
 	return (
-		<Col lg={4} className={visibility}>
-			<h1 className="text-start text">Modifica Utente: {utente.username}</h1>
+		<Col className={`${visibility} zone-6 no-scroll no-scrollbar`}>
+			<h1 className="text-center text text-gold">Modifica Utente: {utente.username}</h1>
 			<div className=" mt-4">
 				<Card className="position-relative my-2">
 					<Row>

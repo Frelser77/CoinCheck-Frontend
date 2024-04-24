@@ -4,7 +4,7 @@ import { Row, Col, Card } from "react-bootstrap";
 const PostSkeleton = () => {
 	return (
 		<Row className="justify-content-center">
-			<Col xs={12} md={6}>
+			<Col xs={12} md={7} className="mx-auto">
 				<Card className="mb-4 post-card position-relative">
 					<Card.Header className="d-flex align-items-center justify-content-between p-2">
 						<div className="d-flex align-items-center gap-1">

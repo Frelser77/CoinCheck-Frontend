@@ -28,7 +28,7 @@ const UtentiList = () => {
 		if (status === "failed" || status === "idle") {
 			dispatch(fetchUtenti());
 		}
-	}, [dispatch, status, role]);
+	}, [dispatch, status]);
 
 	if (status === "loading" || isLoading) {
 		return <Loader isLoading={true} />;

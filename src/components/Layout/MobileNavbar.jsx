@@ -13,7 +13,13 @@ const MobileNavbar = ({ showFavorites, setShowFavorites }) => {
 	const [showButton, setShowButton] = useState(true);
 
 	useEffect(() => {
-		const pathsToHideButton = ["/login", "/Register", "/reset-password", `/reset-password/${token}/${id}`];
+		const pathsToHideButton = [
+			"/login",
+			"/Register",
+			"/reset-password",
+			`/reset-password/${token}/${id}`,
+			"/utentiList/",
+		];
 
 		// Controlla se il path attuale è uno di quelli che non devono mostrare il pulsante
 		const shouldHideButton = pathsToHideButton.includes(path) || (path.includes("/reset-password/") && token && id);

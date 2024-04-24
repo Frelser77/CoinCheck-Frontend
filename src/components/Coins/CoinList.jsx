@@ -167,7 +167,7 @@ const CryptoList = ({ showFavorites }) => {
 			<Col>
 				<Loader isLoading={isLoading && initialLoading} />
 
-				<div className="my-2 zone-5 no-scrollbar p-0">
+				<div className="my-2 zone-3 no-scrollbar p-0">
 					{coinsToRender
 						.filter((coin) => {
 							// Se stiamo mostrando i preferiti, filtra solo le monete preferite

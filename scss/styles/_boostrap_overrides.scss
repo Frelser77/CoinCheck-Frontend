@@ -484,7 +484,6 @@ footer {
 	background-color: black;
 	border-radius: 4px;
 	text-align: center;
-	z-index: 1020;
 }
 
 /* Stili per modificare la scrollbar della pagina */
@@ -705,8 +704,8 @@ footer {
 }
 
 .dropdown-item:hover {
-	background-color: $allight;
-	color: $black;
+	background-color: $body;
+	color: $white;
 }
 
 .icon-like.liked {
@@ -776,9 +775,22 @@ footer {
 	color: lighten($body, 40%);
 }
 
-.post-modal .modal-content {
-	background-color: $all;
+.post-modal {
 	color: $white;
+	.modal-content {
+		background-color: darken($body, 20%);
+	}
+	.form-control {
+		color: $white;
+		border: 0;
+		border-color: transparent;
+		&:focus {
+			background-color: darken($body, 20%);
+			color: $white;
+			border: 0;
+			border-color: transparent;
+		}
+	}
 }
 
 .img-post {
@@ -786,7 +798,7 @@ footer {
 	width: auto;
 }
 
-#root:before {
+.bef-logo:before {
 	-webkit-background-attachment: fixed;
 	background-attachment: fixed;
 	background-image: url(/assets/img/png-prova-dark-mode.png);
@@ -893,4 +905,15 @@ footer {
 
 .gold {
 	color: $gold; /* Oro */
+}
+.tooltip.show {
+	opacity: 1;
+	&.custom-tooltip {
+		background-color: $all;
+		// color: #fff;
+		font-weight: bold;
+		> .tooltip-inner {
+			padding: 0;
+		}
+	}
 }

@@ -46,6 +46,7 @@ function App() {
 	}, []);
 
 	const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+	const closeSidebar = () => setIsSidebarOpen(false);
 
 	if (isLoading) {
 		return <div>Checking role status...</div>;
@@ -59,11 +60,11 @@ function App() {
 	return (
 		<BrowserRouter>
 			<ToasterComponent />
-			<MyNavbar />
+			<MyNavbar closeSidebar={closeSidebar} />
 			{isMobile && <MobileNavbar showFavorites={showFavorites} setShowFavorites={setShowFavorites} />}
 			<RedirectToLoginIfLoggedOut />
-			<Container fluid>
-				<Row className="d-flex align-itmes-center justify-content-between  bef-logo">
+			<Container fluid className="bef-logo">
+				<Row className="d-flex align-itmes-center justify-content-between">
 					{!isMobile && role && (
 						<SideBarLeft
 							toggleSidebar={toggleSidebar}
@@ -73,7 +74,7 @@ function App() {
 					)}
 
 					<motion.div
-						className={`col-xs-12 col-md-${isSidebarOpen ? "7" : "8"} zone-6 no-scrollbar xscroll-none`}
+						className={`col-xs-12 col-md-${isSidebarOpen ? "7" : "8"} min-vh-100 no-scrollbar xscroll-none`}
 						style={{ flexGrow: 1 }}
 						animate={{ width: mainContentWidth }}
 						transition={{ type: "spring", stiffness: 260, damping: 20 }}

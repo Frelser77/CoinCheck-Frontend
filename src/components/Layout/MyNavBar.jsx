@@ -5,7 +5,7 @@ import LogoutButton from "../Auth/Logout";
 import { NavLink, useLocation } from "react-router-dom";
 import useUserRole from "../../hooks/useUserRole";
 
-const MyNavbar = () => {
+const MyNavbar = ({ closeSidebar }) => {
 	const location = useLocation();
 	const user = useSelector((state) => state.login.user);
 	const userId = user?.userId;
@@ -31,29 +31,28 @@ const MyNavbar = () => {
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="ms-auto">
 						<NavLink className="nav-link">{user && <h5 className="p-0 m-0">Bentornato, {user.username}!</h5>}</NavLink>
-						<NavDropdown title="Account" id="basic-nav-dropdown">
+						<NavDropdown title="Account" id="basic-nav-dropdown" className="border-0">
 							{userId ? (
 								<>
-									<NavDropdown.Item as={NavLink} to={`/utenti/${userId}`}>
+									<NavDropdown.Item className="border-0" as={NavLink} to={`/utenti/${userId}`}>
 										Profilo
 									</NavDropdown.Item>
 									{(role === "Admin" || role === "Moderatore") && (
-										<NavDropdown.Item as={NavLink} to="/utentiList/">
+										<NavDropdown.Item className="border-0" as={NavLink} to="/utentiList/">
 											Utenti
 										</NavDropdown.Item>
 									)}
-									<NavDropdown.Divider />
-									<NavDropdown.Item>
-										<LogoutButton />
+									<NavDropdown.Item className="border-0">
+										<LogoutButton closeSidebar={closeSidebar} />
 									</NavDropdown.Item>
 								</>
 							) : (
 								<>
-									<NavDropdown.Item as={NavLink} to="/login">
+									<NavDropdown.Item className="border-0" as={NavLink} to="/login">
 										Login
 									</NavDropdown.Item>
 									<NavDropdown.Divider />
-									<NavDropdown.Item as={NavLink} to="/register">
+									<NavDropdown.Item className="border-0" as={NavLink} to="/register">
 										Register
 									</NavDropdown.Item>
 								</>

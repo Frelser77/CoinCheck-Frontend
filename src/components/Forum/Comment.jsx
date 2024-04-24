@@ -25,8 +25,12 @@ const Comment = memo(({ comment, currentUserId, postId, updateCommentInList }) =
 		const resultAction = await dispatch(editComment({ commentId: comment.commentId, content: newContent }));
 		if (resultAction.meta.requestStatus === "fulfilled") {
 			updateCommentInList(resultAction.payload);
+			setIsEditing(false); // Aggiungi questa riga per chiudere il form dopo il salvataggio
 		}
-		setIsEditing(false);
+	};
+
+	const toggleEdit = () => {
+		setIsEditing(!isEditing); // Apri o chiudi il form di modifica
 	};
 
 	const handleLike = async () => {
@@ -94,19 +98,14 @@ const Comment = memo(({ comment, currentUserId, postId, updateCommentInList }) =
 							<span className="dot">•••</span>
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
-							<Dropdown.Item onClick={() => setIsEditing(true)}>Modifica</Dropdown.Item>
+							<Dropdown.Item onClick={toggleEdit}>Modifica</Dropdown.Item>
 							<Dropdown.Item onClick={handleDeleteComment}>Elimina</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
 				)}
 			</div>
 			{isEditing ? (
-				<CommentForm
-					postId={postId}
-					commentId={comment.commentId}
-					initialContent={comment.content}
-					onSave={(newComment) => updateCommentInList(newComment)}
-				/>
+				<CommentForm postId={postId} commentId={comment.commentId} initialContent={comment.content} onSave={onSave} />
 			) : (
 				<>
 					<p>{comment.content}</p>

@@ -1,12 +1,10 @@
-// PostModal.jsx
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { Url } from "../../Config/config";
 import { useDispatch } from "react-redux";
-import { fetchAllPosts } from "../../redux/reducer/Post/forumSlice";
+import { createPost, editPost, updatePost } from "../../redux/reducer/Post/forumSlice";
 
-const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
+const PostModal = ({ isOpen, onClose, editingPost }) => {
 	const [newPost, setNewPost] = useState({ title: "", content: "" });
 	const [file, setFile] = useState(null);
 	const [imagePreview, setImagePreview] = useState(null);
@@ -15,11 +13,7 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 	useEffect(() => {
 		if (editingPost) {
 			setNewPost({ title: editingPost.title, content: editingPost.content });
-			if (editingPost.filePath) {
-				setImagePreview(`${Url}${editingPost.filePath.replace(/\\/g, "/")}`);
-			} else {
-				setImagePreview(null);
-			}
+			setImagePreview(editingPost.filePath ? `${Url}${editingPost.filePath.replace(/\\/g, "/")}` : null);
 		} else {
 			setNewPost({ title: "", content: "" });
 			setImagePreview(null);
@@ -46,8 +40,16 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		onSubmit(newPost, file);
-		await dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
+		const formData = new FormData();
+		Object.keys(newPost).forEach((key) => formData.append(key, newPost[key]));
+		if (file) formData.append("file", file);
+
+		if (editingPost) {
+			await dispatch(editPost({ postId: editingPost.postId, formData }));
+		} else {
+			await dispatch(createPost(formData));
+		}
+		onClose();
 	};
 
 	return (
@@ -55,7 +57,7 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 			<Modal.Header closeButton>
 				<Modal.Title className="text-gold">{editingPost ? "Modifica Post" : "Crea Post"}</Modal.Title>
 			</Modal.Header>
-			<Form onSubmit={handleSubmit}>
+			<Form onSubmit={handleSubmit} className="text-light">
 				<Modal.Body>
 					{imagePreview && <img src={imagePreview} alt="Preview" className="img-fluid" />}
 					<Form.Group className="mb-3">
@@ -71,15 +73,14 @@ const PostModal = ({ isOpen, onClose, onSubmit, editingPost }) => {
 							placeholder="What's on your mind?"
 							rows={3}
 							required
-							title="Write a post"
 						/>
 					</Form.Group>
 				</Modal.Body>
 				<Modal.Footer className="border-0 flex-center flex-column flex-lg-row justify-content-lg-between">
-					<button className="nav-link mylink text-gold text-underline" onClick={onClose}>
+					<button className="nav-link mylink" onClick={onClose}>
 						Chiudi
 					</button>
-					<button className="nav-link mylink" type="submit">
+					<button className="nav-link mylink text-gold text-underline" type="submit">
 						Salva Post
 					</button>
 				</Modal.Footer>

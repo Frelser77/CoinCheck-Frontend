@@ -205,7 +205,7 @@ const SideBarLeft = ({ toggleSidebar, isSidebarOpen, setShowFavorites, showFavor
 					trigger="click"
 					placement="right"
 					overlay={
-						<Tooltip id="settings-tooltip">
+						<Tooltip id="settings-tooltip" className="custom-tooltip">
 							<ListGroup>
 								<ListGroup.Item
 									as={Link}

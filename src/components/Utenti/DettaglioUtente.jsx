@@ -93,13 +93,14 @@ const DettaglioUtente = () => {
 	};
 
 	const fetchUserDetails = async () => {
+		setIsLoadingDetails(true);
 		try {
 			const utenteDetails = await dispatch(fetchUtente(id, token)).unwrap();
 			setUtente(utenteDetails);
-			setIsLoadingDetails(false);
 		} catch (error) {
 			console.error("Failed to fetch the user details", error);
-			dispatch(showAlert({ message: error.message, type: "error" }));
+			toast.error(`Errore: ${error.message}`);
+		} finally {
 			setIsLoadingDetails(false);
 		}
 	};
@@ -162,7 +163,7 @@ const DettaglioUtente = () => {
 
 	return (
 		<Row className="">
-			<Col xs={12}>
+			<Col xs={12} className="my-1">
 				<h1 className="text-center text-gold">Profilo {utente.username}</h1>
 				<Card className="my-1">
 					<Row>
@@ -172,7 +173,7 @@ const DettaglioUtente = () => {
 									key="bottom"
 									placement="bottom"
 									overlay={<Tooltip id={`tooltip-bottom`}>Carica Immagine</Tooltip>}
-									trigger="focus"
+									trigger={["hover", "focus"]}
 								>
 									<CustomImage
 										src={
@@ -259,9 +260,9 @@ const DettaglioUtente = () => {
 								Carica Preferenze
 							</button>
 							{showPreferences && userPreferences && userPreferences.length > 0 ? (
-								<div className="zone-4 mb-">
+								<div className="zone-5">
 									{userPreferences.map((preferenza, index) => (
-										<Card className="mt-4 other-card" key={index}>
+										<Card className="mt-4 other-card" key={preferenza.nomeCoin}>
 											<Card.Body>
 												<Row>
 													<h3>{preferenza.nomeCoin}</h3>
@@ -272,7 +273,7 @@ const DettaglioUtente = () => {
 													</Col>
 													<Col xs={3} md={4} className="d-flex justify-content-end align-items-baseline gap-2">
 														<OverlayTrigger
-															key="top"
+															key={preferenza.nomeCoin + index + Math.random()}
 															placement="top"
 															overlay={<Tooltip id={`tooltip-top`}>Dettagli coin</Tooltip>}
 														>
@@ -284,7 +285,7 @@ const DettaglioUtente = () => {
 															</div>
 														</OverlayTrigger>
 														<OverlayTrigger
-															key={tooltipPlacement}
+															key={preferenza.nomeCoin + index + Math.random()}
 															placement={tooltipPlacement}
 															overlay={<Tooltip id={`tooltip-${tooltipPlacement}`}>Watchlist</Tooltip>}
 														>

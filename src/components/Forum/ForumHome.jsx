@@ -5,10 +5,14 @@ import Post from "./Post";
 import PostModal from "./PostModal";
 import { Col, Container, Row } from "react-bootstrap";
 import PostSkeleton from "../Skeletorn/PostSkeleton";
+import { FaPlus } from "react-icons/fa";
+import Top from "../Tips/Top";
 
 const ForumHome = () => {
 	const dispatch = useDispatch();
-	const { posts, isLoading, hasMore } = useSelector((state) => state.posts);
+	const posts = useSelector((state) => state.posts.posts);
+	const isLoading = useSelector((state) => state.posts.isLoading);
+	const hasMore = useSelector((state) => state.posts.hasMore);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const [editingPost, setEditingPost] = useState(null);
 	const [pageIndex, setPageIndex] = useState(0);
@@ -55,33 +59,32 @@ const ForumHome = () => {
 		setModalIsOpen(false);
 	};
 
-	const handleModalSubmit = (post, file) => {
+	const handleModalSubmit = async (e) => {
+		e.preventDefault();
+		const formData = new FormData();
+		Object.keys(newPost).forEach((key) => formData.append(key, newPost[key]));
+		if (file) formData.append("file", file);
+
 		if (editingPost) {
-			dispatch(updatePost({ ...post, postId: editingPost.postId, file }));
+			await dispatch(updatePost({ postId: editingPost.postId, formData }));
+			closeModal();
 		} else {
-			const formData = new FormData();
-			Object.keys(post).forEach((key) => formData.append(key, post[key]));
-			if (file) formData.append("file", file);
-			dispatch(createPost(formData)).then(() => {
-				dispatch(fetchAllPosts({ pageIndex: 0, pageSize: 10 }));
-				setPageIndex(0);
-			});
+			await dispatch(createPost(formData));
+			closeModal();
 		}
-		closeModal();
 	};
 
 	return (
 		<Container>
-			<Row className="zone-6 no-scrollbar">
-				<div className="d-flex align-items-center justify-content-start mt-3">
-					<button
-						className="nav-link mylink text-gold text-underline my-3 px-3 py-1 position-fixed top-0 left-0"
-						onClick={() => openModal()}
-					>
-						Crea Post
+			<Row className="zone-7 no-scrollbar">
+				<div className="d-flex align-items-center justify-content-center mt-3">
+					<button className="btn btn-body my-3 px-4 py-1" onClick={() => openModal()}>
+						<FaPlus className="me-2" />
+						<span>Crea Post</span>
 					</button>
 				</div>
-				<Col xs={10} sm={5} className="mx-auto">
+
+				<Col xs={10} md={8} lg={6} className="mx-auto">
 					{isLoading && pageIndex === 0
 						? Array.from({ length: 3 }, (_, index) => <PostSkeleton key={index} />)
 						: posts.map((post) => (
@@ -89,6 +92,7 @@ const ForumHome = () => {
 						  ))}
 				</Col>
 				<div ref={observerRef} style={{ height: 20 }} />
+				<Top />
 			</Row>
 			<PostModal isOpen={modalIsOpen} onClose={closeModal} onSubmit={handleModalSubmit} editingPost={editingPost} />
 		</Container>

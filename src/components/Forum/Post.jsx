@@ -53,6 +53,11 @@ const Post = memo(({ post, onEdit, currentUserId }) => {
 	const isLikingThisPost = post.postId === likingPostId;
 	const [topThreeLikes, setTopThreeLikes] = useState([]);
 	const [localComments, setLocalComments] = useState(post.comments);
+	const [likeCount, setLikeCount] = useState(post.likeCount);
+
+	useEffect(() => {
+		setLikeCount(post.likeCount);
+	}, [post.likeCount]);
 
 	useEffect(() => {
 		setLocalComments(post.comments);
@@ -84,14 +89,12 @@ const Post = memo(({ post, onEdit, currentUserId }) => {
 		try {
 			const response = await dispatch(toggleLikePost({ postId: post.postId })).unwrap();
 			if (response && response.likesDetails) {
-				// Aggiorna il conteggio dei likes e il loro dettaglio
 				const updatedTopThreeLikes = response.likesDetails.slice(0, 3).map((like) => ({
 					...like,
 					style: getUserNameStyle(like.user?.ruoloNome || ""),
 				}));
 				setTopThreeLikes(updatedTopThreeLikes);
-
-				// Aggiorna se l'utente corrente ha messo il like
+				setLikeCount(response.likeCount); // Aggiorna il conteggio dei likes qui
 				const userHasLikedPost = response.likesDetails.some((like) => like.userId === currentUserId);
 				setHasLikedPost(userHasLikedPost);
 			}
@@ -139,7 +142,6 @@ const Post = memo(({ post, onEdit, currentUserId }) => {
 
 	const topComment = getTopComment(post.comments);
 
-	// Sistemare il percorso dell'immagine
 	const userImagePath = post.userImage
 		? `${post.userImage.replace(/\\/g, "/")}?v=${post.postId}-${new Date(post.postDate).getTime()}`
 		: " ";
@@ -196,7 +198,9 @@ const Post = memo(({ post, onEdit, currentUserId }) => {
 						onClick={() => goToUserProfile(post.userId)}
 						Url={Url}
 					/>
-					<strong className={`ms-2 ${postOwnerStyle}`}>{post.userName}</strong>
+					<strong onClick={() => goToUserProfile(post.userId)} className={`ms-2 point ${postOwnerStyle}`}>
+						{post.userName}
+					</strong>
 				</div>
 				<small className="ms-auto">{getTimeDifference(new Date(post.postDate))}</small>
 			</Card.Header>
@@ -235,7 +239,7 @@ const Post = memo(({ post, onEdit, currentUserId }) => {
 							/>
 						)}
 						<FaRegComment className="me-1 point icon-comment" onClick={handleToggleComments} />
-						<span>{post.likeCount} likes</span>
+						<span>{likeCount} likes</span>
 					</div>
 
 					<div className="like-profile-images d-flex align-items-start justify-content-between">
@@ -245,7 +249,8 @@ const Post = memo(({ post, onEdit, currentUserId }) => {
 									key={like.likeId}
 									src={`${like.user.imageUrl.replace(/\\/g, "/")}`}
 									alt={`Like by ${like.user.username}`}
-									className={`profile-image point  ${index > 0 ? "overlapped" : ""}`}
+									className={`profile-image ${index > 0 ? "overlapped" : ""}`}
+									style={{ left: `${index * 7}%` }} // Modifica qui per posizionamento dinamico
 									onClick={() => goToUserProfile(like.userId)}
 									Url={Url}
 								/>
@@ -254,7 +259,7 @@ const Post = memo(({ post, onEdit, currentUserId }) => {
 						<div className="ms-3 small-text">
 							{topThreeLikes.map((like, index) => (
 								<span
-									key={`like-${like.likeId}-${index}`} // Assicurati che la key sia unica
+									key={`like-${like.likeId}-${index}`}
 									className={`like-username point me-1 ${like.style}`}
 									onClick={() => goToUserProfile(like.userId)}
 								>

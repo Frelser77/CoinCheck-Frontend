@@ -16,6 +16,7 @@ const CommentForm = ({ postId, commentId = null, initialContent = "", onSave, on
 		e.preventDefault();
 		if (!commentText.trim()) return;
 
+		// Determina se è una nuova creazione o una modifica basata sulla presenza di commentId
 		const action = commentId
 			? dispatch(editComment({ commentId, content: commentText }))
 			: dispatch(commentOnPost({ postId, createCommentDto: { Content: commentText } }));
@@ -23,17 +24,12 @@ const CommentForm = ({ postId, commentId = null, initialContent = "", onSave, on
 		action
 			.then((response) => {
 				if (response.meta.requestStatus === "fulfilled") {
-					if (onSave && typeof onSave === "function") {
-						onSave(response.payload);
-					}
-					if (onAddComment && typeof onAddComment === "function") {
-						onAddComment(response.payload);
-					}
+					onSave(commentText); // Usa onSave per passare il nuovo contenuto
 					setCommentText(""); // Pulisci il campo del form
+					if (onAddComment) onAddComment(response.payload); // Gestisci l'aggiunta del nuovo commento se necessario
 				}
 			})
 			.catch((error) => {
-				// Gestisci eventuali errori qui
 				console.error("Failed to save comment:", error);
 			});
 	};

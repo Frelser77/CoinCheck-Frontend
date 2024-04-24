@@ -78,8 +78,12 @@ const CoinDetail = ({ isSidebarOpen }) => {
 				startDate.setMonth(endDate.getMonth() - 1);
 				break;
 			case "3M":
-				granularity = 86400; // 1 giorno per 3 mesi
-				startDate.setMonth(endDate.getMonth() - 3);
+				if (role === "Admin" || role === "Moderatore" || role === "UtentePro") {
+					granularity = 86400; // 1 giorno per 3 mesi
+					startDate.setMonth(endDate.getMonth() - 3);
+				} else {
+					return null;
+				}
 				break;
 		}
 
@@ -216,6 +220,7 @@ const CoinDetail = ({ isSidebarOpen }) => {
 									selectedTimeRange={selectedTimeRange}
 									height={300}
 									isSidebarOpen={isSidebarOpen}
+									role={role}
 								/>
 								<h3 className="my-2">Dettagli aggiuntivi</h3>
 								<div className="d-flex align-items-center justify-content-between mb-2">

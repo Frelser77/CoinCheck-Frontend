@@ -42,7 +42,14 @@ export const createPost = createAsyncThunk("posts/createPost", async (formData, 
 			throw new Error("Network response was not ok.");
 		}
 
-		return await response.json();
+		let data = await response.json();
+
+		// Aggiungi il percorso base se l'immagine utente non inizia con http/https
+		if (data.userImageUrl && !data.userImageUrl.startsWith("http")) {
+			data.userImageUrl = `${Url}/${data.userImageUrl.replace(/\\/g, "/")}`;
+		}
+
+		return data;
 	} catch (error) {
 		return rejectWithValue(error.message);
 	}
@@ -121,7 +128,7 @@ export const editPost = createAsyncThunk(
 			const token = getState().login.token;
 			const response = await fetchWithAuth(`${Url}posts/edit/post/${postId}`, {
 				method: "PUT",
-				body: formData, // Assumi che formData contenga il titolo, il contenuto e/o il file
+				body: formData,
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -262,15 +269,14 @@ const postsSlice = createSlice({
 				state.errorMessage = "";
 			})
 			.addCase(createPost.fulfilled, (state, action) => {
+				const post = action.payload;
+				if (post.userImageUrl && !post.userImageUrl.startsWith("http")) {
+					post.userImageUrl = `${Url}/${post.userImageUrl.replace(/\\/g, "/")}`;
+				}
+				state.posts.unshift(post); // Aggiunge il post all'inizio
 				state.isLoading = false;
 				state.isError = false;
 				state.errorMessage = "";
-				const newPostWithUserDetails = {
-					...action.payload, // Questo contiene il nuovo post con i dettagli dell'utente
-					userRole: action.payload.userRole, // Aggiungi questa riga se userRole non è già nel payload
-					// Assicurati che l'oggetto action.payload abbia tutte le informazioni dell'utente
-				};
-				state.posts.unshift(newPostWithUserDetails); // Aggiungi il nuovo post all'inizio dell'array
 			})
 			.addCase(createPost.rejected, (state, action) => {
 				state.isLoading = false;
@@ -341,7 +347,7 @@ const postsSlice = createSlice({
 				state.errorMessage = action.payload;
 			})
 			.addCase(fetchAllPosts.fulfilled, (state, action) => {
-				const { posts, total } = action.payload; // Nota la minuscola "p" e "t"
+				const { posts, total } = action.payload;
 				if (posts.length === 0) {
 					state.hasMore = false;
 				} else {
@@ -362,12 +368,12 @@ const postsSlice = createSlice({
 				state.errorMessage = action.payload;
 			})
 			.addCase(editPost.fulfilled, (state, action) => {
-				state.isLoading = false;
-				state.isError = false;
 				const index = state.posts.findIndex((post) => post.postId === action.payload.postId);
 				if (index !== -1) {
-					state.posts[index] = action.payload;
+					state.posts[index] = { ...state.posts[index], ...action.payload };
 				}
+				state.isLoading = false;
+				state.isError = false;
 			})
 			.addCase(editPost.pending, (state) => {
 				state.isLoading = true;

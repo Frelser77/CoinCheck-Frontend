@@ -33402,7 +33402,6 @@ footer {
   background-color: black;
   border-radius: 4px;
   text-align: center;
-  z-index: 1020;
 }
 
 /* Stili per modificare la scrollbar della pagina */
@@ -33615,8 +33614,8 @@ footer {
 }
 
 .dropdown-item:hover {
-  background-color: #f3f5d4;
-  color: #000;
+  background-color: #353353;
+  color: #fff;
 }
 
 .icon-like.liked {
@@ -33699,9 +33698,22 @@ footer {
   color: #9794be;
 }
 
-.post-modal .modal-content {
-  background-color: #0c0a2b;
+.post-modal {
   color: #fff;
+}
+.post-modal .modal-content {
+  background-color: #0d0c14;
+}
+.post-modal .form-control {
+  color: #fff;
+  border: 0;
+  border-color: transparent;
+}
+.post-modal .form-control:focus {
+  background-color: #0d0c14;
+  color: #fff;
+  border: 0;
+  border-color: transparent;
 }
 
 .img-post {
@@ -33709,7 +33721,7 @@ footer {
   width: auto;
 }
 
-#root:before {
+.bef-logo:before {
   -webkit-background-attachment: fixed;
   background-attachment: fixed;
   background-image: url(/assets/img/png-prova-dark-mode.png);
@@ -33813,6 +33825,17 @@ footer {
 
 .gold {
   color: #c0a868; /* Oro */
+}
+
+.tooltip.show {
+  opacity: 1;
+}
+.tooltip.show.custom-tooltip {
+  background-color: #0c0a2b;
+  font-weight: bold;
+}
+.tooltip.show.custom-tooltip > .tooltip-inner {
+  padding: 0;
 }
 
 #app-nav {

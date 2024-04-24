@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createChart, CrosshairMode, PriceScaleMode } from "lightweight-charts";
 import TimeRangeSelector from "./TimeRangeSelector"; // Assicurati di importare il componente corretto
 
-const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, isSidebarOpen }) => {
+const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, isSidebarOpen, role }) => {
 	const chartContainerRef = useRef();
 	const chartRef = useRef(null); // Riferimento al grafico per accesso futuro
 	const [chartWidth, setChartWidth] = useState(null);
@@ -98,7 +98,7 @@ const TradingViewChart = ({ data, onTimeRangeChange, selectedTimeRange, height, 
 
 	return (
 		<div className="flex-center flex-column">
-			<TimeRangeSelector onChange={handleTimeRangeChange} selectedTimeRange={selectedTimeRange} />
+			<TimeRangeSelector onChange={handleTimeRangeChange} selectedTimeRange={selectedTimeRange} role={role} />
 			<div ref={chartContainerRef} style={{ width: "100%", height }} />
 		</div>
 	);

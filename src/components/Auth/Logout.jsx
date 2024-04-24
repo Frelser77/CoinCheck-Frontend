@@ -47,7 +47,7 @@ const LogoutButton = ({ closeSidebar }) => {
 				overlay={<Tooltip id="tooltip">Logout</Tooltip>}
 			>
 				<button onClick={openModal} className="nav-item flex-center nav-link logout-text">
-					<div className="logout-text">
+					<div className="">
 						<FontAwesomeIcon icon={faSignOutAlt} />
 						<span className="nav-text ms-1">Logout</span>
 					</div>
@@ -65,7 +65,9 @@ const LogoutButton = ({ closeSidebar }) => {
 					<button
 						onClick={() => {
 							handleLogout();
-							closeSidebar();
+							if (!exatcliPath) {
+								closeSidebar();
+							}
 						}}
 						className="nav-link text-gold mylink text-underline"
 					>
@@ -74,8 +76,10 @@ const LogoutButton = ({ closeSidebar }) => {
 					</button>
 					<button
 						onClick={() => {
-							closeSidebar();
 							closeModal();
+							if (!exatcliPath) {
+								closeSidebar();
+							}
 						}}
 						className="nav-link mylink"
 					>

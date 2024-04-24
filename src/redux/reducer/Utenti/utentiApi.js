@@ -168,6 +168,11 @@ const utentiSlice = createSlice({
 			})
 			.addCase(fetchUtente.pending, (state) => {
 				state.status = "loading";
+				state.error = null;
+			})
+			.addCase(fetchUtente.rejected, (state, action) => {
+				state.status = "failed";
+				state.error = action.payload;
 			})
 			.addCase(fetchUtente.fulfilled, (state, action) => {
 				state.status = "succeeded";
@@ -188,10 +193,6 @@ const utentiSlice = createSlice({
 			.addCase(deleteUser.fulfilled, (state, action) => {
 				state.users = state.users.filter((user) => user.id !== action.meta.arg);
 				state.successMessage = "Utente deleted successfully";
-			})
-			.addCase(fetchUtente.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload;
 			})
 			.addCase(createUser.rejected, (state, action) => {
 				state.status = "failed";
