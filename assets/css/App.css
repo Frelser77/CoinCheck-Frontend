@@ -33650,8 +33650,7 @@ footer {
 .form-control {
   background: transparent;
   border: none;
-  border-bottom: 1px solid #ced4da; /* Stile della linea dell'input */
-  /* ... altre proprietà ... */
+  border-bottom: 1px solid #ced4da;
 }
 
 .form-label {
@@ -33836,6 +33835,13 @@ footer {
 }
 .tooltip.show.custom-tooltip > .tooltip-inner {
   padding: 0;
+}
+
+form#productForm .form-control {
+  color: #fff;
+}
+form#productForm .form-control:focus {
+  background-color: #0c0a2b;
 }
 
 #app-nav {

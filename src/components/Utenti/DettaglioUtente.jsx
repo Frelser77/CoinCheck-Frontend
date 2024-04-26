@@ -168,7 +168,7 @@ const DettaglioUtente = () => {
 				<Card className="my-1">
 					<Row>
 						<Col>
-							<CardBody className="d-flex flex-column align-items-start justify-content-between gap-2 sticky-top">
+							<CardBody className="d-flex flex-column align-items-center align-items-lg-start justify-content-between gap-2 sticky-top">
 								<OverlayTrigger
 									key="bottom"
 									placement="bottom"
@@ -206,17 +206,17 @@ const DettaglioUtente = () => {
 								{(isOwner || isAdminOrModerator) && (
 									<div className="flex-center gap-2">
 										{utente.isActive ? (
-											<Button className="nav-link text-gold mylink" onClick={openModal}>
+											<button className="nav-link text-gold mylink" onClick={openModal}>
 												Disattiva
-											</Button>
+											</button>
 										) : (
-											<Button className="nav-link text-gold mylink" onClick={() => handleRestore(utente.userId)}>
+											<button className="nav-link text-gold mylink" onClick={() => handleRestore(utente.userId)}>
 												Riattiva
-											</Button>
+											</button>
 										)}
-										<Button className="nav-link mylink" onClick={() => navigate(`/utenti/${utente.userId}/edit`)}>
+										<button className="nav-link mylink" onClick={() => navigate(`/utenti/${utente.userId}/edit`)}>
 											Modifica
-										</Button>
+										</button>
 									</div>
 								)}
 								<ReactModal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Conferma Disattivazione">

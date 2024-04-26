@@ -203,9 +203,9 @@ const ModificaUtente = ({ userId }) => {
 									</div>
 								</Form>
 								{isCurrentUser && (
-									<Button variant="link" onClick={() => handleResetPasswordRequest(email)}>
+									<button variant="link" onClick={() => handleResetPasswordRequest(email)}>
 										Richiedi Reset Password
-									</Button>
+									</button>
 								)}
 							</Card.Body>
 						</Col>

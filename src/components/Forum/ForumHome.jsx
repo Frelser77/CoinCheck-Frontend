@@ -76,7 +76,7 @@ const ForumHome = () => {
 
 	return (
 		<Container>
-			<Row className="zone-7 no-scrollbar">
+			<Row className="zone-5 no-scrollbar">
 				<div className="d-flex align-items-center justify-content-center mt-3">
 					<button className="btn btn-body my-3 px-4 py-1" onClick={() => openModal()}>
 						<FaPlus className="me-2" />

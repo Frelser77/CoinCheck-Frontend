@@ -63,7 +63,7 @@ function App() {
 			<MyNavbar closeSidebar={closeSidebar} />
 			{isMobile && <MobileNavbar showFavorites={showFavorites} setShowFavorites={setShowFavorites} />}
 			<RedirectToLoginIfLoggedOut />
-			<Container fluid className="bef-logo">
+			<Container fluid className="">
 				<Row className="d-flex align-itmes-center justify-content-between">
 					{!isMobile && role && (
 						<SideBarLeft

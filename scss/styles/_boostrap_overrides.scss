@@ -735,8 +735,7 @@ footer {
 .form-control {
 	background: transparent;
 	border: none;
-	border-bottom: 1px solid #ced4da; /* Stile della linea dell'input */
-	/* ... altre proprietà ... */
+	border-bottom: 1px solid #ced4da;
 }
 
 .form-label {
@@ -914,6 +913,15 @@ footer {
 		font-weight: bold;
 		> .tooltip-inner {
 			padding: 0;
+		}
+	}
+}
+
+form#productForm {
+	.form-control {
+		color: $white;
+		&:focus {
+			background-color: $all;
 		}
 	}
 }

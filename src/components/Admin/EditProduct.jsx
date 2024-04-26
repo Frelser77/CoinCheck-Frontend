@@ -68,10 +68,19 @@ const EditProduct = () => {
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
-		setFormData((prevData) => ({
-			...prevData,
-			[name]: value,
-		}));
+		if (name === "prezzo") {
+			// Sostituisci il punto con una virgola per il formato italiano
+			const formattedValue = value.toString().replace(".", ",");
+			setFormData((prevData) => ({
+				...prevData,
+				[name]: formattedValue,
+			}));
+		} else {
+			setFormData((prevData) => ({
+				...prevData,
+				[name]: value,
+			}));
+		}
 	};
 
 	const handleImageChange = async (event) => {
@@ -98,11 +107,14 @@ const EditProduct = () => {
 
 	const handleUpdate = async (event) => {
 		event.preventDefault();
-		// Crea un oggetto FormData
 		const data = new FormData();
+
+		// Assicura che il prezzo sia nel formato corretto, anche se già gestito in `handleChange`
+		const priceWithComma = formData.prezzo.toString().replace(".", ",");
+
 		// Aggiungi i dati al FormData
 		Object.keys(formData).forEach((key) => {
-			data.append(key, formData[key]);
+			data.append(key, key === "prezzo" ? priceWithComma : formData[key]);
 		});
 
 		try {
@@ -141,25 +153,33 @@ const EditProduct = () => {
 					<Card.Body>
 						<Card.Img src={imageUrlWithTimestamp} alt={productToEdit.tipoAbbonamento} className="img-circle" />
 
-						<Form>
+						<Form id="productForm">
 							<Form.Group className="mb-3" controlId="formImageUrl">
 								<Form.Label>Immagine</Form.Label>
 								<Form.Control type="file" name="image" onChange={handleImageChange} />
 							</Form.Group>
 							<Form.Group className="mb-3" controlId="formPrezzo">
 								<Form.Label>Prezzo</Form.Label>
-								<Form.Control type="number" step="0.01" name="prezzo" value={formData.prezzo} onChange={handleChange} />
+								<Form.Control type="text" name="prezzo" value={formData.prezzo} onChange={handleChange} />
 							</Form.Group>
 							<Form.Group className="mb-3" controlId="formDescrizione">
 								<Form.Label>Descrizione</Form.Label>
-								<Form.Control as="textarea" name="descrizione" value={formData.descrizione} onChange={handleChange} />
+								<Form.Control
+									as="textarea"
+									style={{ resize: "none", height: "100px" }}
+									name="descrizione"
+									value={formData.descrizione}
+									onChange={handleChange}
+								/>
 							</Form.Group>
-							<Button variant="primary" onClick={handleUpdate}>
-								Update Product
-							</Button>
-							<Button variant="danger" onClick={handleDelete} className="ms-2">
-								Delete Product
-							</Button>
+							<div className="d-flex justify-content-between">
+								<button className="nav-link mylink text-gold text-underline" onClick={handleUpdate}>
+									Update Product
+								</button>
+								<button onClick={handleDelete} className="ms-2 nav-link mylink">
+									Delete Product
+								</button>
+							</div>
 						</Form>
 					</Card.Body>
 				</Card>
